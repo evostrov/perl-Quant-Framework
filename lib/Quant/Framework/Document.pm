@@ -12,8 +12,9 @@ Quant::Framework::Document -
 
 =head1 DESCRIPTION
 
-Internal representation of persistend data. Do not use the class directly outside
-of Quant::Framework.
+Internal representation of persistend data. Do not B<create> the class directly outside
+of Quant::Framework, although the usage of public fields outside of Quant::Framework
+is allowed.
 
 The class is responsible for loading and stoing data via Data::Chronicle. The
 data itself is a hash, which content is provided by users of the class (i.e. by

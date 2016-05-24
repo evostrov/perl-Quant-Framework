@@ -1,13 +1,39 @@
 package Quant::Framework::CorporateAction;
 
+use strict;
+use warnings;
+
 use Date::Utility;
 use Quant::Framework::Document;
 use Moo;
+=head1 NAME
+
+Quant::Framework::CorporateAction
+
+=head1 DESCRIPTION
+
+Represents the corporate actions data of an underlying from database.
+
+=cut
 
 has document => (
     is => 'ro',
     required => 1,
 );
+
+sub create {
+    my ($storage_accessor, $symbol, $for_date) = @_;
+    my $document = Quant::Framework::Document->new(
+        storage_accessor => $storage_accessor,
+        for_date         => $for_date,
+        symbol           => $symbol,
+        data             => { actions => {} },
+    );
+
+    return __PACKAGE__->new(
+      document => $document,
+    );
+}
 
 sub load {
     my ($storage_accessor, $symbol, $for_date) = @_;
@@ -42,7 +68,7 @@ sub update {
         $new{$action_id} = $action if ($is_new);
     }
 
-    my %merged_actions = (%{ $data->{actions} // {} }, %new);
+    my %merged_actions = (%{ $data->{actions} }, %new);
 
     my %cancelled;
     foreach my $action_id (keys %$actions) {
@@ -68,7 +94,7 @@ sub update {
 }
 
 sub actions {
-    return shift->document->data->{actions} // {};
+    return shift->document->data->{actions};
 }
 
 1;

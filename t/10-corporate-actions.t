@@ -6,7 +6,6 @@ use warnings;
 use Test::More;
 use Date::Utility;
 
-use Quant::Framework::Document;
 use Quant::Framework::StorageAccessor;
 use Quant::Framework::CorporateAction;
 use Quant::Framework::Utils::Test;
@@ -29,14 +28,7 @@ my $now = time;
 my $old_date = Date::Utility->new->minus_time_interval("15m");
 
 subtest "load/save" => sub {
-  my $ca = Quant::Framework::CorporateAction->new(
-      document => Quant::Framework::Document->new(
-          storage_accessor => $storage_accessor,
-          for_date         => $old_date,
-          symbol           => 'QWER',
-          data             => {},
-      )
-  );
+  my $ca = Quant::Framework::CorporateAction::create($storage_accessor, 'QWER', $old_date);
   ok $ca, "empty corporate actions object has been created";
 
   my $ca2 = $ca->update({
@@ -81,14 +73,7 @@ subtest "load/save" => sub {
 
 subtest 'save new corporate actions' => sub {
     my $now = Date::Utility->new;
-    my $corp = Quant::Framework::CorporateAction->new(
-        document => Quant::Framework::Document->new(
-            storage_accessor => $storage_accessor,
-            for_date         => $now,
-            symbol           => 'USAAPL',
-            data             => {},
-        )
-    );
+    my $corp = Quant::Framework::CorporateAction::create($storage_accessor, 'USAAPL', $now);
 
     is_deeply $corp->actions, {}, "by default it is empty";
 
