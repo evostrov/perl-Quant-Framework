@@ -3,8 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More; # tests => 2;
-#use Test::NoWarnings;
+use Test::More;
 use Date::Utility;
 
 use Quant::Framework::Document;
@@ -15,7 +14,7 @@ use Data::Chronicle::Writer;
 use Data::Chronicle::Reader;
 use Data::Chronicle::Mock;
 
-my ($chronicle_r, $chronicle_w) = Data::Chronicle::Mock::get_mocked_chronicle();
+my ($chronicle_r, $chronicle_w) = Data::Chronicle::Mock::get_mocked_chronicle;
 
 my $storage_accessor = Quant::Framework::StorageAccessor->new(
     chronicle_reader => $chronicle_r,
@@ -79,5 +78,97 @@ subtest "load/save" => sub {
   ok $ca5, "load via specifying exact date";
   is scalar(keys %{$ca5->actions}), 1, "old document contains 1 action";
 };
+
+subtest 'save new corporate actions' => sub {
+    my $now = Date::Utility->new;
+    my $corp = Quant::Framework::CorporateAction->new(
+        document => Quant::Framework::Document->new(
+            storage_accessor => $storage_accessor,
+            for_date         => $now,
+            symbol           => 'USAAPL',
+            data             => {},
+        )
+    );
+
+    is_deeply $corp->actions, {}, "by default it is empty";
+
+    my $new_actions = {
+        1122334 => {
+            effective_date => $now->datetime_iso8601,
+            modifier       => 'multiplication',
+            value          => 1.456,
+            description    => 'Test data 2',
+            flag           => 'N'
+        }};
+
+    my $new_corp = $corp->update($new_actions, $now->plus_time_interval("1m"));
+    $new_corp->save;
+
+    my $after_save_corp = Quant::Framework::CorporateAction::load($storage_accessor, 'USAAPL');
+    ok $after_save_corp;
+    is $after_save_corp->document->for_date, $now->plus_time_interval("1m");
+    is keys(%{ $after_save_corp->actions}), 1, "has one action";
+
+    subtest "no duplicates" => sub {
+        $new_corp->update({
+            1122334 => {
+                effective_date => $now->datetime_iso8601,
+                modifier       => 'multiplication',
+                value          => 1.456,
+                description    => 'Duplicate action',
+                flag           => 'N'
+            }
+        }, $now->plus_time_interval("2m") )->save;
+        my $persisted_actions = Quant::Framework::CorporateAction::load($storage_accessor, 'USAAPL')->actions;
+        isnt $persisted_actions->{1122334}->{description}, 'Duplicate action';
+        is $persisted_actions->{1122334}->{description}, 'Test data 2';
+    };
+
+    subtest 'update existing corporate actions' => sub {
+        $new_corp->update({
+            1122334 => {
+                effective_date => $now->datetime_iso8601,
+                modifier       => 'multiplication',
+                value          => 1.987,
+                description    => 'Update to existing actions',
+                flag           => 'U'
+            }
+        }, $now->plus_time_interval("3m") )->save;
+        my $persisted_actions = Quant::Framework::CorporateAction::load($storage_accessor, 'USAAPL')->actions;
+        is $persisted_actions->{1122334}->{description}, 'Update to existing actions';
+        is $persisted_actions->{1122334}->{value}, 1.987, 'value is also updated';
+    };
+
+    subtest 'cancel existing corporate actions' => sub {
+        $new_corp->update({
+            1122334 => {
+                effective_date => $now->datetime_iso8601,
+                modifier       => 'multiplication',
+                value          => 1.987,
+                description    => 'Update to existing actions',
+                flag           => 'D'
+            }
+        }, $now->plus_time_interval("4m") )->save;
+        my $persisted_actions = Quant::Framework::CorporateAction::load($storage_accessor, 'USAAPL')->actions;
+        is_deeply $persisted_actions, {}, 'action deleted from db';
+    };
+
+    subtest 'save critical actions' => sub {
+        my $action_id = 11223346;
+        $new_corp->update({
+            $action_id => {
+                effective_date  => $now->datetime_iso8601,
+                suspend_trading => 1,
+                disabled_date   => $now->datetime_iso8601,
+                description     => 'Save critical action',
+                flag            => 'N'
+            }
+        }, $now->plus_time_interval("5m") )->save;
+        my $persisted_actions = Quant::Framework::CorporateAction::load($storage_accessor, 'USAAPL')->actions;
+        ok $persisted_actions->{$action_id}, 'critical action saved on db';
+        is $persisted_actions->{$action_id}->{suspend_trading}, 1, 'suspend_trading';
+    };
+};
+
 
 done_testing;

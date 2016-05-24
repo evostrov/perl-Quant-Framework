@@ -68,7 +68,7 @@ sub update {
 }
 
 sub actions {
-    return shift->document->data->{actions};
+    return shift->document->data->{actions} // {};
 }
 
 1;
