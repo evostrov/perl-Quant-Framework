@@ -4,6 +4,13 @@ package Quant::Framework::StorageAccessor;
 
 Quant::Framework::StorageAccessor - This class incorporates chronicle accessors
 
+=head1 DESCRIPTION
+
+ my $storage_accessor = Quant::Framework::StorageAccessor->new(
+  chronicle_reader => ...,
+  chronicle_writer => ...,
+ );
+
 =cut
 
 
