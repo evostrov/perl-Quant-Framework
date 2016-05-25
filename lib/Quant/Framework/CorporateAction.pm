@@ -68,7 +68,7 @@ sub create {
     my ($storage_accessor, $symbol, $for_date) = @_;
     my $document = Quant::Framework::Document->new(
         storage_accessor => $storage_accessor,
-        for_date         => $for_date,
+        recorded_date    => $for_date,
         symbol           => $symbol,
         data             => { actions => {} },
         namespace        => $_NAMESPACE,
@@ -129,7 +129,7 @@ sub update {
     my $new_document = Quant::Framework::Document->new(
         data             => $data,
         storage_accessor => $self->document->storage_accessor,
-        for_date         => $new_date,
+        recorded_date    => $new_date,
         symbol           => $self->document->symbol,
         namespace        => $_NAMESPACE,
     );

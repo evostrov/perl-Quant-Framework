@@ -48,10 +48,10 @@ has storage_accessor => (
     required => 1,
 );
 
-has for_date => (
+has recorded_date => (
     is      => 'ro',
     isa     => sub {
-      die("Quant::Framework::Document::for_date should be Date::Utility")
+      die("Quant::Framework::Document::recorded_date should be Date::Utility")
         unless ref($_[0]) eq 'Date::Utility';
     },
     required => 1,
@@ -85,7 +85,7 @@ sub load {
 
     return __PACKAGE__->new(
         storage_accessor => $storage_accessor,
-        for_date         => $for_date // Date::Utility->new($data->{date}),
+        recorded_date    => $for_date // Date::Utility->new($data->{date}),
         symbol           => $symbol,
         data             => $data,
         namespace        => $namespace,
@@ -94,8 +94,8 @@ sub load {
 
 sub save {
     my $self = shift;
-    $self->data->{date} = $self->for_date->datetime_iso8601;
-    $self->storage_accessor->chronicle_writer->set($self->namespace, $self->symbol, $self->data, $self->for_date);
+    $self->data->{date} = $self->recorded_date->datetime_iso8601;
+    $self->storage_accessor->chronicle_writer->set($self->namespace, $self->symbol, $self->data, $self->recorded_date);
 }
 
 1;

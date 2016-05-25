@@ -91,7 +91,7 @@ subtest 'save new corporate actions' => sub {
 
     my $after_save_corp = Quant::Framework::CorporateAction::load($storage_accessor, 'USAAPL');
     ok $after_save_corp;
-    is $after_save_corp->document->for_date, $now->plus_time_interval("1m");
+    is $after_save_corp->document->recorded_date, $now->plus_time_interval("1m");
     is keys(%{ $after_save_corp->actions}), 1, "has one action";
 
     subtest "no duplicates" => sub {
