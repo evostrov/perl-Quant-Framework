@@ -109,12 +109,6 @@ Loads the document. If the argument C<for_date> is ommitted, then loads the most
 
 If document is not found, returns C<undef>.
 
-=head
-
- $document->save;
-
-Stores (persists) the document in Chronicle database.
-
 =cut
 
 sub load {
@@ -136,6 +130,14 @@ sub load {
         namespace        => $namespace,
     );
 }
+
+=head save
+
+ $document->save;
+
+Stores (persists) the document in Chronicle database.
+
+=cut
 
 sub save {
     my $self = shift;

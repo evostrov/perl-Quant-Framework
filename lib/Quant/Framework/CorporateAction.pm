@@ -57,12 +57,33 @@ new and cancelled action.
 
 =cut
 
+=head1 ATTRIBUTES
+
+=head2 document
+
+The document, which actually incorporates all data. Can be used to get the date of corporate
+actions, e.g.:
+
+ $corporate_actions->document->recorded_date
+
+=cut
+
 has document => (
     is => 'ro',
     required => 1,
 );
 
 my $_NAMESPACE = 'corporate_actions';
+
+=head1 SUBROUTINES
+
+=head2 create ($storage_accessor, $symbol, $for_date)
+
+ my $corp_actions = Quant::Framework::CorporateAction::crate($storage_accessor, "USAAPL", Date::Utility->new)
+
+Creates a new unsaved corporate actions.
+
+=cut
 
 sub create {
     my ($storage_accessor, $symbol, $for_date) = @_;
@@ -79,6 +100,17 @@ sub create {
     );
 }
 
+=head2 load ($storage_accessor, $symbol, $for_date)
+
+ my $corp_actions = Quant::Framework::CorporateAction::load($storage_accessor, "USAAPL", Date::Utility->new)
+
+Loads the corporate actions for the specified symbol at the specified date. The date can
+be omitted, then it loads the most recent corporate actions.
+
+Might return undef, if no actions exists in Chronicle
+
+=cut
+
 sub load {
     my ($storage_accessor, $symbol, $for_date) = @_;
 
@@ -90,13 +122,45 @@ sub load {
     );
 }
 
+=head2 save
+
+ $corp_actions->save;
+
+Stores corporate actions in chronicle.
+
+=cut
+
 sub save {
     my $self = shift;
     $self->document->save;
 }
 
-# creates new unpersisted (non-saved) CorporateAction object. You should invoke
-# save method to persist it in Chronicle
+=head2 update($actions, $date);
+
+ my $new_corp_actions = $corp_actions->update({
+    "32799500" => {
+        "monitor_date" => "2015-02-07T06:00:07Z",
+        "type" => "DIV",
+        "monitor" => 1,
+        "description" =>  "Divided Stocks",
+        "effective_date" =>  "15-Jul-15",
+        "flag" => "N"
+    },
+ }, Date::Utility->new)
+ $new_corp_actions->save;
+
+Takes the existing actions, applies "diff" of actions in Bloomberg
+format (i.e. adds new actions, or cancels exising ones), and
+returns new unpersisted (non-saved) CorporateAction object.
+
+You have to invoke C<save> method to persist new corporate actions
+in Chronicle.
+
+The C<$date> argument in mandatory.
+
+=cut
+
+
 sub update {
     my ($self, $actions, $new_date) = @_;
 
@@ -139,6 +203,15 @@ sub update {
 
     return wantarray ? ($new_ca, \%new, \%cancelled) : $new_ca;
 }
+
+=head2 actions
+
+ my $actions = $corp_actions->actions;
+
+Returns hashref of actions in Bloomberg format. If there are no actions, the empty hashref
+is returned.
+
+=cut
 
 sub actions {
     return shift->document->data->{actions};
