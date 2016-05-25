@@ -42,6 +42,30 @@ CorporateActions).
 
 =cut
 
+=head1 ATTRIBUTES
+
+=head2 storage_accessor
+
+Chonicle assessor
+
+=head2 recorded_date
+
+The date of document creation (C<Date::Utility>)
+
+=head2 data
+
+Hashref of data. Should be defined by the class, which uses Document. Currently the fields
+C<date> and C<symbol> are reserved.
+
+=head2 namespace
+
+The required namespace of document, e.g. 'corporate_actions'
+
+=head2 symbol
+
+The domain-specific name of document; e.g. "USAAPL" for corporate actions
+
+=cut
 
 has storage_accessor => (
     is => 'ro',
@@ -71,6 +95,27 @@ has symbol => (
     is       => 'ro',
     required => 1,
 );
+
+=head1 SUBROUTINES
+
+=head2 load($storage_accessor, $namespace, $symbol, $for_date)
+
+ my $recent_document = Quant::Framework::Document::load($storage_accessor, 'corporate_actions', "USAAPL");
+
+ my $event_date = Date::Utility->new('02-02-2016')
+ my $historical_doc = Quant::Framework::Document::load($storage_accessor, 'corporate_actions', "USAAPL", $event_date);
+
+Loads the document. If the argument C<for_date> is ommitted, then loads the most recent document.
+
+If document is not found, returns C<undef>.
+
+=head
+
+ $document->save;
+
+Stores (persists) the document in Chronicle database.
+
+=cut
 
 sub load {
     my ($storage_accessor, $namespace, $symbol, $for_date) = @_;
