@@ -95,6 +95,8 @@ sub save {
     $self->document->save;
 }
 
+# creates new unpersisted (non-saved) CorporateAction object. You should invoke
+# save method to persist it in Chronicle
 sub update {
     my ($self, $actions, $new_date) = @_;
 
