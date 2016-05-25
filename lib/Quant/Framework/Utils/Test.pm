@@ -8,7 +8,7 @@ Quant::Framework::Utils::Test
 
 This module is used when testing Quant::Framework modules to create new documents.
 A set of pre-defined templates are provided which can be used to create test documents.
-Also it is possible to change some/all of the test document by passing corresponding 
+Also it is possible to change some/all of the test document by passing corresponding
 key/values to create_doc.
 
 =head1 SYNOPSIS
@@ -60,6 +60,10 @@ use Data::Chronicle::Mock;
 
 sub create_doc {
     my ($yaml_db, $data_mod) = @_;
+
+    if ($yaml_db eq 'corporate_actions') {
+        die ("create_doc should not used any longer for creating corporate_actions");
+    }
 
     my $save = 1;
     if (exists $data_mod->{save}) {
