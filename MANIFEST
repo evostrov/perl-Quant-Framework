@@ -6,6 +6,7 @@ lib/Quant/Framework/CorporateAction.pm
 lib/Quant/Framework/CorrelationMatrix.pm
 lib/Quant/Framework/Currency.pm
 lib/Quant/Framework/Dividend.pm
+lib/Quant/Framework/Document.pm
 lib/Quant/Framework/EconomicEventCalendar.pm
 lib/Quant/Framework/Exchange.pm
 lib/Quant/Framework/ExpiryConventions.pm
@@ -13,6 +14,7 @@ lib/Quant/Framework/Holiday.pm
 lib/Quant/Framework/ImpliedRate.pm
 lib/Quant/Framework/InterestRate.pm
 lib/Quant/Framework/PartialTrading.pm
+lib/Quant/Framework/StorageAccessor.pm
 lib/Quant/Framework/TradingCalendar.pm
 lib/Quant/Framework/Utils/MarketData.pm
 lib/Quant/Framework/Utils/Rates.pm
@@ -26,6 +28,7 @@ share/exchanges_trading_days_aliases.yml
 share/expected_trading_days.yml
 share/test_data.yml
 t/00-load.t
+t/10-corporate-actions.t
 t/asset.t
 t/corporate_actions.t
 t/corporate_actions2.t
