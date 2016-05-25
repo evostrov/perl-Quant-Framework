@@ -30,8 +30,6 @@ share/test_data.yml
 t/00-load.t
 t/10-corporate-actions.t
 t/asset.t
-t/corporate_actions.t
-t/corporate_actions2.t
 t/correlation_matrix.t
 t/currency.t
 t/dividend.t
