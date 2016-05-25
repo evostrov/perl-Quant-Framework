@@ -62,19 +62,24 @@ has data => (
     required => 1,
 );
 
+has namespace => (
+    is => 'ro',
+    required => 1,
+);
+
 has symbol => (
     is       => 'ro',
     required => 1,
 );
 
 sub load {
-    my ($storage_accessor, $namepace, $symbol, $for_date) = @_;
+    my ($storage_accessor, $namespace, $symbol, $for_date) = @_;
 
-    my $data = $storage_accessor->chronicle_reader->get('corporate_actions', $symbol)
+    my $data = $storage_accessor->chronicle_reader->get($namespace, $symbol)
       or return;
 
     if ($for_date && $for_date->datetime_iso8601 lt $data->{date}) {
-        $data = $storage_accessor->chronicle_reader->get_for('corporate_actions', $symbol, $for_date->epoch)
+        $data = $storage_accessor->chronicle_reader->get_for($namespace, $symbol, $for_date->epoch)
           or return;
     }
 
@@ -83,13 +88,14 @@ sub load {
         for_date         => $for_date // Date::Utility->new($data->{date}),
         symbol           => $symbol,
         data             => $data,
+        namespace        => $namespace,
     );
 }
 
 sub save {
-    my ($self, $namespace) = @_;
+    my $self = shift;
     $self->data->{date} = $self->for_date->datetime_iso8601;
-    $self->storage_accessor->chronicle_writer->set($namespace, $self->symbol, $self->data, $self->for_date);
+    $self->storage_accessor->chronicle_writer->set($self->namespace, $self->symbol, $self->data, $self->for_date);
 }
 
 1;

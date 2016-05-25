@@ -62,6 +62,8 @@ has document => (
     required => 1,
 );
 
+my $_NAMESPACE = 'corporate_actions';
+
 sub create {
     my ($storage_accessor, $symbol, $for_date) = @_;
     my $document = Quant::Framework::Document->new(
@@ -69,6 +71,7 @@ sub create {
         for_date         => $for_date,
         symbol           => $symbol,
         data             => { actions => {} },
+        namespace        => $_NAMESPACE,
     );
 
     return __PACKAGE__->new(
@@ -79,7 +82,7 @@ sub create {
 sub load {
     my ($storage_accessor, $symbol, $for_date) = @_;
 
-    my $document = Quant::Framework::Document::load($storage_accessor, 'corporate_actions', $symbol, $for_date)
+    my $document = Quant::Framework::Document::load($storage_accessor, $_NAMESPACE, $symbol, $for_date)
       or return;
 
     return __PACKAGE__->new(
@@ -89,7 +92,7 @@ sub load {
 
 sub save {
     my $self = shift;
-    $self->document->save('corporate_actions');
+    $self->document->save;
 }
 
 sub update {
@@ -128,6 +131,7 @@ sub update {
         storage_accessor => $self->document->storage_accessor,
         for_date         => $new_date,
         symbol           => $self->document->symbol,
+        namespace        => $_NAMESPACE,
     );
     my $new_ca = __PACKAGE__->new(document => $new_document);
 
