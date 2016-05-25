@@ -131,7 +131,7 @@ sub load {
     );
 }
 
-=head save
+=head1 save
 
  $document->save;
 
