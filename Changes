@@ -10,3 +10,5 @@ Revision history for Quant-Framework
         Load yml file in BEGIN block
 0.16    18 May 2016
         Adding Builder and UnderlyingConfig
+0.17    27 May 2016
+        Included dividend recorded_date

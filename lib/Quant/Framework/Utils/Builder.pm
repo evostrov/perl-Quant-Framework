@@ -218,7 +218,7 @@ sub interest_rate_for {
 
 =head2 get_discrete_dividend_for_period
 
-Returns discrete dividend for the given (start,end) dates for the underlying specified using `underlying_config`
+Returns discrete dividend for the given (start,end) dates and dividend recorded date for the underlying specified using `underlying_config`
 
 =cut
 
@@ -229,7 +229,9 @@ sub get_discrete_dividend_for_period {
         map { Date::Utility->new($_) } @{$args}{'start', 'end'};
 
     my %valid_dividends;
-    my $discrete_points = $self->build_dividend()->discrete_points;
+    my $dividend_builder = $self->build_dividend();
+    my $discrete_points = $dividend_builder->discrete_points;
+    my $dividend_recorded_date = $dividend_builder->recorded_date;
 
     if ($discrete_points and %$discrete_points) {
         my @sorted_dates =
@@ -246,7 +248,7 @@ sub get_discrete_dividend_for_period {
         }
     }
 
-    return \%valid_dividends;
+    return ($dividend_recorded_date, \%valid_dividends);
 }
 
 =head2 dividend_adjustments_for_period
@@ -258,7 +260,7 @@ Returns dividend adjustments for given start/end period
 sub dividend_adjustments_for_period {
     my ($self, $args) = @_;
 
-    my $applicable_dividends =
+    my ($dividend_recorded_date, $applicable_dividends) =
         ($self->underlying_config->market_prefer_discrete_dividend)
         ? $self->get_discrete_dividend_for_period($args)
         : {};
@@ -284,6 +286,7 @@ sub dividend_adjustments_for_period {
     return {
         barrier => $dK,
         spot    => $dS,
+        recorded_date=> $dividend_recorded_date,
     };
 }
 
