@@ -16,7 +16,7 @@ Internal representation of persistend data. Do not B<create> the class directly 
 of Quant::Framework, although the usage of public fields outside of Quant::Framework
 is allowed.
 
-The class is responsible for loading and stoing data via Data::Chronicle. The
+The class is responsible for loading and storing data via Data::Chronicle. The
 data itself is a hash, which content is provided by users of the class (i.e. by
 CorporateActions).
 
