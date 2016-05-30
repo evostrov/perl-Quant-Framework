@@ -8,7 +8,7 @@ use Moo;
 
 =head1 NAME
 
-Quant::Framework::Document -
+Quant::Framework::Document - Binds data with Chronicle
 
 =head1 DESCRIPTION
 
