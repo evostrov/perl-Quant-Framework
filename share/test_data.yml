@@ -1,4 +1,11 @@
 ---
+corporate_action:
+  class_name: 'Quant::Framework::CorporateAction'
+  data:
+    symbol: 'USAAPL'
+    actions:
+      80004829: {type: 'DVD_CASH', flag: 'N', description: 'Test Corporate Action', modifier: 'divide', value: 1.234}
+
 currency:
   class_name: 'Quant::Framework::InterestRate'
   data:
