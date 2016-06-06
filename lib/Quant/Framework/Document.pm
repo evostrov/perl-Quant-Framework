@@ -20,7 +20,7 @@ The class is responsible for loading and storing data via Data::Chronicle. The
 data itself is a hash, which content is provided by users of the class (i.e. by
 CorporateActions).
 
- # create new (trancient / not-yet-persisted) Document
+ # create new (transient / not-yet-persisted) Document
 
  my $document = Quant::Framework::Document->new(
   storage_accessor => $storage_accessor,
@@ -46,7 +46,7 @@ CorporateActions).
 
 =head2 storage_accessor
 
-Chonicle assessor
+Chronicle assessor
 
 =head2 recorded_date
 
