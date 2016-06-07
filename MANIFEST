@@ -23,7 +23,6 @@ lib/Quant/Framework/Utils/UnderlyingConfig.pm
 lib/Quant/Framework/VolSurface.pm
 lib/Quant/Framework/VolSurface/Cutoff.pm
 lib/Quant/Framework/VolSurface/Delta.pm
-lib/Quant/Framework/VolSurface/Flat.pm
 lib/Quant/Framework/VolSurface/Moneyness.pm
 lib/Quant/Framework/VolSurface/Utils.pm
 lib/Quant/Framework/VolSurface/Validator.pm
@@ -84,7 +83,6 @@ t/VolSurface/Delta/transform_to_cutoff/EURUSD_volcuts_20111128214300.csv
 t/VolSurface/Delta/transform_to_cutoff/EURUSD_volcuts_20111128220200.csv
 t/VolSurface/Delta/transform_to_cutoff/EURUSD_volcuts_20111128222900.csv
 t/VolSurface/Delta/transform_to_cutoff/EURUSD_volcuts_20111128230200.csv
-t/VolSurface/flat.t
 t/VolSurface/Moneyness/convert_moneyness_to_delta.t
 t/VolSurface/Moneyness/error_check.t
 t/VolSurface/Moneyness/general.t
