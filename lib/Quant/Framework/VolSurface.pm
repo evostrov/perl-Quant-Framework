@@ -699,7 +699,7 @@ sub set_smile_spread {
     my $day              = $args->{days};
     my $smile_spread     = $args->{smile_spread};
     my $atm_spread_point = $self->atm_spread_point;
-    die("day[$day] must be a number.") unless $day > 1;
+    die("day[$day] must be a number.") unless $day > 0;
 
     my $surface = $self->surface;
 
