@@ -281,17 +281,6 @@ has default_volatility_duration => (
     default => undef,
 );
 
-=head2 default_volatility
-
-Default value for volatility in case this underlying has a constant volatility.
-
-=cut
-
-has default_volatility => (
-    is      => 'ro',
-    default => undef,
-);
-
 =head2 asset_class
 
 Type of asset for this underlying (can be either 'currency' or 'asset')
