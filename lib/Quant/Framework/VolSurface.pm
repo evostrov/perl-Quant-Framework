@@ -699,7 +699,7 @@ sub set_smile_spread {
     my $day              = $args->{days};
     my $smile_spread     = $args->{smile_spread};
     my $atm_spread_point = $self->atm_spread_point;
-    die("day[$day] must be a number.") unless looks_like_number($day);
+    die("day[$day] must be a number.") unless $day > 1;
 
     my $surface = $self->surface;
 
@@ -1061,17 +1061,6 @@ sub get_volatility {
     my $days         = $args->{days};
 
     $self->_validate_sought_values($days, $sought_point);
-
-    if (($self->_market_name eq 'sectors')
-        and not grep { $days eq $_ } @{$self->original_term_for_smile})
-    {
-
-        # We have constant vol on these markets, so return the
-        # ATM vol of the first market point on the surface.
-        return $self->get_volatility({
-                delta => 50,
-                days  => $self->original_term_for_smile->[0]});
-    }
 
     my $vol = $self->_get_volatility_from_surface({
         days         => $days,
