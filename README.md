@@ -1,5 +1,5 @@
 # perl-Quant-Framework
-A framework of objects upon which to build Financial Quantitative Analysis code
+A framework of objects upon which to build Financial Derivatives Pricing code.
 
 This framework contains modules for different market data that will be needed to price a derivative contract. These market-data modules will need an instance of `Data::Chronicle::Reader` to read data from storage or `Data::Chronicle::Writer` to write data to storage.
 
@@ -35,7 +35,7 @@ $corp->save();
 ```
 ##Quant::Framework::InterestRate
 
-Interest rate is the amount of interest paid for deposit money. This can be defined for different periods and different currencies. So we can have different interest rates for each combination of currency and period. Usually interest rates are described as a percentage. For example a 1% interest rate for a period of 1 year for USD currency means you will get 1.01 times your initial deposit money after one year. For more informatio please refer to [Interest rate](https://en.wikipedia.org/wiki/Interest_rate).
+Interest rate is the amount of interest paid for deposit money. This can be defined for different periods and different currencies. So we can have different interest rates for each combination of currency and period. Usually interest rates are described as a percentage. For example a 1% interest rate for a period of 1 year for USD currency means you will get 1.01 times your initial deposit money after one year. For more information please refer to [Interest rate](https://en.wikipedia.org/wiki/Interest_rate).
 
 This module helps you save/load interest rates to/from a `Data::Chronicle` storage system. When creating an instance of this module you will need to specify symbol (The name of the currency for which you want to save/load interest rate) and a hash-ref named rates. Rates is a hash-table where key is duration (period in days) and the corresponding value is the interest rate percentage paid for that duration.
 
@@ -358,7 +358,7 @@ my $partial_trading = Quant::Framework::PartialTrading->new(
             #than usual at 2:30 GMT.
             calendar => {
                         1293148800 => { 2h30m => [ 'HKSE' ] },
-                        1388620800 => { 1h => [ 'EURONEXT' ] },
+                        1388620800 => { 9h => [ 'EURONEXT' ] },
             },
             chronicle_writer => $chronicle_w);
 
@@ -401,7 +401,7 @@ my $is_closing_early = $calendar->closes_early_on(Date::Utility->new);
 
 ##Quant::Framework::ExpiryConventions
 
-This module is a helper for `CorrelationMatrix` to convert tenor from a volsurface to an actual date. After initializing this module with required inputs, you can invoke its `vol_expiry_date` and `forward_expiry_date` functions.
+This module is used to convert tenor from a volsurface or correlation matrix to an actual date based on respective market conventions. After initializing this module with required inputs, you can invoke its `vol_expiry_date` and `forward_expiry_date` functions.
 
 To use this module:
 ```
@@ -427,7 +427,7 @@ my $expiry_date2 = $expiry_conventions->forward_expiry_date({
 
 ##Quant::Framework::VolSurface
 
-A Volatility Surface is a two dimensional matrix which represents variance in the price of an underlying for different time periods (rows of the matrix) and different maturities (columns of the matrix). These time periods are called tenor. There are two types of Volatility Surface: Delta (used for Foreign Exchange underlyings) and Moneyness (used for Stocks and Indices). Each row of a Volatility Surface is called Smile and can be represented as a curve on a 2-D plane where X axis is maturities and Y is volatility. For more information about Volatility Surface and Smile please refer to (Volatility smile)[https://en.wikipedia.org/wiki/Volatility_smile].
+A Volatility Surface is a two dimensional matrix which represents variance in the price of an underlying for different time periods (rows of the matrix) and different maturities (columns of the matrix). These time periods are called tenor. As per market convention, we manage two type of surfaces: Delta (used for Foreign Exchange underlyings) and Moneyness (used for Stocks and Indices). Each row of a Volatility Surface depicts volatility across various strikes/delta points. For more information about Volatility Surface and Smile please refer to (Volatility smile)[https://en.wikipedia.org/wiki/Volatility_smile].
 
 This module is the parent of two other modules: `Quant::Framework::VolSurface::Delta` and `Quant::Framework::VolSurface::Moneyness`. You can store, fetch and query a Volatility Surface using these modules. You can store different surfaces in a single `Delta` or `Moneyness` instance based on different cutoff times.
 
@@ -435,8 +435,7 @@ To work with these modules you have to first initialize an instance of `Quant::F
 
 To save a volatility surface:
 ```
-#note that to create a Moneyness surface, you will also need to provide a spot_reference parameter which 
-#denoted the spot price reference using which maturities are calcualted.
+#note that to create a Moneyness surface , you will also need to (Moneyness is defined as Strike/Spot) provide a spot_reference parameter #which denotes the spot price reference using which respective strikes/barriers are calculated.
 my $surface = Quant::Framework::VolSurface::Delta->new(
             underlying_config => $eurusd_underlying_config,
             surface => { 'New York 10:00' => 
