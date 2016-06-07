@@ -427,7 +427,7 @@ my $expiry_date2 = $expiry_conventions->forward_expiry_date({
 
 ##Quant::Framework::VolSurface
 
-A Volatility Surface is a two dimensional matrix which represents variance in the price of an underlying for different time periods (rows of the matrix) and different maturities (columns of the matrix). These time periods are called tenor. As per market convention, we manage two type of surfaces: Delta (used for Foreign Exchange underlyings) and Moneyness (used for Stocks and Indices). Each row of a Volatility Surface depicts volatility across various strikes/delta points. For more information about Volatility Surface and Smile please refer to (Volatility smile)[https://en.wikipedia.org/wiki/Volatility_smile].
+A Volatility Surface is a two dimensional matrix which represents variance in the price of an underlying for different time periods (rows of the matrix) and different strikes (columns of the matrix). These time periods are called tenor. As per market convention, we manage two type of surfaces: Delta (used for Foreign Exchange underlyings) and Moneyness (used for Stocks and Indices). Each row of a Volatility Surface depicts volatility across various strikes/delta points. For more information about Volatility Surface and Smile please refer to (Volatility smile)[https://en.wikipedia.org/wiki/Volatility_smile].
 
 This module is the parent of two other modules: `Quant::Framework::VolSurface::Delta` and `Quant::Framework::VolSurface::Moneyness`. You can store, fetch and query a Volatility Surface using these modules. You can store different surfaces in a single `Delta` or `Moneyness` instance based on different cutoff times.
 
