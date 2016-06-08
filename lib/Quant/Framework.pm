@@ -3,7 +3,7 @@ package Quant::Framework;
 use strict;
 use warnings;
 
-our $VERSION = '0.17';
+our $VERSION = '0.19';
 
 =head1 NAME
 
