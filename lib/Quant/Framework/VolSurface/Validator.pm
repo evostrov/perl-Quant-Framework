@@ -304,8 +304,11 @@ sub _check_spot_reference {
 sub _check_age {
     my $surface = shift;
 
+    my $market = $surface->underlying_config->market_name;
+    my $delay = $market eq 'forex' ? 7200 : 12 * 3600;
+
     die('VolSurface is more than 2 hours old')
-        if time - $surface->recorded_date->epoch > 7200;
+        if time - $surface->recorded_date->epoch > $delay;
 
     return 1;
 }
