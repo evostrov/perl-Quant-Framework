@@ -12,3 +12,5 @@ Revision history for Quant-Framework
         Adding Builder and UnderlyingConfig
 0.17    27 May 2016
         Included dividend recorded_date
+0.18    30 May 2016
+        Moving Volatility Surface modules

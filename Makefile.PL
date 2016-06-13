@@ -11,6 +11,8 @@ BEGIN {
 use File::ShareDir::Install;
 install_share dist => "share";
 
+my $tests = 't/*.t t/VolSurface/*.t t/VolSurface/Delta/*.t t/VolSurface/Moneyness/*.t';
+
 WriteMakefile(
     NAME               => 'Quant::Framework',
     AUTHOR             => q{Binary.com <support@binary.com>},
@@ -51,8 +53,17 @@ WriteMakefile(
         'Memoize::HashKey::Ignore'      => 0,
         'List::Util'                    => 0,
         'List::MoreUtils'               => 0,
+        'Try::Tiny'                     => 0,
+        'Storable'                      => 0,
+        'Number::Closest::XS'           => 0,
+        'Scalar::Util'                  => 0,
+        'Text::SimpleTable'             => 0,
+        'Text::CSV'                     => 0,
+        'Scalar::Util::Numeric'         => 0,
+        'Math::Business::BlackScholes::Binaries' => 0,
         'Carp'                          => 0,
         'Digest::MD5'                   => 0,
+        'VolSurface::Utils'             => 0,
         'Clone'                         => 0,
     },
     dist => {
@@ -60,6 +71,9 @@ WriteMakefile(
         SUFFIX   => 'gz',
     },
     clean => {FILES => 'Quant-Framework-*'},
+    test => { 
+      RECURSIVE_TEST_FILES => 1,
+    },
 );
 
 {
