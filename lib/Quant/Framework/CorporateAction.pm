@@ -1,7 +1,11 @@
 package Quant::Framework::CorporateAction;
 
-use Data::Chronicle::Reader;
-use Data::Chronicle::Writer;
+use strict;
+use warnings;
+
+use Date::Utility;
+use Quant::Framework::Document;
+use Moo;
 
 =head1 NAME
 
@@ -9,220 +13,208 @@ Quant::Framework::CorporateAction
 
 =head1 DESCRIPTION
 
-Represents the corporate actions data of an underlying from database. To read actions for a company:
+Represents the corporate actions data of an underlying from database. Create
+new unpersistent CorporateAction can be done via:
 
- my $corp = Quant::Framework::CorporateAction->new(symbol => $symbol,
-             chronicle_reader => $reader);
- my $actions = $corp->actions;
+ my $ca = Quant::Framework::CorporateAction::create($storage_accessor, 'QWER', Date::Utility->new);
 
-To save actions for a company:
+Obviously, it will have empty actions hash
 
- my $corp = Quant::Framework::CorporateAction
-        ->new(symbol => $symbol, 
-            chronicle_writer => $writer,
-            actions => {
-                1234 => {
-                    monitor_date => "2014-02-07",
-                    type => "ACQUIS",
-                    description => "Acquisition",
-                    effective_date => "15-Jul-15",
-                    flag => "N", #N means new action, U means updated action, D means cancelled action
-                }});
- $corp->save();
+ $ca->actions; # empty hashref by default
+
+Corporate actions can be persisted (stored in Chronicle) via C<save> method
+
+ $ca->save;
+
+Load persisted actions can be done via:
+
+ my $ca = Quant::Framework::CorporateAction::load($storage_accessor, 'QWER', Date::Utility->new);
+
+It will return C<undef> if there are no presisted actions in Chronicle. The date can be
+ommitted, than, it will try to load the most recent (last) corporate actions, i.e.
+
+ my $ca = Quant::Framework::CorporateAction::load($storage_accessor, 'QWER');
+
+
+To update actions, the C<update> method should be invoked, with appropriate structure, i.e.
+
+ my $ca = $ca->update({
+   "62799500" => {
+      "monitor_date" => "2014-02-07T06:00:07Z",
+      "type" => "ACQUIS",
+      "monitor" => 1,
+      "description" =>  "Acquisition",
+      "effective_date" =>  "15-Jul-14",
+      "flag" => "N",
+ }, Date::Utility->new);
+
+The C<update> in scalar context will return B<new unpersisted> Corporate object. You have
+to presist it via C<save> method.
+
+In the list context it will return new unpersisted Corporate object, and two hasref for
+new and cancelled action.
+
 
 =cut
-
-use Moose;
-extends 'Quant::Framework::Utils::MarketData';    
 
 =head1 ATTRIBUTES
 
-=head2 for_date
+=head2 document
 
-The date for which we wish data
+The document, which actually incorporates all data. Can be used to get the date of corporate
+actions, e.g.:
 
-=cut
-
-has for_date => (
-    is      => 'ro',
-    isa     => 'Maybe[Date::Utility]',
-    default => undef,
-);
-
-has chronicle_reader => (
-    is       => 'ro',
-    isa      => 'Data::Chronicle::Reader',
-);
-
-has chronicle_writer => (
-    is       => 'ro',
-    isa      => 'Data::Chronicle::Writer',
-);
-
-=head2 symbol
-
-Represents underlying symbol
+ $corporate_actions->document->recorded_date
 
 =cut
 
-has symbol => (
-    is       => 'ro',
+has document => (
+    is => 'ro',
     required => 1,
 );
 
-has _existing_actions => (
-    is         => 'ro',
-    lazy_build => 1,
-);
+my $_NAMESPACE = 'corporate_actions';
 
-sub _build__existing_actions {
-    my $self = shift;
+=head1 SUBROUTINES
 
-    return {} if not defined $self->document;
+=head2 create ($storage_accessor, $symbol, $for_date)
 
-    return ($self->document->{actions}) ? $self->document->{actions} : {};
+ my $corp_actions = Quant::Framework::CorporateAction::crate($storage_accessor, "USAAPL", Date::Utility->new)
+
+Creates a new unsaved corporate actions.
+
+=cut
+
+sub create {
+    my ($storage_accessor, $symbol, $for_date) = @_;
+    my $document = Quant::Framework::Document->new(
+        storage_accessor => $storage_accessor,
+        recorded_date    => $for_date,
+        symbol           => $symbol,
+        data             => { actions => {} },
+        namespace        => $_NAMESPACE,
+    );
+
+    return __PACKAGE__->new(
+      document => $document,
+    );
 }
 
-around _document_content => sub {
-    my $orig = shift;
-    my $self = shift;
+=head2 load ($storage_accessor, $symbol, $for_date)
 
-    my %new              = %{$self->new_actions};
-    my %existing_actions = %{$self->_existing_actions};
+ my $corp_actions = Quant::Framework::CorporateAction::load($storage_accessor, "USAAPL", Date::Utility->new)
 
-    my %new_act;
-    foreach my $id (keys %new) {
-        my %copy = %{$new{$id}};
-        delete $copy{flag};
-        $new_act{$id} = \%copy;
-    }
+Loads the corporate actions for the specified symbol at the specified date. The date can
+be omitted, then it loads the most recent corporate actions.
 
-    # updates existing actions and adds new actions
-    my %all_actions;
-    if (%existing_actions and %new_act) {
-        %all_actions = (%existing_actions, %new_act);
-    } elsif (%existing_actions xor %new_act) {
-        %all_actions = (%existing_actions) ? %existing_actions : %new_act;
-    }
+Might return undef, if no actions exists in Chronicle
 
-    foreach my $cancel_id (keys %{$self->cancelled_actions}) {
-        delete $all_actions{$cancel_id};
-    }
+=cut
 
-    return {
-        %{$self->$orig},
-        actions => \%all_actions,
-    };
-};
+sub load {
+    my ($storage_accessor, $symbol, $for_date) = @_;
 
-has document => (
-    is         => 'rw',
-    lazy_build => 1,
-);
+    my $document = Quant::Framework::Document::load($storage_accessor, $_NAMESPACE, $symbol, $for_date)
+      or return;
 
-sub _build_document {
-    my $self = shift;
-
-    my $document = $self->chronicle_reader->get('corporate_actions', $self->symbol);
-
-    if ($self->for_date and $self->for_date->datetime_iso8601 lt $document->{date}) {
-        $document = $self->chronicle_reader->get_for('corporate_actions', $self->symbol, $self->for_date->epoch);
-
-        #Assume empty data in case there is nothing in the database
-        $document //= {};
-        $document->{date} = $self->for_date->datetime_iso8601;
-    }
-
-    return $document;
+    return __PACKAGE__->new(
+      document => $document,
+    );
 }
 
 =head2 save
 
-This function saves current data for the company's symbol into Chronicle storage.
+ $corp_actions->save;
+
+Stores corporate actions in chronicle.
 
 =cut
 
 sub save {
     my $self = shift;
+    $self->document->save;
+}
 
-    #if chronicle does not have this document, first create it because in document_content we will need it
-    if (not defined $self->chronicle_reader->get('corporate_actions', $self->symbol)) {
-        $self->chronicle_writer->set('corporate_actions', $self->symbol, {});
+=head2 update($actions, $date);
+
+ my $new_corp_actions = $corp_actions->update({
+    "32799500" => {
+        "monitor_date" => "2015-02-07T06:00:07Z",
+        "type" => "DIV",
+        "monitor" => 1,
+        "description" =>  "Divided Stocks",
+        "effective_date" =>  "15-Jul-15",
+        "flag" => "N"
+    },
+ }, Date::Utility->new)
+ $new_corp_actions->save;
+
+Takes the existing actions, applies "diff" of actions in Bloomberg
+format (i.e. adds new actions, or cancels exising ones), and
+returns new unpersisted (non-saved) CorporateAction object.
+
+You have to invoke C<save> method to persist new corporate actions
+in Chronicle.
+
+The C<$date> argument in mandatory.
+
+=cut
+
+
+sub update {
+    my ($self, $actions, $new_date) = @_;
+
+    # clone original data
+    my $original = $self->document->data;
+    my $data = {%$original};
+
+    my %new;
+    foreach my $action_id (keys %$actions) {
+        # flag 'N' = New & 'U' = Update
+        my $action = $actions->{$action_id};
+        my $is_new = ($action->{flag} eq 'N' and not $original->{actions}->{$action_id})
+          || $action->{flag} eq 'U';
+
+        $new{$action_id} = $action if ($is_new);
     }
 
-    return $self->chronicle_writer->set('corporate_actions', $self->symbol, $self->_document_content, $self->recorded_date);
+    my %merged_actions = (%{ $data->{actions} }, %new);
+
+    my %cancelled;
+    foreach my $action_id (keys %$actions) {
+        my $action = $actions->{$action_id};
+        # flag 'D' = Delete
+        if ($action->{flag} eq 'D' and $original->{actions}->{$action_id}) {
+            $cancelled{$action_id} = $action;
+            delete $merged_actions{$action_id};
+        }
+    }
+
+    $data->{actions} = \%merged_actions;
+
+    my $new_document = Quant::Framework::Document->new(
+        data             => $data,
+        storage_accessor => $self->document->storage_accessor,
+        recorded_date    => $new_date,
+        symbol           => $self->document->symbol,
+        namespace        => $_NAMESPACE,
+    );
+    my $new_ca = __PACKAGE__->new(document => $new_document);
+
+    return wantarray ? ($new_ca, \%new, \%cancelled) : $new_ca;
 }
 
 =head2 actions
 
-An hash reference of corporate reference for an underlying
+ my $actions = $corp_actions->actions;
+
+Returns hashref of actions in Bloomberg format. If there are no actions, the empty hashref
+is returned.
 
 =cut
 
-has actions => (
-    is         => 'ro',
-    lazy_build => 1
-);
-
-sub _build_actions {
-    my $self = shift;
-
-    my $document = $self->document;
-
-    return $document->{actions} if defined $document;
-    return {};
+sub actions {
+    return shift->document->data->{actions};
 }
 
-=head2 action_exists
-Boolean. Returns true if action exists, false otherwise.
-=cut
-
-sub action_exists {
-    my ($self, $id) = @_;
-
-    return $self->_existing_actions->{$id} ? 1 : 0;
-}
-
-has [qw(new_actions cancelled_actions)] => (
-    is         => 'ro',
-    init_arg   => undef,
-    lazy_build => 1,
-);
-
-sub _build_new_actions {
-    my $self = shift;
-
-    my %new;
-    my $actions = $self->actions;
-    foreach my $action_id (keys %$actions) {
-        # flag 'N' = New & 'U' = Update
-        my $action = $actions->{$action_id};
-        if ($action->{flag} eq 'N' and not $self->action_exists($action_id)) {
-            $new{$action_id} = $action;
-        } elsif ($action->{flag} eq 'U') {
-            $new{$action_id} = $action;
-        }
-    }
-
-    return \%new;
-}
-
-sub _build_cancelled_actions {
-    my $self = shift;
-
-    my %cancelled;
-    my $actions = $self->actions;
-    foreach my $action_id (keys %$actions) {
-        my $action = $actions->{$action_id};
-        # flag 'D' = Delete
-        if ($action->{flag} eq 'D' and $self->action_exists($action_id)) {
-            $cancelled{$action_id} = $action;
-        }
-    }
-
-    return \%cancelled;
-}
-
-no Moose;
-__PACKAGE__->meta->make_immutable;
 1;
