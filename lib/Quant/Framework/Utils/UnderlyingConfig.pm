@@ -270,6 +270,17 @@ has default_interest_rate => (
     default => undef,
 ); 
 
+=head2 default_volatility_duration
+
+Default duration for this underlying when getting volatility.
+
+=cut
+
+has default_volatility_duration => (
+    is      => 'ro',
+    default => undef,
+);
+
 =head2 asset_class
 
 Type of asset for this underlying (can be either 'currency' or 'asset')

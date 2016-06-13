@@ -663,6 +663,19 @@ subtest 'standard_closing_on early close' => sub {
         'normal standard closing is 23:59:59 GMT';
 };
 
+my $builder = Quant::Framework::Utils::Builder->new({
+        chronicle_reader   => $chronicle_r,
+        chronicle_writer   => $chronicle_w,
+        underlying_config => Quant::Framework::Utils::Test::create_underlying_config('FTSE')
+    });
+
+my $trade_start          = Date::Utility->new('30-Mar-13');
+my $trade_end            = Date::Utility->new('8-Apr-13');
+my $trade_end2           = Date::Utility->new('9-Apr-13');      # Just to avoid memoization on weighted_days_in_period
+is $builder->closed_weight, 0.55, 'Sanity check so that our weighted math matches :-)';
+is $builder->weighted_days_in_period($trade_start, $trade_end), 7.2, 'Weighted period calculated correctly: 5 trading days, plus 4 weekends/holidays';
+is $builder->weighted_days_in_period($trade_start, $trade_end2), 8.2, 'Weighted period calculated correctly: 6 trading days, plus 4 weekends/holidays';
+
 done_testing;
 
 1;

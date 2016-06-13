@@ -47,6 +47,13 @@ use Quant::Framework::CorporateAction;
 use Data::Chronicle::Writer;
 use Data::Chronicle::Reader;
 use Data::Chronicle::Mock;
+use Quant::Framework::InterestRate;
+use Quant::Framework::Currency;
+use Quant::Framework::Asset;
+use Quant::Framework::Dividend;
+use Quant::Framework::VolSurface::Delta;
+use Quant::Framework::VolSurface::Moneyness;
+use Quant::Framework::Utils::UnderlyingConfig;
 
 =head2 create_doc
 
@@ -87,6 +94,21 @@ sub create_doc {
     }
 
     return $obj;
+}
+
+=head2 create_underlying_config
+
+Creates an instance of UnderlyingConfig (for EURUSD or GDAXI) for tesing purposes.
+
+=cut
+
+sub create_underlying_config {
+    my $symbol = shift;
+
+    my $fixture = LoadFile(File::ShareDir::dist_file('Quant-Framework', 'test_underlying_config.yml'));
+    my $data    = $fixture->{$symbol};
+
+    return Quant::Framework::Utils::UnderlyingConfig->new($data);
 }
 
 1;
