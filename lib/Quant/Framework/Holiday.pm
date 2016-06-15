@@ -1,105 +1,94 @@
 package Quant::Framework::Holiday;
 
-use Moose;
-use Carp qw(croak);
+use strict;
+use warnings;
+
 use Date::Utility;
-use List::Util qw(first);
-use List::MoreUtils qw(uniq);
+use Quant::Framework::Document;
+use Moo;
 
-use Data::Chronicle::Reader;
-use Data::Chronicle::Writer;
-
-=head1 NAME
-
-Quant::Framework::Holiday - A module to save/load market holidays
-
-=head1 DESCRIPTION
-
-This module saves/loads holidays to/from Chronicle. 
-
-=cut
-
-around BUILDARGS => sub {
-    my $orig   = shift;
-    my $class  = shift;
-    my %params = ref $_[0] ? %{$_[0]} : @_;
-
-    if ($params{calendar} xor $params{recorded_date}) {
-        croak "calendar and recorded_date are required when pass in either.";
-    }
-
-    return $class->$orig(@_);
-};
-
-has chronicle_reader => (
-    is      => 'ro',
-    isa     => 'Data::Chronicle::Reader',
-);
-
-has chronicle_writer => (
-    is      => 'ro',
-    isa     => 'Data::Chronicle::Writer',
-);
-
-has [qw(calendar recorded_date)] => (
+has document => (
     is => 'ro',
+    required => 1,
 );
 
-=head2 save
+my $_NAMESPACE = 'holidays';
+# there are no per-symbol specialization of holiday, instead
+# we store affected symbols for each holiday event
+my $_SYMBOL = 'holidays';
 
-Updates the current holiday calendar with the new inserts.
-It trims the calendar by removing holiday before the recorded_date.
+sub create {
+    my ($storage_accessor, $for_date) = @_;
+    my $document = Quant::Framework::Document->new(
+        storage_accessor => $storage_accessor,
+        recorded_date    => $for_date,
+        symbol           => $_SYMBOL,
+        data             => { calendar => {} },
+        namespace        => $_NAMESPACE,
+    );
 
-=cut
+    return __PACKAGE__->new(
+      document => $document,
+    );
+}
+
+sub load {
+    my ($storage_accessor, $for_date) = @_;
+
+    my $document = Quant::Framework::Document::load($storage_accessor, $_NAMESPACE, $_SYMBOL, $for_date)
+      or return;
+
+    return __PACKAGE__->new(
+      document => $document,
+    );
+}
 
 sub save {
     my $self = shift;
+    $self->document->save;
+}
 
-    my $cached_holidays = $self->chronicle_reader->get('holidays', 'holidays');
+sub update {
+    my ($self, $new_events, $new_date) = @_;
     my $recorded_date = $self->recorded_date->truncate_to_day->epoch;
-    delete @{$cached_holidays} {grep { $_ < $recorded_date } keys %$cached_holidays};
-    my $calendar = $self->calendar;
+    my $start_epoch = $new_date->truncate_to_day->epoch;
 
-    foreach my $new_holiday (keys %$calendar) {
-        my $epoch = Date::Utility->new($new_holiday)->truncate_to_day->epoch;
-        unless ($cached_holidays->{$epoch}) {
-            $cached_holidays->{$epoch} = $calendar->{$new_holiday};
-            next;
-        }
-        foreach my $new_holiday_desc (keys %{$calendar->{$new_holiday}}) {
-            my $new_symbols = $calendar->{$new_holiday}{$new_holiday_desc};
-            my $symbols_to_save = [uniq(@{$cached_holidays->{$epoch}{$new_holiday_desc}}, @$new_symbols)];
-            $cached_holidays->{$epoch}{$new_holiday_desc} = $symbols_to_save;
-        }
-    }
+    # filter all events, that will happen later then $new_date
+    my $persisted_events = $self->document->data->{calendar};
+    my @actual_dates = grep { $_ >= $start_epoch} keys %$persisted_events;
+    my %actual_events = @$persisted_events{@actual_dates};
 
-    return $self->chronicle_writer->set('holidays', 'holidays', \%{$cached_holidays}, $self->recorded_date);
-}
+    # append / update persisited events with new
+    while (my ($new_holiday_date, $new_holiday) = each %$new_events) {
+        my $epoch = Date::Utility->new($new_holiday_date)->truncate_to_day->epoch;
 
-=head2 get_holidays_for
+        my $persisted_event = $actual_events{$epoch};
+        # persist new event, if it was completely absent
+        if (!$persisted_event) {
+            $actual_events{$epoch} = $new_holiday;
 
-This method looks for holidays of the given symbol (at the optional given time) using
-chronicle_reader object passed to it. Note that this method needs a chronicle reader 
-because it is not part of the Holiday class.
-
-=cut
-
-sub get_holidays_for {
-    my ($reader, $symbol, $for_date) = @_;
-
-    my $calendar =
-        ($for_date) ? $reader->get_for('holidays', 'holidays', $for_date) : 
-        $reader->get('holidays', 'holidays');
-    my %holidays;
-    foreach my $date (keys %$calendar) {
-        foreach my $holiday_desc (keys %{$calendar->{$date}}) {
-            $holidays{$date} = $holiday_desc if (first { $symbol eq $_ } @{$calendar->{$date}{$holiday_desc}});
+        # otherwise merge descriptions and affected symbols
+        } else {
+            while (my ($description, $new_symbols) = each %$new_holiday) {
+                my @merged_symbols = uniq(@${ $persisted_event->{$description} }, @$new_symbols);
+                $persisted_event->{$description} = \@merged_symbols;
+            }
         }
     }
 
-    return \%holidays;
+    my $new_document = Quant::Framework::Document->new(
+        data             => { calendar => \%actual_events },
+        storage_accessor => $self->document->storage_accessor,
+        recorded_date    => $new_date,
+        symbol           => $_SYMBOL,
+        namespace        => $_NAMESPACE,
+    );
+
+    return __PACKAGE__->new(document => $new_document);
 }
 
-no Moose;
-__PACKAGE__->meta->make_immutable;
+sub holidays {
+    return shift->document->data->{calendar};
+}
+
 1;
