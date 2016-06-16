@@ -24,6 +24,8 @@ my $FOREX = Quant::Framework::TradingCalendar->new('FOREX', $chronicle_r);
 isnt($FOREX, $LSE, "different objects for FOREX and LSE");
 my $LSE2 = Quant::Framework::TradingCalendar->new('LSE', $chronicle_r);
 is $LSE2, $LSE, "new returned the same M::E object";
+my $METAL = Quant::Framework::TradingCalendar->new('METAL', $chronicle_r);
+isnt($METAL, $LSE, "different objects for METAL and LSE");
 
 set_relative_time(400);
 note "Force Cache timeout";

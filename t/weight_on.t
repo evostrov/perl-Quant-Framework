@@ -21,7 +21,7 @@ Quant::Framework::Utils::Test::create_doc(
         recorded_date => $date,
         calendar      => {
             "25-Dec-2013" => {
-                "Christmas Day" => [qw(FOREX)],
+                "Christmas Day" => [qw(FOREX METAL)],
             },
         },
         chronicle_reader => $chronicle_r,
@@ -33,6 +33,9 @@ subtest 'weight on' => sub {
     my $forex = Quant::Framework::TradingCalendar->new('FOREX', $chronicle_r, 'en', $date);
     ok $forex->has_holiday_on($chritmas), 'has holiday on ' . $chritmas->date;
     is $forex->weight_on($date), 0, 'weight is zero on a holiday';
+    my $metal = Quant::Framework::TradingCalendar->new('METAL', $chronicle_r, 'en', $date);
+    ok $metal->has_holiday_on($chritmas), 'has holiday on ' . $chritmas->date;
+    is $metal->weight_on($date), 0, 'weight is zero on a holiday';
     my $weekend = Date::Utility->new('2013-12-8');
     note($weekend->date . ' is a weekend');
     is $forex->weight_on($weekend), 0, 'weight is zero on weekend';

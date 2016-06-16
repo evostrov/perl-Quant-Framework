@@ -31,10 +31,10 @@ Quant::Framework::Utils::Test::create_doc(
                 "Early May Bank Holiday" => [qw(LSE)],
             },
             "25-Dec-2013" => {
-                "Christmas Day" => [qw(LSE FOREX)],
+                "Christmas Day" => [qw(LSE FOREX METAL)],
             },
             "1-Jan-2014" => {
-                "New Year's Day" => [qw(LSE FOREX)],
+                "New Year's Day" => [qw(LSE FOREX METAL)],
             },
             "1-Apr-2013" => {
                 "Easter Monday" => [qw(LSE)],
@@ -58,7 +58,7 @@ Quant::Framework::Utils::Test::create_doc(
                 '12h30m' => ['LSE'],
             },
             '22-Dec-2016' => {
-                '18h' => ['FOREX'],
+                '18h' => ['FOREX', 'METAL'],
             },
         },
         chronicle_reader => $chronicle_r,
@@ -94,6 +94,7 @@ my $ASX             = Quant::Framework::TradingCalendar->new('ASX', $chronicle_r
 my $NYSE            = Quant::Framework::TradingCalendar->new('NYSE', $chronicle_r);
 my $HKSE            = Quant::Framework::TradingCalendar->new('HKSE', $chronicle_r);
 my $ISE             = Quant::Framework::TradingCalendar->new('ISE', $chronicle_r);
+my $METAL           = Quant::Framework::TradingCalendar->new('METAL', $chronicle_r);
 
 subtest 'holidays check' => sub {
     is $LSE->for_date->epoch, $date->epoch, 'for_date properly set in Exchange';
@@ -117,6 +118,7 @@ subtest 'holidays check' => sub {
     ok($LSE->has_holiday_on(Date::Utility->new('6-May-13')),    'LSE has holiday on 6-May-13.');
     ok(!$FOREX->has_holiday_on(Date::Utility->new('6-May-13')), 'FOREX is open on LSE holiday 6-May-13.');
     ok(!$LSE->has_holiday_on(Date::Utility->new('7-May-13')),   'LSE is open on 7-May-13.');
+    ok(!$METAL->has_holiday_on(Date::Utility->new('6-May-13')), 'METAL is open on LSE holiday 6-May-13.');
 
     ok(!$LSE->trades_on(Date::Utility->new('1-Jan-14')),   'LSE doesn\'t trade on 1-Jan-14 because it is on holiday.');
     ok(!$LSE->trades_on(Date::Utility->new('12-May-13')),  'LSE doesn\'t trade on weekend (12-May-13).');
@@ -161,7 +163,6 @@ subtest 'Whole bunch of stuff.' => sub {
     is($LSE->weight_on(Date::Utility->new('1-Apr-13')), 0.0, 'weekend weight');
 
     is($FOREX->trade_date_after(Date::Utility->new('20-Dec-13'))->date, '2013-12-23', '23-Dec-13 is next trading day on FOREX after 20-Dec-13');
-
     is($FOREX->calendar_days_to_trade_date_after(Date::Utility->new('20-Dec-13')),
         3, '3 calendar days until next trading day on FOREX after 20-Dec-13');
     is($FOREX->calendar_days_to_trade_date_after(Date::Utility->new('27-Dec-13')),
@@ -173,8 +174,25 @@ subtest 'Whole bunch of stuff.' => sub {
         '2 calendar days until next trading day on FOREX after 9-Mar-13');
     is($FOREX->calendar_days_to_trade_date_after(Date::Utility->new('10-Mar-13')),
         1, '1 calendar day until next trading day on FOREX after 10-Mar-13');
+
     is($FSE->calendar_days_to_trade_date_after(Date::Utility->new('20-Dec-13')), 3, '3 calendar days until next trading day on FSE after 20-Dec-13');
     is($FSE->calendar_days_to_trade_date_after(Date::Utility->new('27-Dec-13')), 3, '3 calendar days until next trading day on FSE after 27-Dec-13');
+    
+    is($METAL->trade_date_after(Date::Utility->new('20-Dec-13'))->date, '2013-12-23', '23-Dec-13 is next trading day on METAL after 20-Dec-13');
+    is($METAL->calendar_days_to_trade_date_after(Date::Utility->new('20-Dec-13')),
+        3, '3 calendar days until next trading day on METAL after 20-Dec-13');
+    is($METAL->calendar_days_to_trade_date_after(Date::Utility->new('27-Dec-13')),
+        3, '3 calendar days until next trading day on METAL after 27-Dec-13');
+    is($METAL->calendar_days_to_trade_date_after(Date::Utility->new('7-Mar-13')), 1, '1 calendar day until next trading day on METAL after 7-Mar-13');
+    is($METAL->calendar_days_to_trade_date_after(Date::Utility->new('8-Mar-13')), 3,
+        '3 calendar days until next trading day on METAL after 8-Mar-13');
+    is($METAL->calendar_days_to_trade_date_after(Date::Utility->new('9-Mar-13')), 2,
+        '2 calendar days until next trading day on METAL after 9-Mar-13');
+    is($METAL->calendar_days_to_trade_date_after(Date::Utility->new('10-Mar-13')),
+        1, '1 calendar day until next trading day on METAL after 10-Mar-13');
+ 
+
+
 
     # testing the "use current time" methods for one date/time only.
     # Rest of tests will use the "_at" methods ("current time" ones
@@ -288,6 +306,8 @@ subtest 'Whole bunch of stuff.' => sub {
     ok(!$LSE->closes_early_on(Date::Utility->new('23-Dec-13')),   'LSE doesn\'t close early on 23-Dec-10');
     ok($LSE->closes_early_on(Date::Utility->new('24-Dec-13')),    'LSE closes early on 24-Dec-10');
     ok(!$FOREX->closes_early_on(Date::Utility->new('23-Dec-13')), 'FOREX doesn\'t close early on 23-Dec-13');
+    ok(!$METAL->closes_early_on(Date::Utility->new('23-Dec-13')), 'METAL doesn\'t close early on 23-Dec-13');
+
     is(
         $LSE->closing_on(Date::Utility->new('24-Dec-13'))->epoch,
         Date::Utility->new('24-Dec-13 12:30')->epoch,
@@ -501,11 +521,22 @@ subtest 'regularly_adjusts_trading_hours_on' => sub {
     note 'It is expected that this long-standing close in forex will not change, so we can use it to verify the implementation.';
 
     ok(!$FOREX->regularly_adjusts_trading_hours_on($monday), 'FOREX does not regularly adjust trading hours on ' . $monday->day_as_string);
+    ok(!$METAL->regularly_adjusts_trading_hours_on($monday), 'METAL does not regularly adjust trading hours on ' . $monday->day_as_string);
+
     my $friday_changes = $FOREX->regularly_adjusts_trading_hours_on($friday);
     ok($friday_changes,                       'FOREX regularly adjusts trading hours on ' . $friday->day_as_string);
     ok(exists $friday_changes->{daily_close}, ' changing daily_close');
     is($friday_changes->{daily_close}->{to},   '21h',     '  to 21h after midnight');
     is($friday_changes->{daily_close}->{rule}, 'Fridays', '  by rule "Friday"');
+
+    my $metal_friday = $METAL->regularly_adjusts_trading_hours_on($friday);
+    ok($metal_friday,  'METAL regularly adjusts trading hours on ' . $friday->day_as_string);
+    ok(exists $metal_friday->{daily_close}, ' changing daily_close');
+    is($metal_friday->{daily_close}->{to},   '21h',     '  to 21h after midnight');
+    is($metal_friday->{daily_close}->{rule}, 'Fridays', '  by rule "Friday"');
+
+
+
 };
 
 subtest 'trading_date_for' => sub {
@@ -576,6 +607,7 @@ subtest 'get exchange settlement time' => sub {
         is($LSE->settlement_on($testing_date)->epoch,             '1426620600', 'correct settlement time for LSE');
         is($FSE->settlement_on($testing_date)->epoch,             '1426620600', 'correct settlement time for FSE');
         is($FOREX->settlement_on($testing_date)->epoch,           '1426636799', 'correct settlement time for FOREX');
+        is($METAL->settlement_on($testing_date)->epoch,           '1426636799', 'correct settlement time for METAL');
         is($RANDOM->settlement_on($testing_date)->epoch,          '1426636799', 'correct settlement time for RANDOM');
         is($RANDOM_NOCTURNE->settlement_on($testing_date)->epoch, '1426593599', 'correct settlement time for RANDOM NOCTURNE');
         is($ASX->settlement_on($testing_date)->epoch,             '1426579200', 'correct settlement time for ASX');
@@ -619,7 +651,22 @@ subtest 'trading period' => sub {
         ];
         is_deeply $p, $expected, 'one period';
     }
-    'trading period for HKSE';
+    'trading period for FOREX';
+
+    $ex = Quant::Framework::TradingCalendar->new('METAL');
+    lives_ok {
+        my $p = $ex->trading_period($trading_date);
+        # daily_open: 0s
+        # daily_close: 23h59m59s
+        my $expected = [{
+                open  => Time::Local::timegm(0,  0,  0,  15, 6, 115),
+                close => Time::Local::timegm(59, 59, 23, 15, 6, 115)
+            },
+        ];
+        is_deeply $p, $expected, 'one period';
+    }
+    'trading period for METAL';
+
 };
 
 subtest "seconds between trading" => sub {
@@ -627,7 +674,10 @@ subtest "seconds between trading" => sub {
     is $HKSE->seconds_of_trading_between_epochs(1291161600, 1293753600), 404280, "Seconds between 1st and 31 of December 2010 (HKSE/late opening)";
 
     is $FOREX->seconds_of_trading_between_epochs(1385856000, 1388448000),
-        1684784, "Seconds between 1st and 31 of December 2013 (Forex/Christmas holyday)";
+        1684784, "Seconds between 1st and 31 of December 2013 (Forex/Christmas holiday)";
+
+    is $METAL->seconds_of_trading_between_epochs(1385856000, 1388448000),
+        1684784, "Seconds between 1st and 31 of December 2013 (METAL/Christmas holiday)";
 
     is $LSE->seconds_of_trading_between_epochs(1385856000, 1388448000), 597600, "Seconds between 1st and 31 of December 2013 (LSE/early closes)";
 
@@ -660,6 +710,13 @@ subtest 'standard_closing_on early close' => sub {
     is $fx->standard_closing_on($normal_thursday)->epoch, $normal_thursday->plus_time_interval('23h59m59s')->epoch,
         'normal standard closing is 23:59:59 GMT';
     is $fx->standard_closing_on($early_close_thursday)->epoch, $early_close_thursday->plus_time_interval('23h59m59s')->epoch,
+        'normal standard closing is 23:59:59 GMT';
+
+    my $metal                = Quant::Framework::TradingCalendar->new('METAL');
+    is $metal->standard_closing_on($friday)->epoch, $friday->plus_time_interval('21h')->epoch, 'standard close for friday is 21:00 GMT';
+    is $metal->standard_closing_on($normal_thursday)->epoch, $normal_thursday->plus_time_interval('23h59m59s')->epoch,
+        'normal standard closing is 23:59:59 GMT';
+    is $metal->standard_closing_on($early_close_thursday)->epoch, $early_close_thursday->plus_time_interval('23h59m59s')->epoch,
         'normal standard closing is 23:59:59 GMT';
 };
 
