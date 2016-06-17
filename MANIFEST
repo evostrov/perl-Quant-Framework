@@ -45,7 +45,6 @@ t/currency.t
 t/dividend.t
 t/economic_event.t
 t/exchange.t
-t/holiday.t
 t/holidays.t
 t/implied_rate.t
 t/interest_rate.t
