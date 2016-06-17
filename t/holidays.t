@@ -11,30 +11,34 @@ use Date::Utility;
 use Quant::Framework::TradingCalendar;
 use Quant::Framework::Utils::Test;
 
+use Quant::Framework::StorageAccessor;
+use Quant::Framework::Holiday;
+
 my ($chronicle_r, $chronicle_w) = Data::Chronicle::Mock::get_mocked_chronicle();
+my $storage_accessor = Quant::Framework::StorageAccessor->new(
+    chronicle_reader => $chronicle_r,
+    chronicle_writer => $chronicle_w,
+);
+
 my $date = Date::Utility->new('2013-12-01');
 note("Exchange tests for_date " . $date->date);
-Quant::Framework::Utils::Test::create_doc(
-    'holiday',
-    {
-        recorded_date => $date,
-        calendar      => {
-            "6-May-2013" => {
-                "Early May Bank Holiday" => [qw(LSE)],
-            },
-            "25-Dec-2013" => {
-                "Christmas Day" => [qw(LSE FOREX)],
-            },
-            "1-Jan-2014" => {
-                "New Year's Day" => [qw(LSE FOREX)],
-            },
-            "1-Apr-2013" => {
-                "Easter Monday" => [qw(LSE)],
-            },
+
+Quant::Framework::Holiday::create($storage_accessor, $date)
+    ->update({
+        "6-May-2013" => {
+            "Early May Bank Holiday" => [qw(LSE)],
         },
-        chronicle_writer => $chronicle_w,
-        chronicle_reader => $chronicle_r,
-    });
+        "25-Dec-2013" => {
+            "Christmas Day" => [qw(LSE FOREX)],
+        },
+        "1-Jan-2014" => {
+            "New Year's Day" => [qw(LSE FOREX)],
+        },
+        "1-Apr-2013" => {
+            "Easter Monday" => [qw(LSE)],
+        },
+    }, $date)
+    ->save;
 
 subtest 'holidays' => sub {
     my ($LSE, $FOREX, $RANDOM) = map { Quant::Framework::TradingCalendar->new($_, $chronicle_r, 'EN', $date) } qw(LSE FOREX RANDOM);

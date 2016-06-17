@@ -34,6 +34,7 @@ use Data::Chronicle::Reader;
 
 use Quant::Framework::Holiday;
 use Quant::Framework::PartialTrading;
+use Quant::Framework::StorageAccessor;
 use Date::Utility;
 use Memoize::HashKey::Ignore;
 use Time::Duration::Concise;
@@ -106,8 +107,15 @@ has holidays => (
 sub _build_holidays {
     my $self = shift;
 
-    my $ref = Quant::Framework::Holiday::get_holidays_for($self->chronicle_reader, $self->symbol, $self->for_date);
-    my %exchange_holidays = map { Date::Utility->new($_)->days_since_epoch => $ref->{$_} } keys %$ref;
+    my $data = {};
+    # temporaly create it here, will be removed after refactong of TradingCalendar
+    my $storage_accessor = Quant::Framework::StorageAccessor->new(
+        chronicle_reader => $self->chronicle_reader,
+    );
+    my $holiday = Quant::Framework::Holiday::load($storage_accessor, $self->for_date);
+    $data = $holiday->holidays_for($self->symbol) if ($holiday);
+
+    my %exchange_holidays = map { Date::Utility->new($_)->days_since_epoch => $data->{$_} } keys %$data;
 
     return \%exchange_holidays;
 }
