@@ -38,6 +38,7 @@ share/test_data.yml
 share/test_underlying_config.yml
 t/00-load.t
 t/10-corporate-actions.t
+t/11-holydays.t
 t/asset.t
 t/correlation_matrix.t
 t/currency.t
