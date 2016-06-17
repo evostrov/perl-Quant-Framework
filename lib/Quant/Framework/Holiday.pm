@@ -6,6 +6,8 @@ use warnings;
 use Date::Utility;
 use Quant::Framework::Document;
 use Moo;
+use List::Util qw(first);
+use List::MoreUtils qw(uniq);
 
 has document => (
     is => 'ro',
@@ -50,7 +52,7 @@ sub save {
 
 sub update {
     my ($self, $new_events, $new_date) = @_;
-    my $recorded_date = $self->recorded_date->truncate_to_day->epoch;
+    my $recorded_date = $self->document->recorded_date->truncate_to_day->epoch;
     my $start_epoch = $new_date->truncate_to_day->epoch;
 
     # filter all events, that will happen later then $new_date
@@ -87,8 +89,15 @@ sub update {
     return __PACKAGE__->new(document => $new_document);
 }
 
-sub holidays {
-    return shift->document->data->{calendar};
+sub holidays_for {
+    my ($self, $symbol) = @_;
+    my %holidays;
+    while (my ($epoch, $holiday) = each %{ $self->document->data->{calendar} }) {
+        while ( my ($description, $symbols) = each %$holiday ) {
+            $holidays{$epoch} = $description if (first { $symbol eq $_ } @$symbols);
+        }
+    }
+    return \%holidays;
 }
 
 1;
