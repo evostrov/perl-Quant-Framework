@@ -15,34 +15,36 @@ use YAML::XS qw(LoadFile);
 use Quant::Framework::TradingCalendar;
 use Quant::Framework::InterestRate;
 use Quant::Framework::Utils::Test;
+use Quant::Framework::StorageAccessor;
+use Quant::Framework::Holiday;
 
 use Readonly;
 Readonly::Scalar my $HKSE_TRADE_DURATION_DAY => ((2 * 3600 + 29 * 60) + (2 * 3600 + 40 * 60));
 Readonly::Scalar my $HKSE_TRADE_DURATION_MORNING => 2 * 3600 + 29 * 60;
 Readonly::Scalar my $HKSE_TRADE_DURATION_EVENING => 2 * 3600 + 40 * 60;
 my ($chronicle_r, $chronicle_w) = Data::Chronicle::Mock::get_mocked_chronicle();
+my $storage_accessor = Quant::Framework::StorageAccessor->new(
+    chronicle_reader => $chronicle_r,
+    chronicle_writer => $chronicle_w,
+);
+
 my $date = Date::Utility->new('2013-12-01');    # first of December 2014
-Quant::Framework::Utils::Test::create_doc(
-    'holiday',
-    {
-        recorded_date => $date,
-        calendar      => {
-            "6-May-2013" => {
-                "Early May Bank Holiday" => [qw(LSE)],
-            },
-            "25-Dec-2013" => {
-                "Christmas Day" => [qw(LSE FOREX)],
-            },
-            "1-Jan-2014" => {
-                "New Year's Day" => [qw(LSE FOREX)],
-            },
-            "1-Apr-2013" => {
-                "Easter Monday" => [qw(LSE)],
-            },
-        },
-        chronicle_reader => $chronicle_r,
-        chronicle_writer => $chronicle_w,
-    });
+Quant::Framework::Holiday::create($storage_accessor, $date)
+    ->update({
+          "6-May-2013" => {
+              "Early May Bank Holiday" => [qw(LSE)],
+          },
+          "25-Dec-2013" => {
+              "Christmas Day" => [qw(LSE FOREX)],
+          },
+          "1-Jan-2014" => {
+              "New Year's Day" => [qw(LSE FOREX)],
+          },
+          "1-Apr-2013" => {
+              "Easter Monday" => [qw(LSE)],
+          },
+    }, $date)
+    ->save;
 
 Quant::Framework::Utils::Test::create_doc(
     'partial_trading',
