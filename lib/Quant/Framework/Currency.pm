@@ -80,8 +80,15 @@ has holidays => (
 sub _build_holidays {
     my $self = shift;
 
-    my $holidays_ref = Quant::Framework::Holiday::get_holidays_for($self->chronicle_reader, $self->symbol, $self->for_date);
-    my %holidays = map { Date::Utility->new($_)->days_since_epoch => $holidays_ref->{$_} } keys %$holidays_ref;
+    # temporaly create it here, will be removed after refactong of TradingCalendar
+    my $storage_accessor = Quant::Framework::StorageAccessor->new(
+        chronicle_reader => $self->chronicle_reader,
+    );
+    my $holiday = Quant::Framework::Holiday::load($storage_accessor, $self->for_date);
+    my $data = {};
+    $data = $holiday->holidays_for($self->symbol) if ($holiday);
+
+    my %holidays = map { Date::Utility->new($_)->days_since_epoch => $data->{$_} } keys %$data;
     my $year = $self->for_date ? $self->for_date->year : Date::Utility->new->year;
     # pseudo-holiday for country is on 24-Dec and 31-Dec annually
     $holidays{Date::Utility->new($_ . '-' . $year)->days_since_epoch} = 'pseudo-holiday' for qw(24-Dec 31-Dec);
