@@ -91,6 +91,10 @@ The C<$date> argument in mandatory.
 
 =cut
 
+sub namespace { 'corporate_actions' }
+
+sub default_section { 'actions' }
+
 sub update {
     my ($self, $actions, $new_date) = @_;
 
