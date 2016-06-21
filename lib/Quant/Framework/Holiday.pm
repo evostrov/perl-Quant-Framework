@@ -90,9 +90,13 @@ sub update {
 }
 
 sub holidays_for {
-    my ($self, $symbol) = @_;
+    my ($storage_accessor, $symbol, $for_date) = @_;
+    my $holiday = load($storage_accessor, $for_date);
+
+    my $data = $holiday ? $holiday->document->data->{calendar} : {};
+
     my %holidays;
-    while (my ($epoch, $holiday) = each %{ $self->document->data->{calendar} }) {
+    while (my ($epoch, $holiday) = each %$data ) {
         while ( my ($description, $symbols) = each %$holiday ) {
             $holidays{$epoch} = $description if (first { $symbol eq $_ } @$symbols);
         }

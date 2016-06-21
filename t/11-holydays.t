@@ -40,7 +40,7 @@ subtest 'save and retrieve event' => sub {
   my $h2 =Quant::Framework::Holiday::load($storage_accessor);
   ok $h2;
 
-  my $event = $h2->holidays_for('EURONEXT');
+  my $event = Quant::Framework::Holiday::holidays_for($storage_accessor, 'EURONEXT');
   ok $event->{$a_bit_later->truncate_to_day->epoch}, 'has a holiday';
   is $event->{$a_bit_later->truncate_to_day->epoch}, 'Test Event 2', 'Found saved holiday';
 
@@ -48,16 +48,15 @@ subtest 'save and retrieve event' => sub {
   $h2->update({$next_day->epoch => { 'Test Event Update' => ['AUD'] }}, $next_day)->save;
 
   my $h3 =Quant::Framework::Holiday::load($storage_accessor);
-  $event = $h3->holidays_for('USD');
+  $event = Quant::Framework::Holiday::holidays_for($storage_accessor, 'USD');
   ok !(%$event), "no holiday";
-  $event = $h3->holidays_for('AUD');
+  $event = Quant::Framework::Holiday::holidays_for($storage_accessor, 'AUD');
   ok $event->{$next_day->truncate_to_day->epoch}, 'has a holiday';
   is $event->{$next_day->truncate_to_day->epoch}, 'Test Event Update', 'Found saved holiday';
 
-  my $h4 = Quant::Framework::Holiday::load($storage_accessor, $now);
-  ok $h4, "got historical holyday";
-  ok $h4->holidays_for('USD')->{$now->truncate_to_day->epoch}, 'Historical holyday has been loaded';
-  is scalar(%{ $h4->holidays_for('EURONEXT')}), 0, "holiday from future isn't available in past-holiday records";
+  ok Quant::Framework::Holiday::load($storage_accessor, $now), "historical holiday object has been loaded";
+  ok Quant::Framework::Holiday::holidays_for($storage_accessor, 'USD', $now)->{$now->truncate_to_day->epoch}, 'Historical holyday has been loaded';
+  is scalar(%{ Quant::Framework::Holiday::holidays_for($storage_accessor, 'EURONEXT')}), 0, "holiday from future isn't available in past-holiday records";
 };
 
 done_testing;

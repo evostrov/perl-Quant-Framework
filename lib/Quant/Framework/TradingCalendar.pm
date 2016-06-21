@@ -112,8 +112,7 @@ sub _build_holidays {
     my $storage_accessor = Quant::Framework::StorageAccessor->new(
         chronicle_reader => $self->chronicle_reader,
     );
-    my $holiday = Quant::Framework::Holiday::load($storage_accessor, $self->for_date);
-    $data = $holiday->holidays_for($self->symbol) if ($holiday);
+    $data = Quant::Framework::Holiday::holidays_for($storage_accessor, $self->symbol, $self->for_date);
 
     my %exchange_holidays = map { Date::Utility->new($_)->days_since_epoch => $data->{$_} } keys %$data;
 
