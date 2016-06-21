@@ -20,15 +20,16 @@ my $storage_accessor = Quant::Framework::StorageAccessor->new(
     chronicle_writer => $chronicle_w,
 );
 
-is Quant::Framework::CorporateAction::load($storage_accessor, 'FPGZ'),
-    undef, 'document is not present';
+my $non_existing_ca = Quant::Framework::CorporateAction->load($storage_accessor, 'FPGZ');
+
+is $non_existing_ca, undef, 'document is not present';
 
 my $now = time;
 
 my $old_date = Date::Utility->new->minus_time_interval("15m");
 
 subtest "load/save" => sub {
-  my $ca = Quant::Framework::CorporateAction::create($storage_accessor, 'QWER', $old_date);
+  my $ca = Quant::Framework::CorporateAction->create($storage_accessor, 'QWER', $old_date);
   ok $ca, "empty corporate actions object has been created";
 
   my $ca2 = $ca->update({
@@ -45,7 +46,7 @@ subtest "load/save" => sub {
   ok $ca2, "updated corporate actions object";
   $ca2->save;
 
-  my $ca3 = Quant::Framework::CorporateAction::load($storage_accessor, 'QWER');
+  my $ca3 = Quant::Framework::CorporateAction->load($storage_accessor, 'QWER');
   ok $ca3;
   is $ca3->actions->{62799500}->{type}, "ACQUIS";
   is $ca3->actions->{62799500}->{effective_date}, "15-Jul-14";
@@ -62,18 +63,18 @@ subtest "load/save" => sub {
   }, $old_date->plus_time_interval("5m"));
   $ca3->save;
 
-  my $ca4 = Quant::Framework::CorporateAction::load($storage_accessor, 'QWER');
+  my $ca4 = Quant::Framework::CorporateAction->load($storage_accessor, 'QWER');
   is $ca4->actions->{62799500}->{type}, "ACQUIS";
   is $ca4->actions->{32799500}->{type}, "DIV";
 
-  my $ca5 = Quant::Framework::CorporateAction::load($storage_accessor, 'QWER', $old_date);
+  my $ca5 = Quant::Framework::CorporateAction->load($storage_accessor, 'QWER', $old_date);
   ok $ca5, "load via specifying exact date";
   is scalar(keys %{$ca5->actions}), 1, "old document contains 1 action";
 };
 
 subtest 'save new corporate actions' => sub {
     my $now = Date::Utility->new;
-    my $corp = Quant::Framework::CorporateAction::create($storage_accessor, 'USAAPL', $now);
+    my $corp = Quant::Framework::CorporateAction->create($storage_accessor, 'USAAPL', $now);
 
     is_deeply $corp->actions, {}, "by default it is empty";
 
@@ -89,9 +90,9 @@ subtest 'save new corporate actions' => sub {
     my $new_corp = $corp->update($new_actions, $now->plus_time_interval("1m"));
     $new_corp->save;
 
-    my $after_save_corp = Quant::Framework::CorporateAction::load($storage_accessor, 'USAAPL');
+    my $after_save_corp = Quant::Framework::CorporateAction->load($storage_accessor, 'USAAPL');
     ok $after_save_corp;
-    is $after_save_corp->document->recorded_date, $now->plus_time_interval("1m");
+    is $after_save_corp->recorded_date, $now->plus_time_interval("1m");
     is keys(%{ $after_save_corp->actions}), 1, "has one action";
 
     subtest "no duplicates" => sub {
@@ -104,7 +105,7 @@ subtest 'save new corporate actions' => sub {
                 flag           => 'N'
             }
         }, $now->plus_time_interval("2m") )->save;
-        my $persisted_actions = Quant::Framework::CorporateAction::load($storage_accessor, 'USAAPL')->actions;
+        my $persisted_actions = Quant::Framework::CorporateAction->load($storage_accessor, 'USAAPL')->actions;
         isnt $persisted_actions->{1122334}->{description}, 'Duplicate action';
         is $persisted_actions->{1122334}->{description}, 'Test data 2';
     };
@@ -119,7 +120,7 @@ subtest 'save new corporate actions' => sub {
                 flag           => 'U'
             }
         }, $now->plus_time_interval("3m") )->save;
-        my $persisted_actions = Quant::Framework::CorporateAction::load($storage_accessor, 'USAAPL')->actions;
+        my $persisted_actions = Quant::Framework::CorporateAction->load($storage_accessor, 'USAAPL')->actions;
         is $persisted_actions->{1122334}->{description}, 'Update to existing actions';
         is $persisted_actions->{1122334}->{value}, 1.987, 'value is also updated';
     };
@@ -134,7 +135,7 @@ subtest 'save new corporate actions' => sub {
                 flag           => 'D'
             }
         }, $now->plus_time_interval("4m") )->save;
-        my $persisted_actions = Quant::Framework::CorporateAction::load($storage_accessor, 'USAAPL')->actions;
+        my $persisted_actions = Quant::Framework::CorporateAction->load($storage_accessor, 'USAAPL')->actions;
         is_deeply $persisted_actions, {}, 'action deleted from db';
     };
 
@@ -149,7 +150,7 @@ subtest 'save new corporate actions' => sub {
                 flag            => 'N'
             }
         }, $now->plus_time_interval("5m") )->save;
-        my $persisted_actions = Quant::Framework::CorporateAction::load($storage_accessor, 'USAAPL')->actions;
+        my $persisted_actions = Quant::Framework::CorporateAction->load($storage_accessor, 'USAAPL')->actions;
         ok $persisted_actions->{$action_id}, 'critical action saved on db';
         is $persisted_actions->{$action_id}->{suspend_trading}, 1, 'suspend_trading';
     };
