@@ -8,37 +8,19 @@ use Moo::Role;
 
 =head1 NAME
 
-Quant::Framework::Document - Binds data with Chronicle
+Quant::Framework::Document - Rolde, which binds data with Chronicle
 
 =head1 DESCRIPTION
 
-Internal representation of persistend data. Do not B<create> the class directly outside
-of Quant::Framework, although the usage of public fields outside of Quant::Framework
-is allowed.
-
-The class is responsible for loading and storing data via Data::Chronicle. The
-data itself is a hash, which content is provided by users of the class (i.e. by
+The class is responsible for Create, Loading and Save Q::F Objects via Data::Chronicle.
+The data itself is a hash, which content is provided by users of the class (i.e. by
 CorporateActions).
 
- # create new (transient / not-yet-persisted) Document
+The role provides C<load> (C<load_default>), C<create> (C<create_default>) and C<save>
+methods. The C<*_default> varians are provided with the intention to allow override
+the original methods with possibility still to use the default impementation. This
+might be needed to specialized symbol-less objects like Holiday.
 
- my $document = Quant::Framework::Document->new(
-  storage_accessor => $storage_accessor,
-  symbol           => 'frxUSDJPY',
-  data             => {},
-  for_date         => Date::Utility->new,
- );
-
- # persist document
- $document->save('currency');
-
- # load document
- my $document2 = Quant::Framework::Document::load(
-  $storage_accessor,
-  'currency',
-  'frxUSDJPY',
-  Date::Utility->new, # optional
- )
 
 =cut
 
@@ -61,6 +43,8 @@ C<date> and C<symbol> are reserved.
 =head2 symbol
 
 The domain-specific name of document; e.g. "USAAPL" for corporate actions
+
+=head2 namespace
 
 =cut
 
@@ -88,9 +72,64 @@ has symbol => (
     required => 1,
 );
 
+=head1 REQUIED METHODS
+
+=head2 namespace()
+
+returns namespace (strign) for the object, which the role is applied to,
+e.g. "corporate_actions" or "holidays"
+
+=head2 default_section()
+
+The section in data hash (string), where object-specific data will be stored.
+For example for Holidays, it can be 'calendar'
+
+=cut
+
 requires 'namespace';
 
 requires 'default_section';
+
+=head1 METHODS
+
+=head2 create($package, $storage_accessor, $symbol, $for_date)
+
+=head2 create_default($package, $storage_accessor, $symbol, $for_date)
+
+
+Creates new unsaved (non-persisted) object, to which the role is applied
+to. The C<create> can be overriden, while The C<create_default> not.
+They have the same impelemtation.
+
+
+  Quant::Framework::CorporateAction->create($storage_accessor, 'USAAPL', $date);
+
+Please note, it should be invoked with package name (the module, to which the
+role is applied to), otherwise it will not work.
+
+All paremeters are required
+
+
+=head2 load($package, $storage_accessor, $symbol, $for_date)
+
+=head2 load_default($package, $storage_accessor, $symbol, $for_date)
+
+Loads persiseted object. All paramters are mandatory, except
+C<$for_date> which is optional. If C<$for_date> is not specified,
+it loads the last stored object.
+
+In case, when object does not exist, it returns C<undef>.
+
+The C<load> can be overriden, while The C<load_default> not.
+They have the same impelemtation.
+
+
+  Quant::Framework::CorporateAction->load($storage_accessor, 'QWER')
+
+Please note, it should be invoked with package name (the module, to which the
+role is applied to), otherwise it will not work.
+
+=cut
 
 sub create_default {
     my ($package, $storage_accessor, $symbol, $for_date) = @_;
@@ -127,9 +166,7 @@ sub load_default {
 
 =head2 save
 
- $document->save;
-
-Stores (persists) the document in Chronicle database.
+Stores (persists) the object in Chronicle database.
 
 =cut
 
