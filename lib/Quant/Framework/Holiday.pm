@@ -10,6 +10,53 @@ use List::MoreUtils qw(uniq);
 
 with('Quant::Framework::Document');
 
+=head1 NAME
+
+Quant::Framework::Holiday - A module to save/load market holidays
+
+=head1 DESCRIPTION
+
+This module saves/loads holidays to/from Chronicle.
+
+  my $holiday = Quant::Framework::Holiday->load($storage_accessor);
+  $holiday->update({ $now->epoch => { 'Some-event-affects-USD' => ['USD'], }  }, $now)->save;
+
+  my $holidays_data = Quant::Framework::Holiday::holidays_for($storage_accessor, 'EUR', $some_date);
+
+
+=head1 SUBROUTINES
+
+=head2 namespace
+
+returns hard-coded string 'holidays'. Required to conform Document role contract.
+
+=head2 default_section
+
+returns hard-coded string 'calendar'. Required to conform Document role contract.
+
+=head2 create($package, $storage_accessor, $for_date)
+
+Creates new holiday object
+
+  Quant::Framework::Holiday->create($storage_accessor, $now)
+
+=head2 load($package, $storage_accessor, $for_date)
+
+Loads persisted Holiday object. Returns undef it is not present. C<$for_date>
+is optional.
+
+  Quant::Framework::Holiday->load($storage_accessor);
+
+=head2 update($self, $new_events, $date);
+
+It migrates B<non-occurred> existing events, i.e. those which are later then
+C<$date>, adds C<$new_events> and returns new unpersisted Holiday object.
+
+  $holiday->update({ $now->epoch => { 'Some-event-affects-USD' => ['USD'], }  }, $now)
+    ->save;
+
+=cut
+
 sub namespace { 'holidays' }
 
 sub default_section { 'calendar' }
@@ -63,6 +110,15 @@ sub update {
 
     return $new_obj;
 }
+
+=head2 holidays_for($symbol, $for_date)
+
+This method looks for holidays of the given symbol (at the optional given time) using
+chronicle_reader object passed to it.
+
+  Quant::Framework::Holiday::holidays_for('USD');
+
+=cut
 
 sub holidays_for {
     my ($storage_accessor, $symbol, $for_date) = @_;

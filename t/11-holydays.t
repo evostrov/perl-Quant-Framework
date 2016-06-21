@@ -38,7 +38,7 @@ subtest 'save and retrieve event' => sub {
   $h->update({ $a_bit_later->epoch => { 'Test Event' => ['USD'], }  }, $now)->save;
   $h->update({ $a_bit_later->epoch => { 'Test Event 2' => ['EURONEXT'], }  }, $a_bit_later)->save;
 
-  my $h2 =Quant::Framework::Holiday->load($storage_accessor);
+  my $h2 = Quant::Framework::Holiday->load($storage_accessor);
   ok $h2;
 
   my $event = Quant::Framework::Holiday::holidays_for($storage_accessor, 'EURONEXT');
