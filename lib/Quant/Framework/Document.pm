@@ -92,7 +92,7 @@ requires 'namespace';
 
 requires 'default_section';
 
-sub create {
+sub create_default {
     my ($package, $storage_accessor, $symbol, $for_date) = @_;
     my $obj = $package->new(
         storage_accessor => $storage_accessor,
@@ -101,8 +101,9 @@ sub create {
         data             => {$package->default_section => {}},
     );
 }
+*create = \&create_default;
 
-sub load {
+sub load_default {
     my ($package, $storage_accessor, $symbol, $for_date) = @_;
 
     my $namespace = $package->namespace;
@@ -122,6 +123,7 @@ sub load {
         data             => $data,
     );
 }
+*load = \&load_default;
 
 =head2 save
 
