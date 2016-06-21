@@ -17,7 +17,7 @@ Quant::Framework::CorporateAction
 Represents the corporate actions data of an underlying from database. Create
 new unpersistent CorporateAction can be done via:
 
- my $ca = Quant::Framework::CorporateAction::create($storage_accessor, 'QWER', Date::Utility->new);
+ my $ca = Quant::Framework::CorporateAction->create($storage_accessor, 'QWER', Date::Utility->new);
 
 Obviously, it will have empty actions hash
 
@@ -29,12 +29,12 @@ Corporate actions can be persisted (stored in Chronicle) via C<save> method
 
 Load persisted actions can be done via:
 
- my $ca = Quant::Framework::CorporateAction::load($storage_accessor, 'QWER', Date::Utility->new);
+ my $ca = Quant::Framework::CorporateAction->load($storage_accessor, 'QWER', Date::Utility->new);
 
 It will return C<undef> if there are no presisted actions in Chronicle. The date can be
 ommitted, than, it will try to load the most recent (last) corporate actions, i.e.
 
- my $ca = Quant::Framework::CorporateAction::load($storage_accessor, 'QWER');
+ my $ca = Quant::Framework::CorporateAction->load($storage_accessor, 'QWER');
 
 
 To update actions, the C<update> method should be invoked, with appropriate structure, i.e.
@@ -56,17 +56,15 @@ In the list context it will return new unpersisted Corporate object, and two has
 new and cancelled action.
 
 
-=cut
-
-=head1 ATTRIBUTES
-
-=cut
-
-sub namespace { 'corporate_actions' }
-
-sub default_section { 'actions' }
-
 =head1 SUBROUTINES
+
+=head2 namespace
+
+returns hard-coded string 'corporate_actions'. Required to conform Document role contract.
+
+=head2 default_section
+
+returns hard-coded string 'actions'. Required to conform Document role contract.
 
 =head2 update($actions, $date);
 
