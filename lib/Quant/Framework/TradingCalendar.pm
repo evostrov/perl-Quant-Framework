@@ -14,7 +14,10 @@ One important feature of this module is that it is designed for READING informat
 
 =head1 USAGE
 
-    my $calendar = Quant::Framework::TradingCalendar->new('LSE');
+    my $calendar = Quant::Framework::TradingCalendar->new({ 
+        symbol => 'LSE',
+        chronicle_reader => $chronicle_r,
+    });
 
 =cut
 
@@ -60,7 +63,8 @@ has symbol => (
 
 =head2 underlying_config
 
-UnderlyingConfig used to create/initialize Q::F modules
+UnderlyingConfig used for query on weighting of an underlying. Not required if this modules is not used for
+that purpose.
 
 =cut
 

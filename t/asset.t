@@ -16,12 +16,14 @@ use Data::Chronicle::Mock;
 use Date::Utility;
 
 my ($chronicle_r, $chronicle_w) = Data::Chronicle::Mock::get_mocked_chronicle();
+my $fchi_underlying_config = Quant::Framework::Utils::Test::create_underlying_config('FCHI');
 
 subtest 'get asset dividend' => sub {
     lives_ok {
         is(
             Quant::Framework::Dividend->new(
-                symbol           => 'AEX',
+                symbol           => 'FCHI',
+                underlying_config => $fchi_underlying_config,
                 chronicle_reader => $chronicle_r,
                 chronicle_writer => $chronicle_w
                 )->document,
@@ -33,14 +35,16 @@ subtest 'get asset dividend' => sub {
             rates            => {365          => 0.1},
             discrete_points  => {'2014-10-10' => 0},
             recorded_date    => Date::Utility->new('2014-10-10'),
-            symbol           => 'AEX',
+            symbol           => 'FCHI',
+            underlying_config => $fchi_underlying_config,
             chronicle_reader => $chronicle_r,
             chronicle_writer => $chronicle_w
         );
         ok $dvd->save, 'save without error';
         lives_ok {
             Quant::Framework::Dividend->new(
-                symbol           => 'AEX',
+                symbol           => 'FCHI',
+                underlying_config => $fchi_underlying_config,
                 chronicle_reader => $chronicle_r,
                 chronicle_writer => $chronicle_w
                 )->document
@@ -48,17 +52,19 @@ subtest 'get asset dividend' => sub {
         'successfully retrieved saved document from chronicle';
 
         my $dv = Quant::Framework::Dividend->new(
-            symbol           => 'AEX',
+            symbol           => 'FCHI',
+            underlying_config => $fchi_underlying_config,
             chronicle_reader => $chronicle_r,
             chronicle_writer => $chronicle_w
         )->document;
 
-        is $dv->{symbol}, "AEX", "symbol is retrieved correctly";
+        is $dv->{symbol}, "FCHI", "symbol is retrieved correctly";
         is $dv->{discrete_points}->{'2014-10-10'}, 0,   "points retrieved correctly";
         is $dv->{rates}->{365},                    0.1, "rates retrieved correctly";
 
         my $asset = Quant::Framework::Asset->new({
-            symbol           => 'AEX',
+            symbol           => 'FCHI',
+            underlying_config => $fchi_underlying_config,
             chronicle_reader => $chronicle_r,
             chronicle_writer => $chronicle_w,
         });
@@ -67,5 +73,5 @@ subtest 'get asset dividend' => sub {
         my $rate = $asset->rate_for($tiy);
         is $rate, 0.001, "rates retrieved successfully through Asset.pm";
     }
-    'sucessfully retrieve asset dividend for AEX using Asset.pm';
+    'sucessfully retrieve asset dividend for FCHI using Asset.pm';
 };

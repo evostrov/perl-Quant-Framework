@@ -18,16 +18,34 @@ Quant::Framework::Utils::Test::create_doc('currency',
     });
 
 # check that cache is flushed after exchanges.yml is touched
-my $LSE = Quant::Framework::TradingCalendar->new('LSE', $chronicle_r);
+my $LSE = Quant::Framework::TradingCalendar->new({
+        symbol => 'LSE', 
+        chronicle_reader => $chronicle_r,
+        underlying_config => Quant::Framework::Utils::Test::create_underlying_config('FTSE')
+    });
 isa_ok $LSE, "Quant::Framework::TradingCalendar";
-my $FOREX = Quant::Framework::TradingCalendar->new('FOREX', $chronicle_r);
+
+my $FOREX = Quant::Framework::TradingCalendar->new({
+        symbol => 'FOREX', 
+        chronicle_rader => $chronicle_r,
+        underlying_config => Quant::Framework::Utils::Test::create_underlying_config('frxEURUSD')
+    });
 isnt($FOREX, $LSE, "different objects for FOREX and LSE");
-my $LSE2 = Quant::Framework::TradingCalendar->new('LSE', $chronicle_r);
+
+my $LSE2 = Quant::Framework::TradingCalendar->new({
+        symbol => 'LSE', 
+        chronicle_reader => $chronicle_r,
+        underlying_config => Quant::Framework::Utils::Test::create_underlying_config('FTSE')
+    });
 is $LSE2, $LSE, "new returned the same M::E object";
 
 set_relative_time(400);
 note "Force Cache timeout";
-my $LSE4 = Quant::Framework::TradingCalendar->new('LSE', $chronicle_r);
+my $LSE4 = Quant::Framework::TradingCalendar->new({
+        symbol => 'LSE', 
+        chronicle_reader => $chronicle_r,
+        underlying_config => Quant::Framework::Utils::Test::create_underlying_config('FTSE')
+    });
 isnt($LSE4, $LSE, "new returned new M::E object");
 
 done_testing;
