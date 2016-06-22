@@ -121,7 +121,7 @@ sub build_interest_rate {
             for_date => $self->for_date,
             chronicle_reader => $self->chronicle_reader,
             chronicle_writer => $self->chronicle_writer,
-        );
+        });
 }
 
 =head2 build_dividend
