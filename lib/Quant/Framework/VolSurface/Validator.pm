@@ -163,8 +163,8 @@ sub _admissible_check {
         # If intraday or not FX, then use the exact duration with fractions of a day.
         die("Invalid tenor[$atid] on surface") if ($atid == 0);
         my $t     = $atid / 365;
-        my $r     = $builder->interest_rate_for($t);
-        my $q     = ($underlying_config->market_prefer_discrete_dividend) ? 0 : $builder->dividend_rate_for($t);
+        my $r     = $builder->build_interest_rate->interest_rate_for($t);
+        my $q     = ($underlying_config->market_prefer_discrete_dividend) ? 0 : $builder->build_dividend->dividend_rate_for($t);
         my $smile = $surface->surface->{$day}->{smile};
 
         my @volatility_level = sort { $a <=> $b } keys %{$smile};

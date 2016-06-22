@@ -175,6 +175,45 @@ sub rate_for {
     return 0;
 }
 
+
+=head2 dividend_rate_for
+
+Get the dividend rate for this underlying over a given time period (expressed in timeinyears.)
+
+=cut
+
+sub dividend_rate_for {
+    my ($self, $tiy) = @_;
+
+    die 'Attempting to get dividend rate on an undefined asset symbol for ' . $self->underlying_config->symbol
+        unless (defined $self->underlying_config->asset_symbol);
+
+    return $self->underlying_config->default_dividend_rate if defined $self->underlying_config->default_dividend_rate;
+
+    my $rate;
+
+    # timeinyears cannot be undef
+    $tiy ||= 0;
+    my $type = $self->underlying_config->asset_class;
+
+    my $which = $type eq 'currency' ? 'Quant::Framework::Currency' : 'Quant::Framework::Asset';
+
+    my $asset = $which->new({
+        symbol           => $self->underlying_config->asset_symbol,
+        for_date         => $self->for_date,
+        chronicle_reader => $self->chronicle_reader,
+        chronicle_writer => $self->chronicle_writer,
+    });
+
+    if ($self->underlying_config->uses_implied_rate_for_asset) {
+        $rate = $asset->rate_implied_from($self->underlying_config->rate_to_imply_from, $tiy);
+    } else {
+        $rate = $asset->rate_for($tiy);
+    }
+
+    return $rate;
+}
+
 =head2 get_discrete_dividend_for_period
 
 Returns discrete dividend for the given (start,end) dates and dividend recorded date for the underlying specified using `underlying_config`

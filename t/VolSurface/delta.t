@@ -646,15 +646,13 @@ subtest fetch_historical_surface_date => sub {
     is(scalar @{$dates}, 1, 'fetch_historical_surface_date going back only one revision.');
 };
 
-# unmock everything we mocked.
-foreach my $builder (@mocked_builders) {
-    $builder->unmock('interest_rate_for')->unmock('dividend_rate_for');
-}
-
 sub _get_surface {
     my $override = shift || {};
     my %override = %$override;
-    my $ul = Quant::Framework::Utils::Test::create_underlying_config('frxUSDJPY');
+    my $ul = Quant::Framework::Utils::Test::create_underlying_config('frxUSDJPY',
+        { default_interest_rate => 0.5,
+          default_dividend_rate => 0.5 });
+
 
     my $surface  = Quant::Framework::VolSurface::Delta->new(
         underlying_config    => $ul,
@@ -689,12 +687,6 @@ sub _get_surface {
         },
         %override,
     );
-
-    my $builder = Test::MockObject::Extends->new($surface->builder);
-    $builder->mock('interest_rate_for', sub { return 0.5 });
-    $builder->mock('dividend_rate_for', sub { return 0.5 });
-
-    push @mocked_builders, $builder;
 
     return $surface;
 }

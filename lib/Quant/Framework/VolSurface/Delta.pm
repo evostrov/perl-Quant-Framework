@@ -224,8 +224,8 @@ sub _ensure_conversion_args {
     $new_args{t}                ||= $new_args{days} / 365;
     $new_args{spot}             ||= $underlying_config->spot;
     $new_args{premium_adjusted} ||= $underlying_config->{market_convention}->{delta_premium_adjusted};
-    $new_args{r_rate}           ||= $self->builder->interest_rate_for($new_args{t});
-    $new_args{q_rate}           ||= $self->builder->dividend_rate_for($new_args{t});
+    $new_args{r_rate}           ||= $self->builder->build_interest_rate->interest_rate_for($new_args{t});
+    $new_args{q_rate}           ||= $self->builder->build_dividend->dividend_rate_for($new_args{t});
 
     $new_args{atm_vol} ||= $self->get_volatility({
         days  => $new_args{days},

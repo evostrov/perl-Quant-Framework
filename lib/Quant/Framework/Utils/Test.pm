@@ -104,9 +104,16 @@ Creates an instance of UnderlyingConfig (for EURUSD or GDAXI) for tesing purpose
 
 sub create_underlying_config {
     my $symbol = shift;
+    my $custom_attributes = shift;
 
     my $fixture = LoadFile(File::ShareDir::dist_file('Quant-Framework', 'test_underlying_config.yml'));
     my $data    = $fixture->{$symbol};
+
+    if ( defined $custom_attributes ) {
+        while (my ($key, $value) = each %$custom_attributes) {
+            $data->{$key} = $value;
+        }
+    }
 
     return Quant::Framework::Utils::UnderlyingConfig->new($data);
 }
