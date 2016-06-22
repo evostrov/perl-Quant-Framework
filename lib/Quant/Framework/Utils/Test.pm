@@ -76,7 +76,7 @@ sub create_doc {
     # get data to insert
     my $fixture = LoadFile(File::ShareDir::dist_file('Quant-Framework', 'test_data.yml'));
 
-    my $data    = $fixture->{$yaml_db}{data};
+    my $data = $fixture->{$yaml_db}{data};
 
     die "Invalid yaml db name: $yaml_db" if not defined $data;
 
@@ -106,7 +106,7 @@ sub create_underlying_config {
     my $symbol = shift;
 
     my $fixture = LoadFile(File::ShareDir::dist_file('Quant-Framework', 'test_underlying_config.yml'));
-    my $data    = $fixture->{$symbol};
+    my $data = $fixture->{$symbol};
 
     return Quant::Framework::Utils::UnderlyingConfig->new($data);
 }

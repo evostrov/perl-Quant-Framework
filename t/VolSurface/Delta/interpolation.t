@@ -28,8 +28,8 @@ my ($chronicle_r, $chronicle_w) = Data::Chronicle::Mock::get_mocked_chronicle();
 Quant::Framework::Utils::Test::create_doc(
     'currency',
     {
-        symbol => $_,
-        date   => Date::Utility->new,
+        symbol           => $_,
+        date             => Date::Utility->new,
         chronicle_reader => $chronicle_r,
         chronicle_writer => $chronicle_w,
     }) for (qw/EUR GBP JPY USD/);
@@ -55,16 +55,16 @@ Quant::Framework::Currency->new({
 });
 Quant::Framework::Exchange->new('FOREX');
 
-my $bbss     = BloombergSurfaces->new({
+my $bbss = BloombergSurfaces->new({
     relative_data_dir => 'interpolation',
-    chronicle_reader => $chronicle_r,
-    chronicle_writer => $chronicle_w,
-  });
+    chronicle_reader  => $chronicle_r,
+    chronicle_writer  => $chronicle_w,
+});
 
-my $clss     = ClarkSurfaces->new({
+my $clss = ClarkSurfaces->new({
     chronicle_reader => $chronicle_r,
     chronicle_writer => $chronicle_w,
-  });
+});
 
 my @surfaces = (
     $bbss->get('frxUSDJPY', '2012-01-11 02:40:00'),
@@ -253,13 +253,13 @@ sub _get_market_points_only_surface_from {
     @mpo_surface{@market_points} = @surface_data{@market_points};
 
     my $mpo_surface = Quant::Framework::VolSurface::Delta->new(
-        surface         => \%mpo_surface,
-        underlying_config      => $surface->underlying_config,
-        recorded_date   => $surface->recorded_date,
-        cutoff          => $surface->cutoff,
-        print_precision => undef,
-        chronicle_reader => $chronicle_r,
-        chronicle_writer => $chronicle_w,
+        surface           => \%mpo_surface,
+        underlying_config => $surface->underlying_config,
+        recorded_date     => $surface->recorded_date,
+        cutoff            => $surface->cutoff,
+        print_precision   => undef,
+        chronicle_reader  => $chronicle_r,
+        chronicle_writer  => $chronicle_w,
     );
 
     return $mpo_surface;

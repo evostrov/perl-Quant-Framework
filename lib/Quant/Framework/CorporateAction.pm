@@ -69,7 +69,7 @@ actions, e.g.:
 =cut
 
 has document => (
-    is => 'ro',
+    is       => 'ro',
     required => 1,
 );
 
@@ -91,12 +91,12 @@ sub create {
         storage_accessor => $storage_accessor,
         recorded_date    => $for_date,
         symbol           => $symbol,
-        data             => { actions => {} },
+        data             => {actions => {}},
         namespace        => $_NAMESPACE,
     );
 
     return __PACKAGE__->new(
-      document => $document,
+        document => $document,
     );
 }
 
@@ -115,10 +115,10 @@ sub load {
     my ($storage_accessor, $symbol, $for_date) = @_;
 
     my $document = Quant::Framework::Document::load($storage_accessor, $_NAMESPACE, $symbol, $for_date)
-      or return;
+        or return;
 
     return __PACKAGE__->new(
-      document => $document,
+        document => $document,
     );
 }
 
@@ -160,25 +160,24 @@ The C<$date> argument in mandatory.
 
 =cut
 
-
 sub update {
     my ($self, $actions, $new_date) = @_;
 
     # clone original data
     my $original = $self->document->data;
-    my $data = {%$original};
+    my $data     = {%$original};
 
     my %new;
     foreach my $action_id (keys %$actions) {
         # flag 'N' = New & 'U' = Update
         my $action = $actions->{$action_id};
         my $is_new = ($action->{flag} eq 'N' and not $original->{actions}->{$action_id})
-          || $action->{flag} eq 'U';
+            || $action->{flag} eq 'U';
 
         $new{$action_id} = $action if ($is_new);
     }
 
-    my %merged_actions = (%{ $data->{actions} }, %new);
+    my %merged_actions = (%{$data->{actions}}, %new);
 
     my %cancelled;
     foreach my $action_id (keys %$actions) {

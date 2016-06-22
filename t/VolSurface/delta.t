@@ -22,8 +22,8 @@ my ($chronicle_r, $chronicle_w) = Data::Chronicle::Mock::get_mocked_chronicle();
 Quant::Framework::Utils::Test::create_doc(
     'currency',
     {
-        symbol        => $_,
-        recorded_date => Date::Utility->new,
+        symbol           => $_,
+        recorded_date    => Date::Utility->new,
         chronicle_reader => $chronicle_r,
         chronicle_writer => $chronicle_w,
     }) for (qw/EUR JPY USD/);
@@ -223,14 +223,14 @@ subtest 'Flagging System' => sub {
     plan tests => 9;
 
     my $underlying = Quant::Framework::Utils::Test::create_underlying_config('frxUSDJPY');
-    my $surface = Quant::Framework::Utils::Test::create_doc(
+    my $surface    = Quant::Framework::Utils::Test::create_doc(
         'volsurface_delta',
         {
             underlying_config => $underlying,
-            recorded_date => Date::Utility->new,
-            chronicle_reader => $chronicle_r,
-            chronicle_writer => $chronicle_w,
-            save          => 0
+            recorded_date     => Date::Utility->new,
+            chronicle_reader  => $chronicle_r,
+            chronicle_writer  => $chronicle_w,
+            save              => 0
         });
 
     $surface->set_smile_flag(1, 'first message');
@@ -257,32 +257,36 @@ subtest 'Flagging System' => sub {
 
 subtest 'object creaion error check' => sub {
     plan tests => 3;
-    my $underlying = Quant::Framework::Utils::Test::create_underlying_config('frxUSDJPY');
+    my $underlying    = Quant::Framework::Utils::Test::create_underlying_config('frxUSDJPY');
     my $recorded_date = Date::Utility->new();
     my $surface       = {1 => {smile => {50 => 0.1}}};
-    throws_ok { 
-      Quant::Framework::VolSurface::Delta->new({
-          surface => $surface, 
-          recorded_date => $recorded_date,
-          chronicle_reader => $chronicle_r,
-          chronicle_writer => $chronicle_w,
-        }) }
-    qr/Attribute underlying_config is required/,
-        'Cannot create volsurface without underlying_config';
-    throws_ok { Quant::Framework::VolSurface::Delta->new({
-          surface => $surface, 
-          underlying_config => $underlying,
-          chronicle_reader => $chronicle_r,
-          chronicle_writer => $chronicle_w,
-        }) }
+    throws_ok {
+        Quant::Framework::VolSurface::Delta->new({
+                surface          => $surface,
+                recorded_date    => $recorded_date,
+                chronicle_reader => $chronicle_r,
+                chronicle_writer => $chronicle_w,
+            })
+    }
+    qr/Attribute underlying_config is required/, 'Cannot create volsurface without underlying_config';
+    throws_ok {
+        Quant::Framework::VolSurface::Delta->new({
+                surface           => $surface,
+                underlying_config => $underlying,
+                chronicle_reader  => $chronicle_r,
+                chronicle_writer  => $chronicle_w,
+            })
+    }
     qr/Must pass both "surface" and "recorded_date" if passing either/, 'Cannot create volsurface without recorded_date';
-    lives_ok { Quant::Framework::VolSurface::Delta->new({
-          surface => $surface, 
-          underlying_config => $underlying, 
-          recorded_date => $recorded_date,
-          chronicle_reader => $chronicle_r,
-          chronicle_writer => $chronicle_w,
-        }) }
+    lives_ok {
+        Quant::Framework::VolSurface::Delta->new({
+                surface           => $surface,
+                underlying_config => $underlying,
+                recorded_date     => $recorded_date,
+                chronicle_reader  => $chronicle_r,
+                chronicle_writer  => $chronicle_w,
+            })
+    }
     'can create volsurface';
 };
 
@@ -290,14 +294,14 @@ subtest effective_date => sub {
     plan tests => 2;
 
     my $underlying = Quant::Framework::Utils::Test::create_underlying_config('frxUSDJPY');
-    my $surface = Quant::Framework::Utils::Test::create_doc(
+    my $surface    = Quant::Framework::Utils::Test::create_doc(
         'volsurface_delta',
         {
             underlying_config => $underlying,
-            recorded_date => Date::Utility->new('2012-03-09 21:15:00'),
-            save          => 0,
-            chronicle_reader => $chronicle_r,
-            chronicle_writer => $chronicle_w,
+            recorded_date     => Date::Utility->new('2012-03-09 21:15:00'),
+            save              => 0,
+            chronicle_reader  => $chronicle_r,
+            chronicle_writer  => $chronicle_w,
         });
 
     is($surface->_ON_day, 3, 'In winter, 21:15 on Friday is before rollover so _ON_day is 3.');
@@ -306,10 +310,10 @@ subtest effective_date => sub {
         'volsurface_delta',
         {
             underlying_config => $underlying,
-            recorded_date => Date::Utility->new('2012-03-16 21:15:00'),
-            save          => 0,
-            chronicle_reader => $chronicle_r,
-            chronicle_writer => $chronicle_w,
+            recorded_date     => Date::Utility->new('2012-03-16 21:15:00'),
+            save              => 0,
+            chronicle_reader  => $chronicle_r,
+            chronicle_writer  => $chronicle_w,
         });
 
     is($surface->_ON_day, 2, 'In summer, 21:15 on Friday is after rollover so _ON_day is 2.');
@@ -319,29 +323,29 @@ subtest cloning => sub {
     plan tests => 11;
 
     my $underlying = Quant::Framework::Utils::Test::create_underlying_config('frxUSDJPY');
-    my $surface = Quant::Framework::Utils::Test::create_doc(
+    my $surface    = Quant::Framework::Utils::Test::create_doc(
         'volsurface_delta',
         {
             underlying_config => $underlying,
-            recorded_date => Date::Utility->new,
-            save          => 0,
-            chronicle_reader => $chronicle_r,
-            chronicle_writer => $chronicle_w,
+            recorded_date     => Date::Utility->new,
+            save              => 0,
+            chronicle_reader  => $chronicle_r,
+            chronicle_writer  => $chronicle_w,
         });
 
     my $clone = $surface->clone;
 
     isa_ok($clone, 'Quant::Framework::VolSurface::Delta');
     is($surface->underlying_config->symbol, $clone->underlying_config->symbol, 'clone without overrides: underlying.');
-    is($surface->cutoff->code,       $clone->cutoff->code,       'clone without overrides: cutoff.');
+    is($surface->cutoff->code, $clone->cutoff->code, 'clone without overrides: cutoff.');
     is_deeply($surface->surface, $clone->surface, 'clone without overrides: surface.');
     is($surface->recorded_date->datetime, $clone->recorded_date->datetime, 'clone without overrides: recorded_date.');
     is($surface->print_precision,         $clone->print_precision,         'clone without overrides: print_precision.');
 
     $clone = $surface->clone({
             underlying_config => Quant::Framework::Utils::Test::create_underlying_config('frxGBPNOK'),
-            cutoff     => 'UTC 13:37',
-            surface    => {
+            cutoff            => 'UTC 13:37',
+            surface           => {
                 7 => {
                     smile => {
                         25 => 0.55,
@@ -354,7 +358,7 @@ subtest cloning => sub {
         });
 
     isnt($surface->underlying_config->symbol, $clone->underlying_config->symbol, 'clone with overrides: underlying.');
-    isnt($surface->cutoff->code,       $clone->cutoff->code,       'clone with overrides: cutoff.');
+    isnt($surface->cutoff->code, $clone->cutoff->code, 'clone with overrides: cutoff.');
     cmp_ok(scalar @{$surface->term_by_day}, '!=', scalar @{$clone->term_by_day}, 'clone with overrides: surface.');
     isnt($surface->recorded_date->datetime, $clone->recorded_date->datetime, 'clone with overrides: recorded_date.');
     isnt($surface->print_precision,         $clone->print_precision,         'clone with overrides: print_precision.');
@@ -419,15 +423,15 @@ subtest 'get_volatility, part 1.' => sub {
     plan tests => scalar(@days_to_expiry) * 6 + 5;
 
     my $underlying = Quant::Framework::Utils::Test::create_underlying_config('frxUSDJPY');
-    my $surface = Quant::Framework::Utils::Test::create_doc(
+    my $surface    = Quant::Framework::Utils::Test::create_doc(
         'volsurface_delta',
         {
             underlying_config => $underlying,
-            surface       => $expected_vols_delta,
-            recorded_date => Date::Utility->new,
-            save          => 0,
-            chronicle_reader => $chronicle_r,
-            chronicle_writer => $chronicle_w,
+            surface           => $expected_vols_delta,
+            recorded_date     => Date::Utility->new,
+            save              => 0,
+            chronicle_reader  => $chronicle_r,
+            chronicle_writer  => $chronicle_w,
         });
 
     cmp_deeply(\@days_to_expiry, $surface->term_by_day, 'Term structures (delta) are same.');
@@ -502,19 +506,19 @@ subtest _validate_sought_points => sub {
     plan tests => 6;
 
     my $underlying = Quant::Framework::Utils::Test::create_underlying_config('frxUSDJPY');
-    my $surface = Quant::Framework::Utils::Test::create_doc(
+    my $surface    = Quant::Framework::Utils::Test::create_doc(
         'volsurface_delta',
         {
-          underlying_config => $underlying,
-            surface => {
+            underlying_config => $underlying,
+            surface           => {
                 7 => {
                     atm_spread => 0.01,
                 },
             },
-            recorded_date => Date::Utility->new,
+            recorded_date    => Date::Utility->new,
             chronicle_reader => $chronicle_r,
             chronicle_writer => $chronicle_w,
-            save          => 0,
+            save             => 0,
         });
 
     throws_ok {
@@ -590,14 +594,14 @@ subtest _is_tenor => sub {
 subtest 'Private method _get_initial_rr' => sub {
     plan tests => 2;
 
-    my $ul = Quant::Framework::Utils::Test::create_underlying_config('frxEURUSD');
+    my $ul                 = Quant::Framework::Utils::Test::create_underlying_config('frxEURUSD');
     my $surface            = _get_surface({underlying_config => $ul});
     my $first_market_point = $surface->original_term_for_smile->[0];
     my $market             = $surface->get_market_rr_bf($first_market_point);
     my %initial_rr         = %{$surface->_get_initial_rr($market)};
     is($initial_rr{RR_25}, 0.1 * $market->{RR_25}, 'correct interpolated RR');
 
-    $ul = Quant::Framework::Utils::Test::create_underlying_config('frxEURUSD');
+    $ul                 = Quant::Framework::Utils::Test::create_underlying_config('frxEURUSD');
     $surface            = _get_surface({underlying_config => $ul});
     $first_market_point = $surface->original_term_for_smile->[0];
     $market             = $surface->get_market_rr_bf($first_market_point);
@@ -614,20 +618,20 @@ subtest fetch_historical_surface_date => sub {
         'volsurface_delta',
         {
             underlying_config => $underlying,
-            symbol        => 'frxUSDJPY',
-            chronicle_reader => $chronicle_r,
-            chronicle_writer => $chronicle_w,
-            recorded_date => Date::Utility->new->minus_time_interval('5m'),
+            symbol            => 'frxUSDJPY',
+            chronicle_reader  => $chronicle_r,
+            chronicle_writer  => $chronicle_w,
+            recorded_date     => Date::Utility->new->minus_time_interval('5m'),
         });
 
     my $surface = Quant::Framework::Utils::Test::create_doc(
         'volsurface_delta',
         {
             underlying_config => $underlying,
-            symbol        => 'frxUSDJPY',
-            recorded_date => Date::Utility->new,
-            chronicle_reader => $chronicle_r,
-            chronicle_writer => $chronicle_w,
+            symbol            => 'frxUSDJPY',
+            recorded_date     => Date::Utility->new,
+            chronicle_reader  => $chronicle_r,
+            chronicle_writer  => $chronicle_w,
         });
 
     my $dates = $surface->fetch_historical_surface_date({
@@ -654,14 +658,14 @@ foreach my $builder (@mocked_builders) {
 sub _get_surface {
     my $override = shift || {};
     my %override = %$override;
-    my $ul = Quant::Framework::Utils::Test::create_underlying_config('frxUSDJPY');
+    my $ul       = Quant::Framework::Utils::Test::create_underlying_config('frxUSDJPY');
 
-    my $surface  = Quant::Framework::VolSurface::Delta->new(
-        underlying_config    => $ul,
-        recorded_date => Date::Utility->new('20-Jun-12'),
-        chronicle_reader => $chronicle_r,
-        chronicle_writer => $chronicle_w,
-        surface       => {
+    my $surface = Quant::Framework::VolSurface::Delta->new(
+        underlying_config => $ul,
+        recorded_date     => Date::Utility->new('20-Jun-12'),
+        chronicle_reader  => $chronicle_r,
+        chronicle_writer  => $chronicle_w,
+        surface           => {
             ON => {
                 smile => {
                     25 => 0.2,

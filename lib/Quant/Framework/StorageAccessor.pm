@@ -13,18 +13,17 @@ Quant::Framework::StorageAccessor - This class incorporates chronicle accessors
 
 =cut
 
-
 use strict;
 use warnings;
 
 use Moo;
 
 has chronicle_reader => (
-    is       => 'ro',
+    is => 'ro',
 );
 
 has chronicle_writer => (
-    is       => 'ro',
+    is => 'ro',
 );
 
 1;

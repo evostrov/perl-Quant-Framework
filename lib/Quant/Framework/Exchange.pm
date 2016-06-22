@@ -61,11 +61,10 @@ has display_name => (
     default => sub { return shift->symbol },
 );
 
-
 my $exchanges;
 
 BEGIN {
-  $exchanges = YAML::XS::LoadFile(File::ShareDir::dist_file('Quant-Framework', 'exchange.yml'));
+    $exchanges = YAML::XS::LoadFile(File::ShareDir::dist_file('Quant-Framework', 'exchange.yml'));
 }
 
 =head2 BUILDARGS

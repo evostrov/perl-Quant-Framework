@@ -35,18 +35,18 @@ my $q = {
 Quant::Framework::Utils::Test::create_doc(
     'currency',
     {
-        symbol => 'EUR',
-        rates  => $r,
-        date   => Date::Utility->new,
+        symbol           => 'EUR',
+        rates            => $r,
+        date             => Date::Utility->new,
         chronicle_reader => $chronicle_r,
         chronicle_writer => $chronicle_w,
     });
 Quant::Framework::Utils::Test::create_doc(
     'index',
     {
-        symbol => 'IBEX35',
-        date   => Date::Utility->new,
-        rates  => $q,
+        symbol           => 'IBEX35',
+        date             => Date::Utility->new,
+        rates            => $q,
         chronicle_reader => $chronicle_r,
         chronicle_writer => $chronicle_w,
     });
@@ -54,9 +54,9 @@ Quant::Framework::Utils::Test::create_doc(
     'volsurface_delta',
     {
         underlying_config => $underlying_config,
-        recorded_date => Date::Utility->new,
-        chronicle_reader => $chronicle_r,
-        chronicle_writer => $chronicle_w,
+        recorded_date     => Date::Utility->new,
+        chronicle_reader  => $chronicle_r,
+        chronicle_writer  => $chronicle_w,
     });
 
 subtest "convert moneyness to delta" => sub {
@@ -97,12 +97,12 @@ subtest "convert moneyness to delta" => sub {
 
     my $recorded_date = Date::Utility->new;
     my $v             = Quant::Framework::VolSurface::Moneyness->new(
-        underlying_config     => $underlying_config,
-        recorded_date  => $recorded_date,
-        surface        => $surface,
-        spot_reference => 7099.7,
-        chronicle_reader => $chronicle_r,
-        chronicle_writer => $chronicle_w,
+        underlying_config => $underlying_config,
+        recorded_date     => $recorded_date,
+        surface           => $surface,
+        spot_reference    => 7099.7,
+        chronicle_reader  => $chronicle_r,
+        chronicle_writer  => $chronicle_w,
     );
 
     lives_ok { $v->_convert_moneyness_smile_to_delta(7) } "can convert moneyness smile to delta smile";
