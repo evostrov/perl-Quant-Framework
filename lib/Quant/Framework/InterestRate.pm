@@ -40,6 +40,17 @@ has for_date => (
     default => undef,
 );
 
+=head2 underlying_config
+
+UnderlyingConfig used to create/initialize Q::F modules
+
+=cut
+
+has underlying_config => (
+    is      => 'ro',
+    isa     => 'Quant::Framework::Utils::UnderlyingConfig',
+);
+
 around _document_content => sub {
     my $orig = shift;
     my $self = shift;
@@ -108,6 +119,38 @@ has type => (
     isa     => 'qf_interest_rate_type',
     default => 'market',
 );
+
+
+=head2 interest_rate_for
+
+Get the interest rate for this underlying over a given time period (expressed in timeinyears.)
+
+=cut
+
+sub interest_rate_for {
+    my ($self, $tiy) = @_;
+
+    # timeinyears cannot be undef
+    $tiy ||= 0;
+
+    return $self->underlying_config->default_interest_rate if defined $self->underlying_config->default_interest_rate;
+
+    my $quoted_currency = Quant::Framework::Currency->new({
+            symbol           => $self->underlying_config->quoted_currency_symbol,
+            for_date         => $self->for_date,
+            chronicle_reader => $self->chronicle_reader,
+            chronicle_writer => $self->chronicle_writer,
+        });
+
+    my $rate;
+    if ($self->underlying_config->uses_implied_rate_for_quoted_currency) {
+        $rate = $quoted_currency->rate_implied_from($self->underlying_config->rate_to_imply_from, $tiy);
+    } else {
+        $rate = $quoted_currency->rate_for($tiy);
+    }
+
+    return $rate;
+}
 
 no Moose;
 __PACKAGE__->meta->make_immutable;

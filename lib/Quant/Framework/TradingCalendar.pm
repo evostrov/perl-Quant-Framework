@@ -58,6 +58,17 @@ has symbol => (
     isa => 'Str',
 );
 
+=head2 underlying_config
+
+UnderlyingConfig used to create/initialize Q::F modules
+
+=cut
+
+has underlying_config => (
+    is      => 'ro',
+    isa     => 'Quant::Framework::Utils::UnderlyingConfig',
+);
+
 =head2 locale
 
 localization language (default is 'en')
@@ -244,7 +255,13 @@ BEGIN {
 }
 
 sub BUILDARGS {
-    my ($class, $symbol, $chronicle_r, $locale, $for_date) = @_;
+    my ($class, $orig_params_ref) = @_;
+
+    my $symbol = $orig_params_ref->{symbol};
+    my $chronicle_r = $orig_params_ref->{chronicle_reader};
+    my $locale = $orig_params_ref->{locale};
+    my $for_date = $orig_params_ref->{for_date};
+    my $underlying_config = $orig_params_ref->{underlying_config};
 
     croak "Exchange symbol must be specified" unless $symbol;
     my $params_ref = clone($exchanges->{$symbol});
@@ -252,6 +269,7 @@ sub BUILDARGS {
     $params_ref->{for_date}         = $for_date if $for_date;
     $params_ref->{locale}           = $locale if $locale;
     $params_ref->{chronicle_reader} = $chronicle_r;
+    $params_ref->{underlying_config} = $underlying_config;
 
     foreach my $key (keys %{$params_ref->{market_times}}) {
         foreach my $trading_segment (keys %{$params_ref->{market_times}->{$key}}) {
@@ -1296,6 +1314,115 @@ sub new {
 
     return $ex;
 }
+
+=head2 weighted_days_in_period
+
+Returns the sum of the weights we apply to each day in the requested period.
+
+=cut
+
+sub weighted_days_in_period {
+    my ($self, $begin, $end, $include) = @_;
+
+    $end = $end->truncate_to_day;
+    my $current = $begin->truncate_to_day->plus_time_interval('1d');
+    my $days    = 0.0;
+
+    while (not $current->is_after($end)) {
+        $days += $self->extended_weight_on($current, $include);
+        $current = $current->plus_time_interval('1d');
+    }
+
+    return $days;
+}
+
+
+sub _build_asset {
+    my $self = shift;
+
+    return unless $self->underlying_config->asset_symbol;
+    my $type = $self->underlying_config->asset_class;
+
+    my $which = $type eq 'currency' ? 'Quant::Framework::Currency' : 'Quant::Framework::Asset';
+
+    return $which->new({
+        symbol           => $self->underlying_config->asset_symbol,
+        for_date         => $self->for_date,
+        chronicle_reader => $self->chronicle_reader,
+        chronicle_writer => $self->chronicle_writer,
+    });
+}
+
+=head2 extended_weight_on
+
+Returns the weight for a given day (given as a Date::Utility object).
+Returns our closed weight for days when the market is closed.
+
+=cut
+
+sub extended_weight_on {
+    my ($self, $date, $include) = @_;
+
+    my $base = $self->_build_asset;
+    my $numeraire = Quant::Framework::Currency->new({
+            symbol           => $self->underlying_config->quoted_currency_symbol,
+            for_date         => $self->for_date,
+            chronicle_reader => $self->chronicle_reader,
+            chronicle_writer => $self->chronicle_writer,
+        });
+
+    my $weight = $self->weight_on($date) || $self->closed_weight;
+    if ($self->underlying_config->market_name eq 'forex') {
+        my $currency_weight =
+            0.5 * ($base->weight_on($date) + $numeraire->weight_on($date));
+
+        # If both have a holiday, set to 0.25
+        if (!$currency_weight) {
+            $currency_weight = 0.25;
+        }
+
+        $weight = min($weight, $currency_weight);
+    }
+
+    # We are adjusting our volatility based on market events for these dates.
+    # These HACKS will be removed after 2016-06-23
+    my ($jpy_announcement_date, $euro_announcement_date);
+    if ($include) {
+        $jpy_announcement_date = Date::Utility->new('2016-06-15');
+        $euro_announcement_date = Date::Utility->new('2016-06-22');
+    } else {
+        $jpy_announcement_date = Date::Utility->new('2016-06-16');
+        $euro_announcement_date = Date::Utility->new('2016-06-23');
+    }
+
+    if ($self->underlying_config->symbol =~ /JPY/ and $date->truncate_to_day->epoch == $jpy_announcement_date->epoch) {
+        return 11;
+    }
+
+    if ($date->truncate_to_day->epoch == $euro_announcement_date->minus_time_interval('1d')->epoch) {
+        return 10 if ($self->underlying_config->symbol =~ /GBP/);
+        return 5 if ($self->underlying_config->symbol =~ /EUR/);
+    }
+
+    if ($date->truncate_to_day->epoch == $euro_announcement_date->epoch) {
+        return 25 if ($self->underlying_config->symbol =~ /GBP/);
+        return 12 if ($self->underlying_config->symbol =~ /EUR/);
+    }
+
+    return $weight;
+}
+
+=head2 closed_weight
+
+Weights assigned for days when the markets are closed, based on empirical study and industry standards.
+
+=cut
+
+sub closed_weight {
+    my $self = shift;
+
+    return ($self->underlying_config->market_name eq 'indices') ? 0.55 : 0.06;
+};
 
 no Moose;
 __PACKAGE__->meta->make_immutable(

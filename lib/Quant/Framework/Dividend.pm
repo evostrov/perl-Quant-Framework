@@ -29,6 +29,11 @@ extends 'Quant::Framework::Utils::Rates';
 use Data::Chronicle::Reader;
 use Data::Chronicle::Writer;
 
+has underlying_config => (
+    is  => 'ro',
+    required => 1,
+);
+
 =head2 for_date
 
 The date for which we wish data
@@ -50,12 +55,6 @@ has chronicle_writer => (
     is      => 'ro',
     isa     => 'Data::Chronicle::Writer',
 );
-
-=head2 symbol
-
-Represents underlying symbol
-
-=cut
 
 has document => (
     is         => 'rw',
@@ -174,6 +173,80 @@ sub rate_for {
         return $discrete_points * 365 / ($days_to_expiry * 100);
     }
     return 0;
+}
+
+=head2 get_discrete_dividend_for_period
+
+Returns discrete dividend for the given (start,end) dates and dividend recorded date for the underlying specified using `underlying_config`
+
+=cut
+
+sub get_discrete_dividend_for_period {
+    my ($self, $args) = @_;
+
+    my ($start, $end) =
+        map { Date::Utility->new($_) } @{$args}{'start', 'end'};
+
+    my %valid_dividends;
+    my $discrete_points = $self->discrete_points;
+    my $dividend_recorded_date = $self->recorded_date;
+
+    if ($discrete_points and %$discrete_points) {
+        my @sorted_dates =
+            sort { $a->epoch <=> $b->epoch }
+            map  { Date::Utility->new($_) } keys %$discrete_points;
+
+        foreach my $dividend_date (@sorted_dates) {
+            if (    not $dividend_date->is_before($start)
+                and not $dividend_date->is_after($end))
+            {
+                my $date = $dividend_date->date_yyyymmdd;
+                $valid_dividends{$date} = $discrete_points->{$date};
+            }
+        }
+    }
+
+    return ($dividend_recorded_date, \%valid_dividends);
+}
+
+=head2 dividend_adjustments_for_period
+
+Returns dividend adjustments for given start/end period
+
+=cut
+
+sub dividend_adjustments_for_period {
+    my ($self, $args) = @_;
+
+    my ($dividend_recorded_date, $applicable_dividends) =
+        ($self->underlying_config->market_prefer_discrete_dividend)
+        ? $self->get_discrete_dividend_for_period($args)
+        : {};
+
+    my ($start, $end) = @{$args}{'start', 'end'};
+    my $duration_in_sec = $end->epoch - $start->epoch;
+
+    my ($dS, $dK) = (0, 0);
+    foreach my $date (keys %$applicable_dividends) {
+        my $adjustment           = $applicable_dividends->{$date};
+        my $effective_date       = Date::Utility->new($date);
+        my $sec_away_from_action = ($effective_date->epoch - $start->epoch);
+        my $duration_in_year     = $sec_away_from_action / (86400 * 365);
+        #TODO: rewrite this using an instance of InterestRate
+        my $r_rate               = $self->interest_rate_for($duration_in_year);
+
+        my $adj_present_value = $adjustment * exp(-$r_rate * $duration_in_year);
+        my $s_adj = ($duration_in_sec - $sec_away_from_action) / ($duration_in_sec) * $adj_present_value;
+        $dS -= $s_adj;
+        my $k_adj = $sec_away_from_action / ($duration_in_sec) * $adj_present_value;
+        $dK += $k_adj;
+    }
+
+    return {
+        barrier => $dK,
+        spot    => $dS,
+        recorded_date=> $dividend_recorded_date,
+    };
 }
 
 no Moose;
