@@ -262,11 +262,12 @@ sub BUILDARGS {
     my ($class, $orig_params_ref) = @_;
 
     my $symbol = $orig_params_ref->{symbol};
-    my $locale = $orig_params_ref->{locale};
 
     croak "Exchange symbol must be specified" unless $symbol;
     my $params_ref = clone($exchanges->{$symbol});
     $params_ref = { %$params_ref, %$orig_params_ref };
+
+    my $locale = $orig_params_ref->{locale} // 'EN';
 
     foreach my $key (keys %{$params_ref->{market_times}}) {
         foreach my $trading_segment (keys %{$params_ref->{market_times}->{$key}}) {
@@ -1329,7 +1330,6 @@ sub _build_asset {
         symbol           => $self->underlying_config->asset_symbol,
         for_date         => $self->for_date,
         chronicle_reader => $self->chronicle_reader,
-        chronicle_writer => $self->chronicle_writer,
     });
 }
 
@@ -1348,7 +1348,6 @@ sub extended_weight_on {
             symbol           => $self->underlying_config->quoted_currency_symbol,
             for_date         => $self->for_date,
             chronicle_reader => $self->chronicle_reader,
-            chronicle_writer => $self->chronicle_writer,
         });
 
     my $weight = $self->simple_weight_on($date) || $self->closed_weight;

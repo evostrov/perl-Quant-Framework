@@ -29,9 +29,15 @@ extends 'Quant::Framework::Utils::Rates';
 use Data::Chronicle::Reader;
 use Data::Chronicle::Writer;
 
+=head2 underlying_config
+
+Used for more advanced query of Dividen. For simple `rate_for` queries, 
+this is not required.
+
+=cut
+
 has underlying_config => (
     is  => 'ro',
-    required => 1,
 );
 
 =head2 for_date
