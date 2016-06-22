@@ -76,3 +76,6 @@ subtype 'qf_surface_type', as Str, where {
 
 subtype 'qf_cutoff_helper', as 'Quant::Framework::VolSurface::Cutoff';
 coerce 'qf_cutoff_helper', from 'Str', via { Quant::Framework::VolSurface::Cutoff->new($_) };
+
+
+1;

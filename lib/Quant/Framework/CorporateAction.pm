@@ -133,6 +133,7 @@ Stores corporate actions in chronicle.
 sub save {
     my $self = shift;
     $self->document->save;
+    return;
 }
 
 =head2 update($actions, $date);
