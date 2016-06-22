@@ -11,8 +11,6 @@ BEGIN {
 use File::ShareDir::Install;
 install_share dist => "share";
 
-my $tests = 't/*.t t/VolSurface/*.t t/VolSurface/Delta/*.t t/VolSurface/Moneyness/*.t';
-
 WriteMakefile(
     NAME               => 'Quant::Framework',
     AUTHOR             => q{Binary.com <support@binary.com>},
@@ -80,7 +78,6 @@ WriteMakefile(
 );
 
 {
-
     package MY;
     use File::ShareDir::Install qw(postamble);
 }
