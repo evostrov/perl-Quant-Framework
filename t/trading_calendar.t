@@ -146,7 +146,7 @@ subtest "Holiday/Weekend weights" => sub {
             return {%$orig_holidays, 14703 => 'Test Sunday Holiday!'};
         });
     # test
-    is($LSE->weight_on($sunday), 0.0, "holiday on sunday.");
+    is($LSE->simple_weight_on($sunday), 0.0, "holiday on sunday.");
 
     # unmock
     $LSE->unmock('holidays');
@@ -156,9 +156,9 @@ subtest "Holiday/Weekend weights" => sub {
 subtest 'Whole bunch of stuff.' => sub {
     plan tests => 99;
 
-    is($LSE->weight_on(Date::Utility->new('2-Apr-13')), 1.0, 'open weight');
-    is($LSE->weight_on(Date::Utility->new('1-Apr-13')), 0.0, 'holiday weight');
-    is($LSE->weight_on(Date::Utility->new('1-Apr-13')), 0.0, 'weekend weight');
+    is($LSE->simple_weight_on(Date::Utility->new('2-Apr-13')), 1.0, 'open weight');
+    is($LSE->simple_weight_on(Date::Utility->new('1-Apr-13')), 0.0, 'holiday weight');
+    is($LSE->simple_weight_on(Date::Utility->new('1-Apr-13')), 0.0, 'weekend weight');
 
     is($FOREX->trade_date_after(Date::Utility->new('20-Dec-13'))->date, '2013-12-23', '23-Dec-13 is next trading day on FOREX after 20-Dec-13');
 
@@ -672,9 +672,9 @@ my $builder = Quant::Framework::Utils::Builder->new({
 my $trade_start          = Date::Utility->new('30-Mar-13');
 my $trade_end            = Date::Utility->new('8-Apr-13');
 my $trade_end2           = Date::Utility->new('9-Apr-13');      # Just to avoid memoization on weighted_days_in_period
-is $builder->closed_weight, 0.55, 'Sanity check so that our weighted math matches :-)';
-is $builder->weighted_days_in_period($trade_start, $trade_end), 7.2, 'Weighted period calculated correctly: 5 trading days, plus 4 weekends/holidays';
-is $builder->weighted_days_in_period($trade_start, $trade_end2), 8.2, 'Weighted period calculated correctly: 6 trading days, plus 4 weekends/holidays';
+is $builder->build_trading_calendar->closed_weight, 0.55, 'Sanity check so that our weighted math matches :-)';
+is $builder->build_trading_calendar->weighted_days_in_period($trade_start, $trade_end), 7.2, 'Weighted period calculated correctly: 5 trading days, plus 4 weekends/holidays';
+is $builder->build_trading_calendar->weighted_days_in_period($trade_start, $trade_end2), 8.2, 'Weighted period calculated correctly: 6 trading days, plus 4 weekends/holidays';
 
 done_testing;
 

@@ -258,18 +258,11 @@ sub BUILDARGS {
     my ($class, $orig_params_ref) = @_;
 
     my $symbol = $orig_params_ref->{symbol};
-    my $chronicle_r = $orig_params_ref->{chronicle_reader};
     my $locale = $orig_params_ref->{locale};
-    my $for_date = $orig_params_ref->{for_date};
-    my $underlying_config = $orig_params_ref->{underlying_config};
 
     croak "Exchange symbol must be specified" unless $symbol;
     my $params_ref = clone($exchanges->{$symbol});
-    $params_ref->{symbol}           = $symbol;
-    $params_ref->{for_date}         = $for_date if $for_date;
-    $params_ref->{locale}           = $locale if $locale;
-    $params_ref->{chronicle_reader} = $chronicle_r;
-    $params_ref->{underlying_config} = $underlying_config;
+    $params_ref = { %$params_ref, %$orig_params_ref };
 
     foreach my $key (keys %{$params_ref->{market_times}}) {
         foreach my $trading_segment (keys %{$params_ref->{market_times}->{$key}}) {
@@ -320,14 +313,14 @@ sub _object_expired {
     return shift->_build_time + 30 < time;
 }
 
-=head2 weight_on
+=head2 simple_weight_on
 
 Returns the weight assigned to the day of a given Date::Utility object. Return 0
 if the exchange does not trade on this day and 1 if there is no pseudo-holiday.
 
 =cut
 
-sub weight_on {
+sub simple_weight_on {
     my ($self, $when) = @_;
 
     return 0   if not $self->trades_on($when);
@@ -1298,23 +1291,6 @@ sub trading_period {
     return \@periods;
 }
 
-sub new {
-    my ($self, $symbol, $chronicle_r, $lang, $for_date) = @_;
-
-    state %cached_objects;
-    $lang //= 'EN';
-
-    my $key = join('::', $symbol, $lang);
-
-    my $ex = $cached_objects{$key};
-    if (not $ex or $ex->_object_expired) {
-        $ex = $self->_new($symbol, $chronicle_r, $lang, $for_date);
-        $cached_objects{$key} = $ex;
-    }
-
-    return $ex;
-}
-
 =head2 weighted_days_in_period
 
 Returns the sum of the weights we apply to each day in the requested period.
@@ -1371,7 +1347,7 @@ sub extended_weight_on {
             chronicle_writer => $self->chronicle_writer,
         });
 
-    my $weight = $self->weight_on($date) || $self->closed_weight;
+    my $weight = $self->simple_weight_on($date) || $self->closed_weight;
     if ($self->underlying_config->market_name eq 'forex') {
         my $currency_weight =
             0.5 * ($base->weight_on($date) + $numeraire->weight_on($date));
@@ -1425,9 +1401,6 @@ sub closed_weight {
 };
 
 no Moose;
-__PACKAGE__->meta->make_immutable(
-    constructor_name    => '_new',
-    replace_constructor => 1
-);
+__PACKAGE__->meta->make_immutable;
 
 1;

@@ -1019,8 +1019,8 @@ sub _market_maturities_interpolation_function {
         T2 => $effective_date->plus_time_interval($T2 - 1 . 'd23h59m59s'),
     );
 
-    my $tau1       = $self->builder->weighted_days_in_period($dates{T1}, $dates{T}, 0) / 365;
-    my $tau2       = $self->builder->weighted_days_in_period($dates{T1}, $dates{T2}, 1) / 365;
+    my $tau1       = $self->builder->build_trading_calendar->weighted_days_in_period($dates{T1}, $dates{T}, 0) / 365;
+    my $tau2       = $self->builder->build_trading_calendar->weighted_days_in_period($dates{T1}, $dates{T2}, 1) / 365;
 
     warn(     'Error in volsurface['
             . $self->recorded_date->datetime
