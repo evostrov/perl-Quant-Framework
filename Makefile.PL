@@ -44,6 +44,8 @@ WriteMakefile(
         'Moose'                         => 0,
         'Test::Syntax::Aggregate'       => 0,
         'YAML::XS'                      => 0,
+        'File::Find::Rule'              => 0,
+        'Test::Strict'                  => 0,
         'File::ShareDir'                => 0,
         'Math::Function::Interpolator', => 0,
         'Date::Utility'                 => 0,
