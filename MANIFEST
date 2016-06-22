@@ -39,6 +39,7 @@ share/test_underlying_config.yml
 t/00-load.t
 t/10-corporate-actions.t
 t/asset.t
+t/autosyntax.t
 t/correlation_matrix.t
 t/currency.t
 t/dividend.t
@@ -52,6 +53,8 @@ t/manifest.t
 t/partial_trading.t
 t/pod-coverage.t
 t/pod.t
+t/rc/.perlcriticrc
+t/rc/.perltidyrc
 t/tentative_events.t
 t/trades_on.t
 t/trading_calendar.t

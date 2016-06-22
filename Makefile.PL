@@ -42,6 +42,7 @@ WriteMakefile(
     },
     PREREQ_PM => {
         'Moose'                         => 0,
+        'Test::Syntax::Aggregate'       => 0,
         'YAML::XS'                      => 0,
         'File::ShareDir'                => 0,
         'Math::Function::Interpolator', => 0,
