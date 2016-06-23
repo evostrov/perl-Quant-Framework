@@ -55,7 +55,6 @@ subtest 'trades on holidays/pseudo-holidays' => sub {
     my $forex = Quant::Framework::TradingCalendar->new({
         symbol           => 'FOREX',
         chronicle_reader => $chronicle_r,
-        locale           => 'EN',
         for_date         => $date
     });
     my $counter = 0;

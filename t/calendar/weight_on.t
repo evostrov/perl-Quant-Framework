@@ -33,7 +33,6 @@ subtest 'weight on' => sub {
     my $forex    = Quant::Framework::TradingCalendar->new({
         symbol           => 'FOREX',
         chronicle_reader => $chronicle_r,
-        locale           => 'en',
         for_date         => $date
     });
     ok $forex->has_holiday_on($chritmas), 'has holiday on ' . $chritmas->date;

@@ -8,7 +8,6 @@ frxEURUSD:
   rate_to_imply_from : 'USD'
   volatility_surface_type : 'delta'
   exchange_name : 'FOREX'
-  locale : 'EN'
   uses_implied_rate_for_asset : 1
   uses_implied_rate_for_quoted_currency : 0
   spot : 1.12345
@@ -31,7 +30,6 @@ GDAXI:
   rate_to_imply_from : 'EUR'
   volatility_surface_type : 'moneyness'
   exchange_name : 'FSE'
-  locale : 'EN'
   uses_implied_rate_for_asset : 0
   uses_implied_rate_for_quoted_currency : 0
   spot : 10071.94
@@ -51,7 +49,6 @@ frxUSDJPY:
   rate_to_imply_from : 'USD'
   volatility_surface_type : 'delta'
   exchange_name : 'FOREX'
-  locale : 'EN'
   uses_implied_rate_for_asset : 1
   uses_implied_rate_for_quoted_currency : 0
   spot : 1.12345
@@ -74,7 +71,6 @@ frxXAUUSD:
   rate_to_imply_from : 'USD'
   volatility_surface_type : 'delta'
   exchange_name : 'FOREX'
-  locale : 'EN'
   uses_implied_rate_for_asset : 0
   uses_implied_rate_for_quoted_currency : 0
   spot : 1202.74,
@@ -97,7 +93,6 @@ SPC:
   rate_to_imply_from : 'USD'
   volatility_surface_type : 'moneyness'
   exchange_name : 'NYSE_SPC'
-  locale : 'EN'
   uses_implied_rate_for_asset : 0
   uses_implied_rate_for_quoted_currency : 0
   spot : 10071.94
@@ -117,7 +112,6 @@ AS51:
   rate_to_imply_from : 'AUD'
   volatility_surface_type : 'moneyness'
   exchange_name : 'ASX'
-  locale : 'EN'
   uses_implied_rate_for_asset : 0
   uses_implied_rate_for_quoted_currency : 0
   spot : 10071.94
@@ -137,7 +131,6 @@ R_50:
   rate_to_imply_from : 'R_50'
   volatility_surface_type : 'flat'
   exchange_name : 'RANDOM'
-  locale : 'EN'
   uses_implied_rate_for_asset : 0
   uses_implied_rate_for_quoted_currency : 0
   spot : 7378.12345
@@ -157,7 +150,6 @@ FCHI:
   rate_to_imply_from : 'EUR'
   volatility_surface_type : 'moneyness'
   exchange_name : 'EURONEXT'
-  locale : 'EN'
   uses_implied_rate_for_asset : 0
   uses_implied_rate_for_quoted_currency : 0
   spot : 3563.07
@@ -177,7 +169,6 @@ frxGBPNOK:
   rate_to_imply_from : 'GBP'
   volatility_surface_type : 'delta'
   exchange_name : 'FOREX'
-  locale : 'EN'
   uses_implied_rate_for_asset : 0
   uses_implied_rate_for_quoted_currency : 1
   spot : 12.1930
@@ -200,7 +191,6 @@ FTSE:
   rate_to_imply_from : 'GBP'
   volatility_surface_type : 'moneyness'
   exchange_name : 'LSE'
-  locale : 'EN'
   uses_implied_rate_for_asset : 0
   uses_implied_rate_for_quoted_currency : 0
   spot : 7000.00
@@ -220,7 +210,6 @@ frxEURGBP:
   rate_to_imply_from : 'EUR'
   volatility_surface_type : 'delta'
   exchange_name : 'FOREX'
-  locale : 'EN'
   uses_implied_rate_for_asset : 0
   uses_implied_rate_for_quoted_currency : 1
   spot : 0.88062
@@ -243,7 +232,6 @@ IBEX35:
   rate_to_imply_from : 'EUR'
   volatility_surface_type : 'moneyness'
   exchange_name : 'BM'
-  locale : 'EN'
   uses_implied_rate_for_asset : 0
   uses_implied_rate_for_quoted_currency : 0
   spot : 10069.30
@@ -263,7 +251,6 @@ HSI:
   rate_to_imply_from : 'HKD'
   volatility_surface_type : 'moneyness'
   exchange_name : 'HKSE'
-  locale : 'EN'
   uses_implied_rate_for_asset : 0
   uses_implied_rate_for_quoted_currency : 0
   spot : 7000.00
