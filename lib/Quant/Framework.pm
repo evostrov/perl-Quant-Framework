@@ -20,5 +20,4 @@ Quant::Framework - Gateway to fetch market-data from Quant::Framework
 
 =cut
 
-
 1;
