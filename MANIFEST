@@ -37,6 +37,7 @@ share/expected_trading_days.yml
 share/test_data.yml
 share/test_underlying_config.yml
 t/asset.t
+t/autosyntax.t
 t/basic/00-load.t
 t/basic/manifest.t
 t/basic/pod-coverage.t
@@ -56,6 +57,8 @@ t/exchange.t
 t/rates/dividend.t
 t/rates/implied_rate.t
 t/rates/interest_rate.t
+t/rc/.perlcriticrc
+t/rc/.perltidyrc
 t/tentative_events.t
 t/VolSurface/Cutoff.t
 t/VolSurface/delta.t

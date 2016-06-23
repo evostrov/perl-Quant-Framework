@@ -10,6 +10,7 @@ Quant::Framework::Utils::MarketData - Base class for market-data
 =head1 DESCRIPTION
 
 =cut
+
 use Moose;
 use Quant::Framework::Utils::Types;
 

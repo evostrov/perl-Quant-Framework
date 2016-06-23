@@ -24,9 +24,9 @@ Symbol name (e.g. frxEURUSD)
 =cut
 
 has symbol => (
-    is      => 'ro',
-    isa     => 'Str',
-    required=> 1,
+    is       => 'ro',
+    isa      => 'Str',
+    required => 1,
 );
 
 =head2 system_symbol
@@ -36,8 +36,8 @@ The symbol used by the system to look up data.  May be different from symbol, pa
 =cut
 
 has system_symbol => (
-    is      => 'ro',
-    isa     => 'Str',
+    is  => 'ro',
+    isa => 'Str',
 );
 
 =head2 market_name
@@ -50,10 +50,9 @@ Name of the market. Can be one of:
 =cut
 
 has market_name => (
-    is      => 'ro',
-    isa     => 'Str',
+    is  => 'ro',
+    isa => 'Str',
 );
-
 
 =head2 market_prefer_discrete_dividend
 
@@ -62,7 +61,7 @@ Should this financial market use discrete dividend
 =cut
 
 has market_prefer_discrete_dividend => (
-    is      => 'ro',
+    is => 'ro',
 );
 
 =head2 quanto_only
@@ -72,7 +71,7 @@ Specifies if this underlying is quanto-only
 =cut
 
 has quanto_only => (
-    is      => 'ro',
+    is => 'ro',
 );
 
 =head2 rate_to_imply_from 
@@ -82,8 +81,8 @@ Name of the underlying to imply interest rates from, when calculating implied in
 =cut
 
 has rate_to_imply_from => (
-    is         => 'ro',
-    isa        => 'Str',
+    is  => 'ro',
+    isa => 'Str',
 );
 
 =head2 volatility_surface_type
@@ -93,8 +92,8 @@ Type of volatility surface (moneyness, delta, flat)
 =cut
 
 has volatility_surface_type => (
-    is      => 'ro',
-    isa     => 'Str',
+    is  => 'ro',
+    isa => 'Str',
 );
 
 =head2 exchange_name
@@ -104,8 +103,8 @@ Name of the exchange
 =cut
 
 has exchange_name => (
-    is      => 'ro',
-    isa     => 'Str',
+    is  => 'ro',
+    isa => 'Str',
 );
 
 =head2 locale
@@ -115,8 +114,8 @@ Locale code, used to generate some descriptions in TradingCalendar (Default is '
 =cut
 
 has locale => (
-    is      => 'ro',
-    isa     => 'Str',
+    is  => 'ro',
+    isa => 'Str',
 );
 
 =head2 uses_implied_rate
@@ -126,8 +125,8 @@ Whether this underlying uses implied rate or no.
 =cut
 
 has uses_implied_rate => (
-    is      => 'ro',
-    isa     => 'Maybe[Bool]',
+    is  => 'ro',
+    isa => 'Maybe[Bool]',
 );
 
 =head2 spot
@@ -136,8 +135,8 @@ Current spot price
 
 =cut
 
-has spot  => (
-    is      => 'ro',
+has spot => (
+    is => 'ro',
 );
 
 =head2 asset_symbol
@@ -147,8 +146,8 @@ Symbol name of the asset (Asset or Currency)
 =cut
 
 has asset_symbol => (
-    is      => 'ro',
-    isa     => 'Str',
+    is  => 'ro',
+    isa => 'Str',
 );
 
 =head2 uses_implied_rate_for_asset
@@ -158,8 +157,8 @@ Can we use implied rate for asset symbol?
 =cut
 
 has uses_implied_rate_for_asset => (
-    is      => 'ro',
-    isa     => 'Str',
+    is  => 'ro',
+    isa => 'Str',
 );
 
 =head2 quoted_currency_symbol
@@ -169,8 +168,8 @@ Quoted currency of the underlying
 =cut
 
 has quoted_currency_symbol => (
-    is      => 'ro',
-    isa     => 'Str',
+    is  => 'ro',
+    isa => 'Str',
 );
 
 =head2 uses_implied_rate_for_quoted_currency
@@ -180,8 +179,8 @@ Can we use implied rate from quoted currency symbol?
 =cut
 
 has uses_implied_rate_for_quoted_currency => (
-    is      => 'ro',
-    isa     => 'Str',
+    is  => 'ro',
+    isa => 'Str',
 );
 
 =head2 extra_vol_diff_by_delta
@@ -192,7 +191,7 @@ This is used when validating a volatility-surface for this underlying.
 =cut
 
 has extra_vol_diff_by_delta => (
-    is      => 'ro',
+    is => 'ro',
 );
 
 =head2 market_convention
@@ -268,7 +267,7 @@ used to lookup interest rate)
 has default_interest_rate => (
     is      => 'ro',
     default => undef,
-); 
+);
 
 =head2 default_volatility_duration
 
@@ -288,8 +287,8 @@ Type of asset for this underlying (can be either 'currency' or 'asset')
 =cut
 
 has asset_class => (
-    is      => 'ro',
-    isa     => 'Str',
+    is  => 'ro',
+    isa => 'Str',
 );
 
 1;

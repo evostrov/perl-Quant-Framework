@@ -20,15 +20,18 @@ subtest 'error check' => sub {
         'throws error if not enough argument to create a early close calendar';
     throws_ok { Quant::Framework::PartialTrading->new(calendar => {})->save } qr/required/,
         'throws error if not enough argument to create a early close calendar';
-    lives_ok { Quant::Framework::PartialTrading->new(
-            type => 'early_closes', 
-            recorded_date => $now, 
-            calendar => {} ,
+    lives_ok {
+        Quant::Framework::PartialTrading->new(
+            type             => 'early_closes',
+            recorded_date    => $now,
+            calendar         => {},
             chronicle_reader => $chronicle_r,
             chronicle_writer => $chronicle_w,
-        )->save }
+            )->save
+    }
     'creates a early close object if all args are present';
-    throws_ok { Quant::Framework::PartialTrading->new(type => 'some_data', recorded_date => $now, calendar => {})->save } qr/Invalid partial-trading type/,
+    throws_ok { Quant::Framework::PartialTrading->new(type => 'some_data', recorded_date => $now, calendar => {})->save }
+    qr/Invalid partial-trading type/,
         'throws error if partial trading type is invalid';
 };
 
@@ -91,10 +94,9 @@ subtest 'save and retrieve early closes in history' => sub {
         {
             chronicle_reader => $chronicle_r,
             chronicle_writer => $chronicle_w,
-            type          => 'early_closes',
-            recorded_date => $yesterday,
-            calendar      => {$now->epoch => {'18:00' => ['EURONEXT']}
-        }});
+            type             => 'early_closes',
+            recorded_date    => $yesterday,
+            calendar         => {$now->epoch => {'18:00' => ['EURONEXT']}}});
 
     my $h = Quant::Framework::PartialTrading->new({
             chronicle_reader => $chronicle_r,

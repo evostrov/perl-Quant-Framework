@@ -21,14 +21,14 @@ use Date::Utility;
 use Quant::Framework::VolSurface::Delta;
 
 has chronicle_reader => (
-    is  => 'ro',
-    isa => 'Data::Chronicle::Reader',
+    is       => 'ro',
+    isa      => 'Data::Chronicle::Reader',
     required => 1,
 );
 
 has chronicle_writer => (
-    is  => 'ro',
-    isa => 'Data::Chronicle::Writer',
+    is       => 'ro',
+    isa      => 'Data::Chronicle::Writer',
     required => 1,
 );
 
@@ -44,11 +44,11 @@ sub get {
     my $self = shift;
 
     return Quant::Framework::VolSurface::Delta->new(
-        underlying_config    => $self->_underlying_config,
-        recorded_date => Date::Utility->new('2012-01-13 00:00:00'),
+        underlying_config => $self->_underlying_config,
+        recorded_date     => Date::Utility->new('2012-01-13 00:00:00'),
         chronicle_reader  => $self->chronicle_reader,
         chronicle_writer  => $self->chronicle_writer,
-        market_points => {
+        market_points     => {
             smile      => [3, 7, 14, 21, 28],
             vol_spread => [3, 7, 14, 21, 28],
         },

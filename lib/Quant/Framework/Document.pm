@@ -68,26 +68,26 @@ The domain-specific name of document; e.g. "USAAPL" for corporate actions
 =cut
 
 has storage_accessor => (
-    is => 'ro',
+    is       => 'ro',
     required => 1,
 );
 
 has recorded_date => (
-    is      => 'ro',
-    isa     => sub {
-      die("Quant::Framework::Document::recorded_date should be Date::Utility")
-        unless ref($_[0]) eq 'Date::Utility';
+    is  => 'ro',
+    isa => sub {
+        die("Quant::Framework::Document::recorded_date should be Date::Utility")
+            unless ref($_[0]) eq 'Date::Utility';
     },
     required => 1,
 );
 
 has data => (
-    is => 'ro',
+    is       => 'ro',
     required => 1,
 );
 
 has namespace => (
-    is => 'ro',
+    is       => 'ro',
     required => 1,
 );
 
@@ -115,11 +115,11 @@ sub load {
     my ($storage_accessor, $namespace, $symbol, $for_date) = @_;
 
     my $data = $storage_accessor->chronicle_reader->get($namespace, $symbol)
-      or return;
+        or return;
 
     if ($for_date && $for_date->datetime_iso8601 lt $data->{date}) {
         $data = $storage_accessor->chronicle_reader->get_for($namespace, $symbol, $for_date->epoch)
-          or return;
+            or return;
     }
 
     return __PACKAGE__->new(
@@ -142,9 +142,10 @@ Stores (persists) the document in Chronicle database.
 sub save {
     my $self = shift;
     # the most probably this is redundant, anc can be removed in future
-    $self->data->{date} = $self->recorded_date->datetime_iso8601;
+    $self->data->{date}   = $self->recorded_date->datetime_iso8601;
     $self->data->{symbol} = $self->symbol;
     $self->storage_accessor->chronicle_writer->set($self->namespace, $self->symbol, $self->data, $self->recorded_date);
+    return;
 }
 
 1;

@@ -42,13 +42,13 @@ has for_date => (
 );
 
 has chronicle_reader => (
-    is      => 'ro',
-    isa     => 'Data::Chronicle::Reader',
+    is  => 'ro',
+    isa => 'Data::Chronicle::Reader',
 );
 
 has chronicle_writer => (
-    is      => 'ro',
-    isa     => 'Data::Chronicle::Writer',
+    is  => 'ro',
+    isa => 'Data::Chronicle::Writer',
 );
 
 =head2 symbol
@@ -67,7 +67,7 @@ sub _build_document {
 
     my $document = $self->chronicle_reader->get('dividends', $self->symbol);
 
-    if ($self->for_date and $self->for_date->epoch < Date::Utility->new($document->{date})->epoch ) {
+    if ($self->for_date and $self->for_date->epoch < Date::Utility->new($document->{date})->epoch) {
         $document = $self->chronicle_reader->get_for('dividends', $self->symbol, $self->for_date->epoch);
 
         # This works around a problem with Volatility surfaces and negative dates to expiry.

@@ -32,13 +32,13 @@ around BUILDARGS => sub {
 };
 
 has chronicle_reader => (
-    is      => 'ro',
-    isa     => 'Data::Chronicle::Reader',
+    is  => 'ro',
+    isa => 'Data::Chronicle::Reader',
 );
 
 has chronicle_writer => (
-    is      => 'ro',
-    isa     => 'Data::Chronicle::Writer',
+    is  => 'ro',
+    isa => 'Data::Chronicle::Writer',
 );
 
 has [qw(calendar recorded_date)] => (
@@ -57,7 +57,7 @@ sub save {
 
     my $cached_holidays = $self->chronicle_reader->get('holidays', 'holidays');
     my $recorded_date = $self->recorded_date->truncate_to_day->epoch;
-    delete @{$cached_holidays} {grep { $_ < $recorded_date } keys %$cached_holidays};
+    delete @{$cached_holidays}{grep { $_ < $recorded_date } keys %$cached_holidays};
     my $calendar = $self->calendar;
 
     foreach my $new_holiday (keys %$calendar) {
@@ -88,8 +88,9 @@ sub get_holidays_for {
     my ($reader, $symbol, $for_date) = @_;
 
     my $calendar =
-        ($for_date) ? $reader->get_for('holidays', 'holidays', $for_date) : 
-        $reader->get('holidays', 'holidays');
+        ($for_date)
+        ? $reader->get_for('holidays', 'holidays', $for_date)
+        : $reader->get('holidays', 'holidays');
     my %holidays;
     foreach my $date (keys %$calendar) {
         foreach my $holiday_desc (keys %{$calendar->{$date}}) {
