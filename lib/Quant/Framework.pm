@@ -19,3 +19,5 @@ Quant::Framework - Gateway to fetch market-data from Quant::Framework
 =head1 DESCRIPTION
 
 =cut
+
+1;

@@ -14,5 +14,9 @@ Revision history for Quant-Framework
         Included dividend recorded_date
 0.18    30 May 2016
         Moving Volatility Surface modules
+0.22    22 Jun 2016
+        Organize unit test files
+0.23    23 Jun 2016
+        Enable perlcritic and perltidy checks 
 0.24    23 Jun 2016
         Cleanup Builder module
