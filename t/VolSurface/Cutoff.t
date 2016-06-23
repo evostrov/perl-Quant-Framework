@@ -1,3 +1,4 @@
+
 =head1 NAME
 
 01_cutoff.t
@@ -21,17 +22,17 @@ use Quant::Framework::VolSurface::Moneyness;
 
 my ($chronicle_r, $chronicle_w) = Data::Chronicle::Mock::get_mocked_chronicle();
 my $underlying_config = Quant::Framework::Utils::Test::create_underlying_config('frxUSDJPY');
-my $builder = Quant::Framework::Utils::Builder->new({
-    chronicle_reader => $chronicle_r,
-    chronicle_writer => $chronicle_w,
+my $builder           = Quant::Framework::Utils::Builder->new({
+    chronicle_reader  => $chronicle_r,
+    chronicle_writer  => $chronicle_w,
     underlying_config => $underlying_config
-  });
+});
 my $calendar = $builder->build_trading_calendar;
 
 subtest 'Private method _cutoff_date_for_effective_day' => sub {
     plan tests => 5;
 
-    my $cutoff     = Quant::Framework::VolSurface::Cutoff->new('New York 10:00');
+    my $cutoff = Quant::Framework::VolSurface::Cutoff->new('New York 10:00');
 
     is(
         $cutoff->cutoff_date_for_effective_day(Date::Utility->new('2011-11-22 02:00:00'), $calendar)->datetime_yyyymmdd_hhmmss,
@@ -40,15 +41,14 @@ subtest 'Private method _cutoff_date_for_effective_day' => sub {
     );
 
     my $builder_hsi = Quant::Framework::Utils::Builder->new({
-        chronicle_reader => $chronicle_r,
-        chronicle_writer => $chronicle_w,
+        chronicle_reader  => $chronicle_r,
+        chronicle_writer  => $chronicle_w,
         underlying_config => Quant::Framework::Utils::Test::create_underlying_config('HSI'),
-      });
+    });
     my $calendar_hsi = $builder_hsi->build_trading_calendar;
 
     is(
-        $cutoff->cutoff_date_for_effective_day(Date::Utility->new('2011-11-22 03:00:00'), $calendar_hsi)
-            ->datetime_yyyymmdd_hhmmss,
+        $cutoff->cutoff_date_for_effective_day(Date::Utility->new('2011-11-22 03:00:00'), $calendar_hsi)->datetime_yyyymmdd_hhmmss,
         '2011-11-22 15:00:00',
         'Given the HSI, next NY10am cutoff date after 2011-11-21 02:00:00.'
     );
@@ -77,7 +77,7 @@ subtest 'Private method _cutoff_date_for_effective_day' => sub {
 subtest 'seconds_to_cutoff_time' => sub {
     plan tests => 7;
 
-    my $cutoff     = Quant::Framework::VolSurface::Cutoff->new('New York 10:00');
+    my $cutoff = Quant::Framework::VolSurface::Cutoff->new('New York 10:00');
 
     throws_ok {
         $cutoff->seconds_to_cutoff_time;
@@ -89,16 +89,16 @@ subtest 'seconds_to_cutoff_time' => sub {
     qr/No Calendar given/, 'Calling seconds_to_cutoff_time without underlying.';
     throws_ok {
         $cutoff->seconds_to_cutoff_time({
-            from       => 1,
-            calendar   => 1,
+            from     => 1,
+            calendar => 1,
         });
     }
     qr/No maturity given/, 'Calling seconds_to_cutoff_time without maturity.';
 
     is(
         $cutoff->seconds_to_cutoff_time({
-                from       => Date::Utility->new('2011-11-22 23:00:00'),
-                maturity   => 1,
+                from     => Date::Utility->new('2011-11-22 23:00:00'),
+                maturity => 1,
                 calendar => $calendar,
             }
         ),
@@ -108,8 +108,8 @@ subtest 'seconds_to_cutoff_time' => sub {
 
     is(
         $cutoff->seconds_to_cutoff_time({
-                from       => Date::Utility->new('2011-11-22 04:00:00'),
-                maturity   => 1,
+                from     => Date::Utility->new('2011-11-22 04:00:00'),
+                maturity => 1,
                 calendar => $calendar
             }
         ),
@@ -119,8 +119,8 @@ subtest 'seconds_to_cutoff_time' => sub {
 
     is(
         $cutoff->seconds_to_cutoff_time({
-                from       => Date::Utility->new('2011-11-22 00:00:00'),
-                maturity   => 1,
+                from     => Date::Utility->new('2011-11-22 00:00:00'),
+                maturity => 1,
                 calendar => $calendar
             }
         ),
@@ -131,8 +131,8 @@ subtest 'seconds_to_cutoff_time' => sub {
     $cutoff = Quant::Framework::VolSurface::Cutoff->new('New York 10:00');
     is(
         $cutoff->seconds_to_cutoff_time({
-                from       => Date::Utility->new('2011-06-14 23:00:00'),
-                maturity   => 1,
+                from     => Date::Utility->new('2011-06-14 23:00:00'),
+                maturity => 1,
                 calendar => $calendar
             }
         ),

@@ -48,7 +48,6 @@ subtype 'qf_interest_rate_type', as Str, where {
     "Invalid interest_rate type $_. Must be one of: " . join(', ', @interest_rate_types)
 };
 
-
 =head2 qf_cutoff_code
 
 A volatility surface cutoff time convention

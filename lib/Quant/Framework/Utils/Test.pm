@@ -76,7 +76,7 @@ sub create_doc {
     # get data to insert
     my $fixture = LoadFile(File::ShareDir::dist_file('Quant-Framework', 'test_data.yml'));
 
-    my $data    = $fixture->{$yaml_db}{data};
+    my $data = $fixture->{$yaml_db}{data};
 
     die "Invalid yaml db name: $yaml_db" if not defined $data;
 
@@ -103,13 +103,13 @@ Creates an instance of UnderlyingConfig (for EURUSD or GDAXI) for tesing purpose
 =cut
 
 sub create_underlying_config {
-    my $symbol = shift;
+    my $symbol            = shift;
     my $custom_attributes = shift;
 
     my $fixture = LoadFile(File::ShareDir::dist_file('Quant-Framework', 'test_underlying_config.yml'));
-    my $data    = $fixture->{$symbol};
+    my $data = $fixture->{$symbol};
 
-    if ( defined $custom_attributes ) {
+    if (defined $custom_attributes) {
         while (my ($key, $value) = each %$custom_attributes) {
             $data->{$key} = $value;
         }

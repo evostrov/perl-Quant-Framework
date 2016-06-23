@@ -69,8 +69,8 @@ that purpose.
 =cut
 
 has underlying_config => (
-    is      => 'ro',
-    isa     => 'Quant::Framework::Utils::UnderlyingConfig',
+    is  => 'ro',
+    isa => 'Quant::Framework::Utils::UnderlyingConfig',
 );
 
 =head2 locale
@@ -265,7 +265,7 @@ sub BUILDARGS {
 
     croak "Exchange symbol must be specified" unless $symbol;
     my $params_ref = clone($exchanges->{$symbol});
-    $params_ref = { %$params_ref, %$orig_params_ref };
+    $params_ref = {%$params_ref, %$orig_params_ref};
 
     my $locale = $orig_params_ref->{locale} // 'EN';
 
@@ -1317,7 +1317,6 @@ sub weighted_days_in_period {
     return $days;
 }
 
-
 sub _build_asset {
     my $self = shift;
 
@@ -1343,12 +1342,12 @@ Returns our closed weight for days when the market is closed.
 sub extended_weight_on {
     my ($self, $date, $include) = @_;
 
-    my $base = $self->_build_asset;
+    my $base      = $self->_build_asset;
     my $numeraire = Quant::Framework::Currency->new({
-            symbol           => $self->underlying_config->quoted_currency_symbol,
-            for_date         => $self->for_date,
-            chronicle_reader => $self->chronicle_reader,
-        });
+        symbol           => $self->underlying_config->quoted_currency_symbol,
+        for_date         => $self->for_date,
+        chronicle_reader => $self->chronicle_reader,
+    });
 
     my $weight = $self->simple_weight_on($date) || $self->closed_weight;
     if ($self->underlying_config->market_name eq 'forex') {
@@ -1367,10 +1366,10 @@ sub extended_weight_on {
     # These HACKS will be removed after 2016-06-23
     my ($jpy_announcement_date, $euro_announcement_date);
     if ($include) {
-        $jpy_announcement_date = Date::Utility->new('2016-06-15');
+        $jpy_announcement_date  = Date::Utility->new('2016-06-15');
         $euro_announcement_date = Date::Utility->new('2016-06-22');
     } else {
-        $jpy_announcement_date = Date::Utility->new('2016-06-16');
+        $jpy_announcement_date  = Date::Utility->new('2016-06-16');
         $euro_announcement_date = Date::Utility->new('2016-06-23');
     }
 
@@ -1380,7 +1379,7 @@ sub extended_weight_on {
 
     if ($date->truncate_to_day->epoch == $euro_announcement_date->minus_time_interval('1d')->epoch) {
         return 10 if ($self->underlying_config->symbol =~ /GBP/);
-        return 5 if ($self->underlying_config->symbol =~ /EUR/);
+        return 5  if ($self->underlying_config->symbol =~ /EUR/);
     }
 
     if ($date->truncate_to_day->epoch == $euro_announcement_date->epoch) {
@@ -1401,7 +1400,7 @@ sub closed_weight {
     my $self = shift;
 
     return ($self->underlying_config->market_name eq 'indices') ? 0.55 : 0.06;
-};
+}
 
 no Moose;
 __PACKAGE__->meta->make_immutable;

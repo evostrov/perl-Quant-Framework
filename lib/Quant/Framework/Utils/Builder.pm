@@ -34,8 +34,8 @@ Instance of Data::Chronicle::Reader for reading data
 =cut
 
 has chronicle_reader => (
-    is      => 'ro',
-    isa     => 'Data::Chronicle::Reader',
+    is  => 'ro',
+    isa => 'Data::Chronicle::Reader',
 );
 
 =head2 chronicle_writer
@@ -45,8 +45,8 @@ Instance of Data::Chronicle::Writer to write data to
 =cut
 
 has chronicle_writer => (
-    is      => 'ro',
-    isa     => 'Data::Chronicle::Writer',
+    is  => 'ro',
+    isa => 'Data::Chronicle::Writer',
 );
 
 =head2 underlying_config
@@ -56,8 +56,8 @@ UnderlyingConfig used to create/initialize Q::F modules
 =cut
 
 has underlying_config => (
-    is      => 'ro',
-    isa     => 'Quant::Framework::Utils::UnderlyingConfig',
+    is  => 'ro',
+    isa => 'Quant::Framework::Utils::UnderlyingConfig',
 );
 
 =head2 build_expiry_conventions
@@ -70,22 +70,22 @@ sub build_expiry_conventions {
     my $self = shift;
 
     my $quoted_currency = Quant::Framework::Currency->new({
-            symbol           => $self->underlying_config->quoted_currency_symbol,
-            for_date         => $self->for_date,
-            chronicle_reader => $self->chronicle_reader,
-            chronicle_writer => $self->chronicle_writer,
-        });
+        symbol           => $self->underlying_config->quoted_currency_symbol,
+        for_date         => $self->for_date,
+        chronicle_reader => $self->chronicle_reader,
+        chronicle_writer => $self->chronicle_writer,
+    });
 
     return Quant::Framework::ExpiryConventions->new({
-            chronicle_reader => $self->chronicle_reader,
-            is_forex_market  => $self->underlying_config->market_name eq 'forex',
-            symbol           => $self->underlying_config->symbol,
-            for_date         => $self->for_date,
-            asset            => $self->build_asset,
-            quoted_currency  => $quoted_currency,
-            asset_symbol     => $self->underlying_config->asset_symbol,
-            calendar         => $self->build_trading_calendar,
-        });
+        chronicle_reader => $self->chronicle_reader,
+        is_forex_market  => $self->underlying_config->market_name eq 'forex',
+        symbol           => $self->underlying_config->symbol,
+        for_date         => $self->for_date,
+        asset            => $self->build_asset,
+        quoted_currency  => $quoted_currency,
+        asset_symbol     => $self->underlying_config->asset_symbol,
+        calendar         => $self->build_trading_calendar,
+    });
 }
 
 =head2 build_trading_calendar
@@ -98,12 +98,12 @@ sub build_trading_calendar {
     my $self = shift;
 
     return Quant::Framework::TradingCalendar->new({
-            symbol => $self->underlying_config->exchange_name,
-            chronicle_reader => $self->chronicle_reader,
-            ($self->underlying_config->locale) ? ( locale => $self->underlying_config->locale ) : (),
-            for_date => $self->for_date,
-            underlying_config => $self->underlying_config,
-        });
+        symbol           => $self->underlying_config->exchange_name,
+        chronicle_reader => $self->chronicle_reader,
+        ($self->underlying_config->locale) ? (locale => $self->underlying_config->locale) : (),
+        for_date          => $self->for_date,
+        underlying_config => $self->underlying_config,
+    });
 }
 
 =head2 build_interest_rate
@@ -116,12 +116,12 @@ sub build_interest_rate {
     my $self = shift;
 
     return Quant::Framework::InterestRate->new({
-            symbol  => $self->underlying_config->symbol,
-            underlying_config => $self->underlying_config,
-            for_date => $self->for_date,
-            chronicle_reader => $self->chronicle_reader,
-            chronicle_writer => $self->chronicle_writer,
-        });
+        symbol            => $self->underlying_config->symbol,
+        underlying_config => $self->underlying_config,
+        for_date          => $self->for_date,
+        chronicle_reader  => $self->chronicle_reader,
+        chronicle_writer  => $self->chronicle_writer,
+    });
 }
 
 =head2 build_dividend
@@ -134,12 +134,12 @@ sub build_dividend {
     my $self = shift;
 
     return Quant::Framework::Dividend->new({
-            symbol  => $self->underlying_config->symbol,
-            underlying_config => $self->underlying_config,
-            for_date => $self->for_date,
-            chronicle_reader => $self->chronicle_reader,
-            chronicle_writer => $self->chronicle_writer,
-        });
+        symbol            => $self->underlying_config->symbol,
+        underlying_config => $self->underlying_config,
+        for_date          => $self->for_date,
+        chronicle_reader  => $self->chronicle_reader,
+        chronicle_writer  => $self->chronicle_writer,
+    });
 }
 
 =head2 build_asset
@@ -147,7 +147,6 @@ sub build_dividend {
 Creates a default instance of Asset/Currency according to current parameters (chronicle, for_date, underlying_config)
 
 =cut
-
 
 sub build_asset {
     my $self = shift;
@@ -181,6 +180,5 @@ sub build_currency {
         chronicle_writer => $self->chronicle_writer,
     });
 }
-
 
 1;

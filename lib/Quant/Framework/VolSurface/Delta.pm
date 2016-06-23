@@ -93,7 +93,6 @@ sub save {
     return $self->chronicle_writer->set('volatility_surfaces', $self->symbol, $self->_document_content, $self->recorded_date);
 }
 
-
 =head1 ATTRIBUTES
 
 =head2 type
@@ -218,7 +217,7 @@ sub _convert_strike_to_delta {
 sub _ensure_conversion_args {
     my ($self, $args) = @_;
 
-    my %new_args   = %{$args};
+    my %new_args          = %{$args};
     my $underlying_config = $self->underlying_config;
 
     $new_args{t}                ||= $new_args{days} / 365;
@@ -252,18 +251,18 @@ sub generate_surface_for_cutoff {
 
     my $surface1 = $self;
     $cutoff = Quant::Framework::VolSurface::Cutoff->new($cutoff) if (not ref $cutoff);
-    my $surface_hashref = {};
-    my $underlying_config      = $surface1->underlying_config;
+    my $surface_hashref   = {};
+    my $underlying_config = $surface1->underlying_config;
 
     foreach my $maturity (@{$surface1->term_by_day}) {
         my $t1 = $surface1->cutoff->seconds_to_cutoff_time({
-            from       => $surface1->recorded_date,
-            maturity   => $maturity,
+            from     => $surface1->recorded_date,
+            maturity => $maturity,
             calendar => $self->builder->build_trading_calendar,
         });
         my $t = $cutoff->seconds_to_cutoff_time({
-            from       => $surface1->recorded_date,
-            maturity   => $maturity,
+            from     => $surface1->recorded_date,
+            maturity => $maturity,
             calendar => $self->builder->build_trading_calendar,
         });
 
@@ -334,11 +333,11 @@ sub _build_surface {
     }
 
     my $master_surface = __PACKAGE__->new(
-        symbol   => $self->symbol,
-        cutoff   => $master_cutoff,
-        for_date => $self->for_date,
-        chronicle_reader => $self->chronicle_reader,
-        chronicle_writer => $self->chronicle_writer,
+        symbol            => $self->symbol,
+        cutoff            => $master_cutoff,
+        for_date          => $self->for_date,
+        chronicle_reader  => $self->chronicle_reader,
+        chronicle_writer  => $self->chronicle_writer,
         underlying_config => $self->underlying_config,
     );
     my $surface = $master_surface->generate_surface_for_cutoff($cutoff);
@@ -351,12 +350,12 @@ sub _stores_surface {
     my ($self, $cutoff, $surface_hashref) = @_;
 
     try {
-      my $doc = $self->document;
-      $doc->{surfaces} ||= {};
-      $doc->{surfaces}->{$cutoff} = $surface_hashref;
+        my $doc = $self->document;
+        $doc->{surfaces} ||= {};
+        $doc->{surfaces}->{$cutoff} = $surface_hashref;
     }
     catch {
-      warn('Could not save ' . $cutoff . ' cutoff for ' . $self->symbol);
+        warn('Could not save ' . $cutoff . ' cutoff for ' . $self->symbol);
     };
 
     return;
@@ -423,7 +422,7 @@ sub clone {
     $clone_args = dclone($args) if $args;
 
     $clone_args->{underlying_config} = $self->underlying_config if (not exists $clone_args->{underlying_config});
-    $clone_args->{cutoff}     = $self->cutoff     if (not exists $clone_args->{cutoff});
+    $clone_args->{cutoff}            = $self->cutoff            if (not exists $clone_args->{cutoff});
 
     if (not exists $clone_args->{surface}) {
         my $orig_surface = dclone($self->surface);
@@ -458,8 +457,9 @@ has cutoff => (
 sub _build_cutoff {
     my $self = shift;
 
-    my $date          = $self->for_date     ? $self->for_date  : Date::Utility->new;
-    my $cutoff_string = $self->_new_surface ? 'New York 10:00' : 'UTC ' . $self->builder->build_trading_calendar->standard_closing_on($date)->time_hhmm;
+    my $date = $self->for_date ? $self->for_date : Date::Utility->new;
+    my $cutoff_string =
+        $self->_new_surface ? 'New York 10:00' : 'UTC ' . $self->builder->build_trading_calendar->standard_closing_on($date)->time_hhmm;
 
     return Quant::Framework::VolSurface::Cutoff->new($cutoff_string);
 }

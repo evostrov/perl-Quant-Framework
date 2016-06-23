@@ -22,40 +22,40 @@ subtest 'get asset dividend' => sub {
     lives_ok {
         is(
             Quant::Framework::Dividend->new(
-                symbol           => 'FCHI',
+                symbol            => 'FCHI',
                 underlying_config => $fchi_underlying_config,
-                chronicle_reader => $chronicle_r,
-                chronicle_writer => $chronicle_w
+                chronicle_reader  => $chronicle_r,
+                chronicle_writer  => $chronicle_w
                 )->document,
             undef,
             'document is not present'
         );
 
         my $dvd = Quant::Framework::Dividend->new(
-            rates            => {365          => 0.1},
-            discrete_points  => {'2014-10-10' => 0},
-            recorded_date    => Date::Utility->new('2014-10-10'),
-            symbol           => 'FCHI',
+            rates             => {365          => 0.1},
+            discrete_points   => {'2014-10-10' => 0},
+            recorded_date     => Date::Utility->new('2014-10-10'),
+            symbol            => 'FCHI',
             underlying_config => $fchi_underlying_config,
-            chronicle_reader => $chronicle_r,
-            chronicle_writer => $chronicle_w
+            chronicle_reader  => $chronicle_r,
+            chronicle_writer  => $chronicle_w
         );
         ok $dvd->save, 'save without error';
         lives_ok {
             Quant::Framework::Dividend->new(
-                symbol           => 'FCHI',
+                symbol            => 'FCHI',
                 underlying_config => $fchi_underlying_config,
-                chronicle_reader => $chronicle_r,
-                chronicle_writer => $chronicle_w
+                chronicle_reader  => $chronicle_r,
+                chronicle_writer  => $chronicle_w
                 )->document
         }
         'successfully retrieved saved document from chronicle';
 
         my $dv = Quant::Framework::Dividend->new(
-            symbol           => 'FCHI',
+            symbol            => 'FCHI',
             underlying_config => $fchi_underlying_config,
-            chronicle_reader => $chronicle_r,
-            chronicle_writer => $chronicle_w
+            chronicle_reader  => $chronicle_r,
+            chronicle_writer  => $chronicle_w
         )->document;
 
         is $dv->{symbol}, "FCHI", "symbol is retrieved correctly";
@@ -63,10 +63,10 @@ subtest 'get asset dividend' => sub {
         is $dv->{rates}->{365},                    0.1, "rates retrieved correctly";
 
         my $asset = Quant::Framework::Asset->new({
-            symbol           => 'FCHI',
+            symbol            => 'FCHI',
             underlying_config => $fchi_underlying_config,
-            chronicle_reader => $chronicle_r,
-            chronicle_writer => $chronicle_w,
+            chronicle_reader  => $chronicle_r,
+            chronicle_writer  => $chronicle_w,
         });
 
         my $tiy  = 365.0 / 365.0;

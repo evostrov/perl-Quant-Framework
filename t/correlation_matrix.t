@@ -19,38 +19,42 @@ subtest general => sub {
     my ($chronicle_r, $chronicle_w) = Data::Chronicle::Mock::get_mocked_chronicle();
     my $date = Date::Utility->new('2015-05-26');
 
-    Quant::Framework::Utils::Test::create_doc('correlation_matrix', {
-            recorded_date       => $date,
-            chronicle_reader    => $chronicle_r,
-            chronicle_writer    => $chronicle_w,
+    Quant::Framework::Utils::Test::create_doc(
+        'correlation_matrix',
+        {
+            recorded_date    => $date,
+            chronicle_reader => $chronicle_r,
+            chronicle_writer => $chronicle_w,
         });
 
     my $rho = Quant::Framework::CorrelationMatrix->new(
-        symbol => 'indices',
-        for_date    => $date,
-        chronicle_reader => $chronicle_r);
+        symbol           => 'indices',
+        for_date         => $date,
+        chronicle_reader => $chronicle_r
+    );
 
     my $index           = 'FCHI';
     my $payout_currency = 'USD';
-    my $calendar = Quant::Framework::TradingCalendar->new({
-            symbol => 'EURONEXT', 
-            chronicle_reader => $chronicle_r, 
-            locale => 'EN', 
-            for_date => $date});
+    my $calendar        = Quant::Framework::TradingCalendar->new({
+        symbol           => 'EURONEXT',
+        chronicle_reader => $chronicle_r,
+        locale           => 'EN',
+        for_date         => $date
+    });
 
     my $qcurrency = Quant::Framework::Currency->new({
-		symbol => 'USD',
-		for_date => $date,
-        chronicle_reader    => $chronicle_r,
-        chronicle_writer    => $chronicle_w,
+        symbol           => 'USD',
+        for_date         => $date,
+        chronicle_reader => $chronicle_r,
+        chronicle_writer => $chronicle_w,
     });
 
     my $expiry_conventions = Quant::Framework::ExpiryConventions->new(
-        chronicle_reader        => $chronicle_r,
-        for_date                => $date,
-        symbol                  => $index,
-        quoted_currency         => $qcurrency,
-        calendar                => $calendar,
+        chronicle_reader => $chronicle_r,
+        for_date         => $date,
+        symbol           => $index,
+        quoted_currency  => $qcurrency,
+        calendar         => $calendar,
     );
 
     my $tiy = 366 / 365;

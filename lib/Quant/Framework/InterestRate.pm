@@ -47,8 +47,8 @@ UnderlyingConfig used to create/initialize Q::F modules
 =cut
 
 has underlying_config => (
-    is      => 'ro',
-    isa     => 'Quant::Framework::Utils::UnderlyingConfig',
+    is  => 'ro',
+    isa => 'Quant::Framework::Utils::UnderlyingConfig',
 );
 
 around _document_content => sub {
@@ -63,13 +63,13 @@ around _document_content => sub {
 };
 
 has chronicle_reader => (
-    is      => 'ro',
-    isa     => 'Data::Chronicle::Reader',
+    is  => 'ro',
+    isa => 'Data::Chronicle::Reader',
 );
 
 has chronicle_writer => (
-    is      => 'ro',
-    isa     => 'Data::Chronicle::Writer',
+    is  => 'ro',
+    isa => 'Data::Chronicle::Writer',
 );
 
 =head2 document
@@ -88,7 +88,7 @@ sub _build_document {
 
     my $document = $self->chronicle_reader->get('interest_rates', $self->symbol);
 
-    if ($self->for_date and $self->for_date->epoch < Date::Utility->new($document->{date})->epoch ) {
+    if ($self->for_date and $self->for_date->epoch < Date::Utility->new($document->{date})->epoch) {
         $document = $self->chronicle_reader->get_for('interest_rates', $self->symbol, $self->for_date->epoch);
 
         #Assume empty data in case there is nothing in the database
@@ -120,7 +120,6 @@ has type => (
     default => 'market',
 );
 
-
 =head2 interest_rate_for
 
 Get the interest rate for this underlying over a given time period (expressed in timeinyears.)
@@ -136,11 +135,11 @@ sub interest_rate_for {
     return $self->underlying_config->default_interest_rate if defined $self->underlying_config->default_interest_rate;
 
     my $quoted_currency = Quant::Framework::Currency->new({
-            symbol           => $self->underlying_config->quoted_currency_symbol,
-            for_date         => $self->for_date,
-            chronicle_reader => $self->chronicle_reader,
-            chronicle_writer => $self->chronicle_writer,
-        });
+        symbol           => $self->underlying_config->quoted_currency_symbol,
+        for_date         => $self->for_date,
+        chronicle_reader => $self->chronicle_reader,
+        chronicle_writer => $self->chronicle_writer,
+    });
 
     my $rate;
     if ($self->underlying_config->uses_implied_rate_for_quoted_currency) {

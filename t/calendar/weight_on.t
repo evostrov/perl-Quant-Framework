@@ -30,11 +30,12 @@ Quant::Framework::Utils::Test::create_doc(
 
 subtest 'weight on' => sub {
     my $chritmas = Date::Utility->new('2013-12-25');
-    my $forex = Quant::Framework::TradingCalendar->new({
-            symbol => 'FOREX', 
-            chronicle_reader => $chronicle_r, 
-            locale => 'en', 
-            for_date => $date});
+    my $forex    = Quant::Framework::TradingCalendar->new({
+        symbol           => 'FOREX',
+        chronicle_reader => $chronicle_r,
+        locale           => 'en',
+        for_date         => $date
+    });
     ok $forex->has_holiday_on($chritmas), 'has holiday on ' . $chritmas->date;
     is $forex->simple_weight_on($date), 0, 'weight is zero on a holiday';
     my $weekend = Date::Utility->new('2013-12-8');

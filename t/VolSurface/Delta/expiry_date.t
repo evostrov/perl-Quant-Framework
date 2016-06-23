@@ -13,8 +13,8 @@ my $underlying_config = Quant::Framework::Utils::Test::create_underlying_config(
 Quant::Framework::Utils::Test::create_doc(
     'currency',
     {
-        symbol => 'USD',
-        date   => Date::Utility->new,
+        symbol           => 'USD',
+        date             => Date::Utility->new,
         chronicle_reader => $chronicle_r,
         chronicle_writer => $chronicle_w,
     });
@@ -317,13 +317,13 @@ sub _sample_surface {
     );
 
     my $surface = Quant::Framework::VolSurface::Delta->new(
-        underlying_config    => $underlying_config,
-        surface       => \%surface_data,
-        recorded_date => Date::Utility->new,
-        deltas        => [25, 50, 75],
-        cutoff        => 'UTC 23:59',
-        chronicle_reader => $chronicle_r,
-        chronicle_writer => $chronicle_w,
+        underlying_config => $underlying_config,
+        surface           => \%surface_data,
+        recorded_date     => Date::Utility->new,
+        deltas            => [25, 50, 75],
+        cutoff            => 'UTC 23:59',
+        chronicle_reader  => $chronicle_r,
+        chronicle_writer  => $chronicle_w,
     );
 
     return $surface->clone(@args);

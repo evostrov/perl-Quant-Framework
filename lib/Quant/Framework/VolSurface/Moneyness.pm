@@ -328,9 +328,8 @@ sub _convert_moneyness_smile_to_delta {
 sub _convert_strike_to_delta {
     my ($self, $args) = @_;
     my ($days, $vol, $strike) = @{$args}{'days', 'vol', 'strike'};
-    my $tiy = $days / 365;
+    my $tiy     = $days / 365;
     my $builder = $self->builder;
-
 
     return 100 * get_delta_for_strike({
         strike           => $strike,

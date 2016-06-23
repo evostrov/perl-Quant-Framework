@@ -37,7 +37,7 @@ this is not required.
 =cut
 
 has underlying_config => (
-    is  => 'ro',
+    is => 'ro',
 );
 
 =head2 for_date
@@ -53,13 +53,13 @@ has for_date => (
 );
 
 has chronicle_reader => (
-    is      => 'ro',
-    isa     => 'Data::Chronicle::Reader',
+    is  => 'ro',
+    isa => 'Data::Chronicle::Reader',
 );
 
 has chronicle_writer => (
-    is      => 'ro',
-    isa     => 'Data::Chronicle::Writer',
+    is  => 'ro',
+    isa => 'Data::Chronicle::Writer',
 );
 
 has document => (
@@ -72,7 +72,7 @@ sub _build_document {
 
     my $document = $self->chronicle_reader->get('dividends', $self->symbol);
 
-    if ($self->for_date and $self->for_date->epoch < Date::Utility->new($document->{date})->epoch ) {
+    if ($self->for_date and $self->for_date->epoch < Date::Utility->new($document->{date})->epoch) {
         $document = $self->chronicle_reader->get_for('dividends', $self->symbol, $self->for_date->epoch);
 
         # This works around a problem with Volatility surfaces and negative dates to expiry.
@@ -181,7 +181,6 @@ sub rate_for {
     return 0;
 }
 
-
 =head2 dividend_rate_for
 
 Get the dividend rate for this underlying over a given time period (expressed in timeinyears.)
@@ -233,7 +232,7 @@ sub get_discrete_dividend_for_period {
         map { Date::Utility->new($_) } @{$args}{'start', 'end'};
 
     my %valid_dividends;
-    my $discrete_points = $self->discrete_points;
+    my $discrete_points        = $self->discrete_points;
     my $dividend_recorded_date = $self->recorded_date;
 
     if ($discrete_points and %$discrete_points) {
@@ -278,7 +277,7 @@ sub dividend_adjustments_for_period {
         my $sec_away_from_action = ($effective_date->epoch - $start->epoch);
         my $duration_in_year     = $sec_away_from_action / (86400 * 365);
         #TODO: rewrite this using an instance of InterestRate
-        my $r_rate               = $self->interest_rate_for($duration_in_year);
+        my $r_rate = $self->interest_rate_for($duration_in_year);
 
         my $adj_present_value = $adjustment * exp(-$r_rate * $duration_in_year);
         my $s_adj = ($duration_in_sec - $sec_away_from_action) / ($duration_in_sec) * $adj_present_value;
@@ -288,9 +287,9 @@ sub dividend_adjustments_for_period {
     }
 
     return {
-        barrier => $dK,
-        spot    => $dS,
-        recorded_date=> $dividend_recorded_date,
+        barrier       => $dK,
+        spot          => $dS,
+        recorded_date => $dividend_recorded_date,
     };
 }
 

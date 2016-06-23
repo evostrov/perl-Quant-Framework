@@ -1,7 +1,7 @@
 package Quant::Framework::Utils::Rates;
 
 use Moose;
-extends 'Quant::Framework::Utils::MarketData';    
+extends 'Quant::Framework::Utils::MarketData';
 
 use Date::Utility;
 
