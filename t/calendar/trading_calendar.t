@@ -85,7 +85,7 @@ Quant::Framework::Utils::Test::create_doc('currency', {
     }) for qw(AUD GBP EUR USD HKD);
 
 
-my $LSE             = Quant::Framework::TradingCalendar->new({symbol => 'LSE', chronicle_reader => $chronicle_r, locale = 'EN', for_date => $date});
+my $LSE             = Quant::Framework::TradingCalendar->new({symbol => 'LSE', chronicle_reader => $chronicle_r, locale => 'EN', for_date => $date});
 my $FSE             = Quant::Framework::TradingCalendar->new({symbol=>'FSE', chronicle_reader => $chronicle_r});               # think GDAXI
 my $FOREX           = Quant::Framework::TradingCalendar->new({symbol=>'FOREX', chronicle_reader => $chronicle_r});
 my $RANDOM          = Quant::Framework::TradingCalendar->new({symbol=>'RANDOM', chronicle_reader => $chronicle_r});
