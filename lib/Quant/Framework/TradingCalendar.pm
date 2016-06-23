@@ -781,7 +781,7 @@ sub standard_closing_on {
 
     $when = $self->trading_date_for($when);
 
-    return $self->closes_early_on($when) if (($self->symbol eq 'FOREX' or $self->symbol eq 'METAL')and $when->day_of_week == 5);
+    return $self->closes_early_on($when) if (($self->symbol eq 'FOREX' or $self->symbol eq 'METAL') and $when->day_of_week == 5);
     return $when->truncate_to_day->plus_time_interval($self->market_times->{standard}->{daily_close});
 }
 
