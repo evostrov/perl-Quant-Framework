@@ -100,7 +100,6 @@ sub build_trading_calendar {
     return Quant::Framework::TradingCalendar->new({
         symbol           => $self->underlying_config->exchange_name,
         chronicle_reader => $self->chronicle_reader,
-        ($self->underlying_config->locale) ? (locale => $self->underlying_config->locale) : (),
         for_date          => $self->for_date,
         underlying_config => $self->underlying_config,
     });
