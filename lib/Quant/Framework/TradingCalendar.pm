@@ -1310,7 +1310,7 @@ sub weighted_days_in_period {
     my $days    = 0.0;
 
     while (not $current->is_after($end)) {
-        $days += $self->extended_weight_on($current, $include);
+        $days += $self->weight_on($current, $include);
         $current = $current->plus_time_interval('1d');
     }
 
@@ -1332,14 +1332,14 @@ sub _build_asset {
     });
 }
 
-=head2 extended_weight_on
+=head2 weight_on
 
 Returns the weight for a given day (given as a Date::Utility object).
 Returns our closed weight for days when the market is closed.
 
 =cut
 
-sub extended_weight_on {
+sub weight_on {
     my ($self, $date, $include) = @_;
 
     my $base      = $self->_build_asset;
