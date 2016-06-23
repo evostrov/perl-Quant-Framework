@@ -41,8 +41,8 @@ Quant::Framework::Utils::Test::create_doc(
                 "New Year's Day" => [qw(FOREX METAL)],
             },
         },
-        chronicle_reader     => $chronicle_r,
-        chronicle_writer     => $chronicle_w,
+        chronicle_reader => $chronicle_r,
+        chronicle_writer => $chronicle_w,
     });
 
 subtest 'trades on holidays/pseudo-holidays' => sub {

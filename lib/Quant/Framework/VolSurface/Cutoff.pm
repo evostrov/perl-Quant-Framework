@@ -91,7 +91,7 @@ sub _build_timezone {
         'Beijing'      => 'Asia/Shanghai',
         'Bucharest'    => 'Europe/Bucharest',
         'Budapest'     => 'Europe/Budapest',
-        'Colombia'     => 'America/Bogota',        
+        'Colombia'     => 'America/Bogota',
         'Frankfurt'    => 'Europe/Berlin',
         'Hanoi'        => 'Asia/Ho_Chi_Minh',
         'Istanbul'     => 'Europe/Istanbul',
@@ -103,17 +103,17 @@ sub _build_timezone {
         'Moscow'       => 'Europe/Moscow',
         'Mumbai'       => 'Asia/Kolkata',
         'New York'     => 'America/New_York',
-        'Santiago'   => 'America/Santiago',
-        'Sao Paulo'  => 'America/Sao_Paulo',
-        'Seoul'      => 'Asia/Seoul',
-        'Singapore'  => 'Asia/Singapore',
-        'Taipei'     => 'Asia/Taipei',
-        'Taiwan'     => 'Asia/Taipei',
-        'Tel Aviv'   => 'Asia/Jerusalem',
-        'Tokyo'      => 'Asia/Tokyo',
-        'Warsaw'     => 'Europe/Warsaw',
-        'Wellington' => 'Pacific/Auckland',
-        'UTC'        => 'UTC',
+        'Santiago'     => 'America/Santiago',
+        'Sao Paulo'    => 'America/Sao_Paulo',
+        'Seoul'        => 'Asia/Seoul',
+        'Singapore'    => 'Asia/Singapore',
+        'Taipei'       => 'Asia/Taipei',
+        'Taiwan'       => 'Asia/Taipei',
+        'Tel Aviv'     => 'Asia/Jerusalem',
+        'Tokyo'        => 'Asia/Tokyo',
+        'Warsaw'       => 'Europe/Warsaw',
+        'Wellington'   => 'Pacific/Auckland',
+        'UTC'          => 'UTC',
     );
 
     # No need to default: anything that's a bom_cutoff_code will have a match.
@@ -144,9 +144,9 @@ to the next cutoff, given a maturity and a calendar.
 sub seconds_to_cutoff_time {
     my ($self, $args) = @_;
 
-    my $from       = $args->{from}       || die 'No "from" date given to seconds_to_cutoff_time.';
+    my $from     = $args->{from}     || die 'No "from" date given to seconds_to_cutoff_time.';
     my $calendar = $args->{calendar} || die 'No Calendar given to seconds_to_cutoff_time.';
-    my $maturity   = $args->{maturity}   || die 'No maturity given to seconds_to_cutoff_time.';
+    my $maturity = $args->{maturity} || die 'No maturity given to seconds_to_cutoff_time.';
 
     # From the given $from date and $maturity, we get the "effective day"
     # on which the cutoff we are looking for falls on.

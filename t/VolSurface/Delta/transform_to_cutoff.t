@@ -16,16 +16,16 @@ Quant::Framework::Utils::Test::create_doc(
     'volsurface_delta',
     {
         underlying_config => $underlying_config,
-        recorded_date => Date::Utility->new,
-        chronicle_reader => $chronicle_r,
-        chronicle_writer => $chronicle_w,
+        recorded_date     => Date::Utility->new,
+        chronicle_reader  => $chronicle_r,
+        chronicle_writer  => $chronicle_w,
     });
 
 Quant::Framework::Utils::Test::create_doc(
     'currency',
     {
-        symbol => $_,
-        date   => Date::Utility->new,
+        symbol           => $_,
+        date             => Date::Utility->new,
         chronicle_reader => $chronicle_r,
         chronicle_writer => $chronicle_w,
     }) for (qw/EUR GBP/);
@@ -35,9 +35,9 @@ use BloombergSurfaces;
 
 my $bbss = BloombergSurfaces->new({
     relative_data_dir => 'transform_to_cutoff',
-    chronicle_reader => $chronicle_r,
-    chronicle_writer => $chronicle_w,
-  });
+    chronicle_reader  => $chronicle_r,
+    chronicle_writer  => $chronicle_w,
+});
 
 subtest 'There and back.' => sub {
     plan tests => 2;
@@ -50,11 +50,11 @@ subtest 'There and back.' => sub {
 
     my $and_back = Quant::Framework::VolSurface::Delta->new(
         underlying_config => $underlying_config,
-        surface       => $there,
-        cutoff        => 'Tokyo 15:00',
-        recorded_date => $recorded_date,
-        chronicle_reader => $chronicle_r,
-        chronicle_writer => $chronicle_w,
+        surface           => $there,
+        cutoff            => 'Tokyo 15:00',
+        recorded_date     => $recorded_date,
+        chronicle_reader  => $chronicle_r,
+        chronicle_writer  => $chronicle_w,
     )->generate_surface_for_cutoff($start->cutoff);
 
     is_deeply($start->surface, $and_back, 'Transforming from one surface to another then back.');
@@ -202,11 +202,11 @@ subtest generate_default_transform_cut_list => sub {
     };
 
     my $s = Quant::Framework::VolSurface::Delta->new(
-        surface       => $made_up_surface,
-        underlying_config    => $underlying_config,
-        recorded_date => Date::Utility->new,
-        chronicle_reader => $chronicle_r,
-        chronicle_writer => $chronicle_w,
+        surface           => $made_up_surface,
+        underlying_config => $underlying_config,
+        recorded_date     => Date::Utility->new,
+        chronicle_reader  => $chronicle_r,
+        chronicle_writer  => $chronicle_w,
     );
 
     is(keys %{$s->surfaces_to_save}, 3, 'generates cutoff for default list');
@@ -216,9 +216,9 @@ subtest generate_default_transform_cut_list => sub {
 
     my $new_s = Quant::Framework::VolSurface::Delta->new(
         underlying_config => $underlying_config,
-        cutoff     => 'Tokyo 15:00',
-        chronicle_reader => $chronicle_r,
-        chronicle_writer => $chronicle_w,
+        cutoff            => 'Tokyo 15:00',
+        chronicle_reader  => $chronicle_r,
+        chronicle_writer  => $chronicle_w,
     );
     ok($new_s->surface,                               'can get surface for different cutoff');
     ok($new_s->document->{surfaces}->{'Tokyo 15:00'}, 'has transformed Tokyo 15:00 surface');

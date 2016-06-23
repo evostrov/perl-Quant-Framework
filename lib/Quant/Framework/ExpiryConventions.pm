@@ -3,7 +3,6 @@ package Quant::Framework::ExpiryConventions;
 use strict;
 use warnings;
 
-
 use Moose;
 use DateTime;
 use Date::Utility;
@@ -11,12 +10,12 @@ use Quant::Framework::Currency;
 use List::Util qw(min);
 
 has calendar => (
-    is         => 'ro',
-    isa        => 'Quant::Framework::TradingCalendar',
+    is  => 'ro',
+    isa => 'Quant::Framework::TradingCalendar',
 );
 
 has for_date => (
-    is          => 'ro',
+    is      => 'ro',
     isa     => 'Maybe[Date::Utility]',
     default => undef,
 );
@@ -28,8 +27,8 @@ Used to work with Chronicle storage data (Holidays and Partial trading data)
 =cut
 
 has chronicle_reader => (
-    is      => 'ro',
-    isa     => 'Data::Chronicle::Reader',
+    is  => 'ro',
+    isa => 'Data::Chronicle::Reader',
 );
 
 has is_forex_market => (
@@ -49,8 +48,8 @@ has 'symbol' => (
 );
 
 has quoted_currency => (
-    is         => 'ro',
-    isa        => 'Maybe[Quant::Framework::Currency]',
+    is  => 'ro',
+    isa => 'Maybe[Quant::Framework::Currency]',
 );
 
 has asset_symbol => (
@@ -70,7 +69,7 @@ sub _build_asset_symbol {
 }
 
 has asset => (
-    is         => 'ro',
+    is => 'ro',
 );
 
 # This returns number of days after the trade date which determine the delivery

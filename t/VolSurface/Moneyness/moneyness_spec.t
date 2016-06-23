@@ -13,8 +13,8 @@ my $underlying_config = Quant::Framework::Utils::Test::create_underlying_config(
 Quant::Framework::Utils::Test::create_doc(
     'currency',
     {
-        symbol => 'EUR',
-        date   => Date::Utility->new,
+        symbol           => 'EUR',
+        date             => Date::Utility->new,
         chronicle_reader => $chronicle_r,
         chronicle_writer => $chronicle_w,
     });
@@ -22,8 +22,8 @@ Quant::Framework::Utils::Test::create_doc(
 Quant::Framework::Utils::Test::create_doc(
     'index',
     {
-        symbol => 'IBEX35',
-        date   => Date::Utility->new,
+        symbol           => 'IBEX35',
+        date             => Date::Utility->new,
         chronicle_reader => $chronicle_r,
         chronicle_writer => $chronicle_w,
     });
@@ -32,45 +32,47 @@ Quant::Framework::Utils::Test::create_doc(
     'volsurface_moneyness',
     {
         underlying_config => $underlying_config,
-        recorded_date => Date::Utility->new('12-Sep-12'),
-        chronicle_reader => $chronicle_r,
-        chronicle_writer => $chronicle_w,
+        recorded_date     => Date::Utility->new('12-Sep-12'),
+        chronicle_reader  => $chronicle_r,
+        chronicle_writer  => $chronicle_w,
     });
 
 subtest creates_moneyness_object => sub {
     plan tests => 4;
-    lives_ok { 
-      Quant::Framework::VolSurface::Moneyness->new({
-          underlying_config => $underlying_config,
-          chronicle_reader => $chronicle_r,
-          chronicle_writer => $chronicle_w,
-        }) 
-      } 'creates moneyness surface with symbol hash';
+    lives_ok {
+        Quant::Framework::VolSurface::Moneyness->new({
+                underlying_config => $underlying_config,
+                chronicle_reader  => $chronicle_r,
+                chronicle_writer  => $chronicle_w,
+            })
+    }
+    'creates moneyness surface with symbol hash';
 
-    throws_ok { 
-      Quant::Framework::VolSurface::Moneyness->new({
-          underlying_config => 'IBEX35',
-          chronicle_reader => $chronicle_r,
-          chronicle_writer => $chronicle_w,
-        }) } qr/Attribute \(symbol\) is required/,
-        'throws exception if underlying is not UnderlyingConfig';
+    throws_ok {
+        Quant::Framework::VolSurface::Moneyness->new({
+                underlying_config => 'IBEX35',
+                chronicle_reader  => $chronicle_r,
+                chronicle_writer  => $chronicle_w,
+            })
+    }
+    qr/Attribute \(symbol\) is required/, 'throws exception if underlying is not UnderlyingConfig';
 
     throws_ok {
         Quant::Framework::VolSurface::Moneyness->new(
-          underlying_config => $underlying_config,
-          chronicle_reader => $chronicle_r,
-          chronicle_writer => $chronicle_w,
-          recorded_date => '12-Sep-12'
+            underlying_config => $underlying_config,
+            chronicle_reader  => $chronicle_r,
+            chronicle_writer  => $chronicle_w,
+            recorded_date     => '12-Sep-12'
         );
     }
     qr/Must pass both "surface" and "recorded_date" if passing either/, 'throws exception if only pass in recorded_date';
 
     throws_ok {
         Quant::Framework::VolSurface::Moneyness->new(
-          underlying_config => $underlying_config,
-          chronicle_reader => $chronicle_r,
-          chronicle_writer => $chronicle_w,
-          surface    => {});
+            underlying_config => $underlying_config,
+            chronicle_reader  => $chronicle_r,
+            chronicle_writer  => $chronicle_w,
+            surface           => {});
     }
     qr/Must pass both "surface" and "recorded_date" if passing either/, 'throws exception if only pass in surface';
 };
@@ -84,18 +86,18 @@ subtest fetching_volsurface_data_from_db => sub {
     Quant::Framework::Utils::Test::create_doc(
         'volsurface_moneyness',
         {
-          underlying_config => $underlying_config,
-          chronicle_reader => $chronicle_r,
-          chronicle_writer => $chronicle_w,
-          surface       => $fake_surface,
-          recorded_date => $fake_date,
+            underlying_config => $underlying_config,
+            chronicle_reader  => $chronicle_r,
+            chronicle_writer  => $chronicle_w,
+            surface           => $fake_surface,
+            recorded_date     => $fake_date,
         });
 
     my $vs = Quant::Framework::VolSurface::Moneyness->new({
         underlying_config => $underlying_config,
-        chronicle_reader => $chronicle_r,
-        chronicle_writer => $chronicle_w,
-      });
+        chronicle_reader  => $chronicle_r,
+        chronicle_writer  => $chronicle_w,
+    });
 
     is_deeply($vs->surface, $fake_surface, 'surface is fetched correctly');
     is($vs->recorded_date->epoch, $fake_date->epoch, 'surface recorded_date is fetched correctly');

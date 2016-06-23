@@ -140,12 +140,12 @@ sub _admissible_check {
     my $surface = shift;
 
     my $underlying_config = $surface->underlying_config;
-    my $builder = $surface->builder;
-    my $calendar         = $surface->calendar;
-    my $surface_type     = $surface->type;
-    my $S                = ($surface_type eq 'delta') ? $underlying_config->spot : $surface->spot_reference;
-    my $premium_adjusted = $underlying_config->{market_convention}->{delta_premium_adjusted};
-    my $now              = Date::Utility->new;
+    my $builder           = $surface->builder;
+    my $calendar          = $surface->calendar;
+    my $surface_type      = $surface->type;
+    my $S                 = ($surface_type eq 'delta') ? $underlying_config->spot : $surface->spot_reference;
+    my $premium_adjusted  = $underlying_config->{market_convention}->{delta_premium_adjusted};
+    my $now               = Date::Utility->new;
 
     my $utils = Quant::Framework::VolSurface::Utils->new;
     foreach my $day (@{$surface->_days_with_smiles}) {
@@ -333,7 +333,7 @@ sub _check_structure {
 
     foreach my $day (@days) {
         if ($day !~ /^\d+$/) {
-          $DB::single=1;
+            $DB::single = 1;
             die("Invalid day[$day] in volsurface for underlying[$system_symbol]. Not a positive integer.");
         } elsif ($day > $max_term) {
             die("Day[$day] in volsurface for underlying[$system_symbol] greater than allowed.");
@@ -345,7 +345,7 @@ sub _check_structure {
     }
 
     my $min_day = min @days;
-    my $market = $surface->underlying_config->market_name;
+    my $market  = $surface->underlying_config->market_name;
 
     if ($market eq 'forex' and $min_day > 7) {
         die("ON term is missing in volsurface for underlying $system_symbol, the minimum term is $min_day");

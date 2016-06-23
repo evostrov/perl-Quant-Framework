@@ -24,16 +24,16 @@ Quant::Framework::Utils::Test::create_doc(
     'volsurface_moneyness',
     {
         underlying_config => $underlying_config,
-        recorded_date => Date::Utility->new,
-        chronicle_reader => $chronicle_r,
-        chronicle_writer => $chronicle_w,
+        recorded_date     => Date::Utility->new,
+        chronicle_reader  => $chronicle_r,
+        chronicle_writer  => $chronicle_w,
     });
 
 Quant::Framework::Utils::Test::create_doc(
     'currency',
     {
-        symbol => $_,
-        date   => Date::Utility->new,
+        symbol           => $_,
+        date             => Date::Utility->new,
         chronicle_reader => $chronicle_r,
         chronicle_writer => $chronicle_w,
     }) for (qw/USD EUR/);
@@ -64,12 +64,12 @@ my $surface = {
 };
 
 my $v = Quant::Framework::VolSurface::Moneyness->new(
-    recorded_date  => $recorded_date,
-    underlying_config     => $underlying_config,
-    spot_reference => $underlying_config->spot,
-    surface        => $surface,
-    chronicle_reader => $chronicle_r,
-    chronicle_writer => $chronicle_w,
+    recorded_date     => $recorded_date,
+    underlying_config => $underlying_config,
+    spot_reference    => $underlying_config->spot,
+    surface           => $surface,
+    chronicle_reader  => $chronicle_r,
+    chronicle_writer  => $chronicle_w,
 );
 
 subtest "get_vol for term structure that exists on surface" => sub {
@@ -97,13 +97,13 @@ subtest 'Interpolating down.' => sub {
     plan tests => 1;
 
     my $underlying_config = Quant::Framework::Utils::Test::create_underlying_config('GDAXI');
-    my $surface = Quant::Framework::Utils::Test::create_doc(
+    my $surface           = Quant::Framework::Utils::Test::create_doc(
         'volsurface_moneyness',
         {
             underlying_config => $underlying_config,
-            recorded_date => Date::Utility->new,
-            chronicle_reader => $chronicle_r,
-            chronicle_writer => $chronicle_w,
+            recorded_date     => Date::Utility->new,
+            chronicle_reader  => $chronicle_r,
+            chronicle_writer  => $chronicle_w,
         });
 
     ok(
@@ -121,11 +121,11 @@ subtest "get_vol for interpolated term structure" => sub {
     plan tests => 7;
 
     my $underlying_config = Quant::Framework::Utils::Test::create_underlying_config('GDAXI');
-    my $surface = Quant::Framework::Utils::Test::create_doc(
+    my $surface           = Quant::Framework::Utils::Test::create_doc(
         'volsurface_moneyness',
         {
             underlying_config => $underlying_config,
-            surface => {
+            surface           => {
                 7 => {
                     smile => {
                         90  => 0.2,
@@ -133,7 +133,7 @@ subtest "get_vol for interpolated term structure" => sub {
                         110 => 0.2
                     }}
             },
-            recorded_date => Date::Utility->new,
+            recorded_date    => Date::Utility->new,
             chronicle_reader => $chronicle_r,
             chronicle_writer => $chronicle_w,
         });
@@ -153,9 +153,10 @@ subtest "get_vol for interpolated term structure" => sub {
 };
 
 subtest "get_vol for a smile that has a single point" => sub {
-    plan tests => 1,
+    plan
+        tests => 1,
 
-    $v->clear_smile_points;
+        $v->clear_smile_points;
     $v = Test::MockObject::Extends->new($v);
     $v->mock('surface', sub { {7 => {smile => {80 => 0.1}}} });
     throws_ok { $v->get_volatility({days => 7, moneyness => 70}) } qr/cannot interpolate/i, "cannot interpolate with one point on smile";
@@ -166,12 +167,12 @@ subtest "get_vol for delta" => sub {
     plan tests => 10;
 
     my $new_v = Quant::Framework::VolSurface::Moneyness->new(
-        recorded_date  => $recorded_date,
-        underlying_config     => $underlying_config,
-        spot_reference => $underlying_config->spot,
-        surface        => $surface,
-        chronicle_reader => $chronicle_r,
-        chronicle_writer => $chronicle_w,
+        recorded_date     => $recorded_date,
+        underlying_config => $underlying_config,
+        spot_reference    => $underlying_config->spot,
+        surface           => $surface,
+        chronicle_reader  => $chronicle_r,
+        chronicle_writer  => $chronicle_w,
     );
 
     ok(!exists $new_v->corresponding_deltas->{8}, "corresponding_deltas does not exist before request");
@@ -192,12 +193,12 @@ subtest 'get_vol for term less than the available term on surface' => sub {
     plan tests => 4;
 
     my $volsurface = Quant::Framework::VolSurface::Moneyness->new(
-        recorded_date  => $recorded_date,
-        underlying_config     => $underlying_config,
-        spot_reference => $underlying_config->spot,
-        surface        => $surface,
-        chronicle_reader => $chronicle_r,
-        chronicle_writer => $chronicle_w,
+        recorded_date     => $recorded_date,
+        underlying_config => $underlying_config,
+        spot_reference    => $underlying_config->spot,
+        surface           => $surface,
+        chronicle_reader  => $chronicle_r,
+        chronicle_writer  => $chronicle_w,
     );
 
     my $vol;

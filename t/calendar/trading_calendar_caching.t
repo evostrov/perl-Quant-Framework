@@ -10,9 +10,10 @@ use Quant::Framework::Utils::Test;
 use Data::Chronicle::Mock;
 
 my ($chronicle_r, $chronicle_w) = Data::Chronicle::Mock::get_mocked_chronicle();
-Quant::Framework::Utils::Test::create_doc('currency', 
+Quant::Framework::Utils::Test::create_doc(
+    'currency',
     {
-        symbol => 'GBP',
+        symbol           => 'GBP',
         chronicle_reader => $chronicle_r,
         chronicle_writer => $chronicle_w,
     });

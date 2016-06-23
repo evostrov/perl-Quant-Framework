@@ -15,7 +15,7 @@ The values can be updated through backoffice's Quant Market Data page.
 =cut
 
 use Moose;
-extends 'Quant::Framework::Utils::MarketData';    
+extends 'Quant::Framework::Utils::MarketData';
 
 use namespace::autoclean;
 use Math::Function::Interpolator;
@@ -31,13 +31,13 @@ The date for which we wish data
 =cut
 
 has chronicle_reader => (
-    is         => 'ro',
-    isa        => 'Data::Chronicle::Reader',
+    is  => 'ro',
+    isa => 'Data::Chronicle::Reader',
 );
 
 has chronicle_writer => (
-    is         => 'ro',
-    isa        => 'Data::Chronicle::Writer',
+    is  => 'ro',
+    isa => 'Data::Chronicle::Writer',
 );
 
 has for_date => (

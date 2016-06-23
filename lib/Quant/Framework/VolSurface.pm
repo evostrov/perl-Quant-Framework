@@ -49,7 +49,7 @@ has chronicle_writer => (
 );
 
 has underlying_config => (
-    is  => 'ro',
+    is       => 'ro',
     required => 1,
 );
 
@@ -66,8 +66,8 @@ sub _build_calendar {
 }
 
 has builder => (
-    is  => 'ro',
-    isa => 'Quant::Framework::Utils::Builder',
+    is         => 'ro',
+    isa        => 'Quant::Framework::Utils::Builder',
     lazy_build => 1,
 );
 
@@ -75,9 +75,9 @@ sub _build_builder {
     my $self = shift;
 
     return Quant::Framework::Utils::Builder->new({
-        for_date           => $self->for_date,
-        chronicle_reader   => $self->chronicle_reader,
-        chronicle_writer   => $self->chronicle_writer,
+        for_date          => $self->for_date,
+        chronicle_reader  => $self->chronicle_reader,
+        chronicle_writer  => $self->chronicle_writer,
         underlying_config => $self->underlying_config,
     });
 }
@@ -122,7 +122,7 @@ sub _build_recorded_date {
     my $self          = shift;
     my $recorded_date = Date::Utility->new($self->document->{date});
 
-    #for a flat volatility surface, we assume it is always fresh with date equal to now or the date for which 
+    #for a flat volatility surface, we assume it is always fresh with date equal to now or the date for which
     #we want to fetch the surface (because it never changes)
     if ($self->type eq 'flat') {
         $recorded_date = $self->for_date // Date::Utility->new;
@@ -444,7 +444,7 @@ has _ON_day => (
     lazy_build => 1,
 );
 
-#Returns the day for over-night tenor of this surface 
+#Returns the day for over-night tenor of this surface
 #ON = over-night
 sub _build__ON_day {
     my $self = shift;
@@ -459,7 +459,7 @@ around BUILDARGS => sub {
     my %day_for_tenor;
 
     die "Chronicle reader is required to create a vol-surface" if not defined $args{chronicle_reader};
-    die "Attribute underlying_config is required" if not defined $args{underlying_config};
+    die "Attribute underlying_config is required"              if not defined $args{underlying_config};
 
     my $underlying_config = $args{underlying_config};
     if (ref $underlying_config
@@ -476,11 +476,11 @@ around BUILDARGS => sub {
 
         $args{_new_surface} = 1;
         my $builder = Quant::Framework::Utils::Builder->new({
-            for_date           => $args{for_date},
-            chronicle_reader   => $args{chronicle_reader},
-            chronicle_writer   => $args{chronicle_writer},
+            for_date          => $args{for_date},
+            chronicle_reader  => $args{chronicle_reader},
+            chronicle_writer  => $args{chronicle_writer},
             underlying_config => $args{underlying_config},
-          });
+        });
 
         my $expiry_conventions = $builder->build_expiry_conventions;
 
@@ -1019,8 +1019,8 @@ sub _market_maturities_interpolation_function {
         T2 => $effective_date->plus_time_interval($T2 - 1 . 'd23h59m59s'),
     );
 
-    my $tau1       = $self->builder->weighted_days_in_period($dates{T1}, $dates{T}, 0) / 365;
-    my $tau2       = $self->builder->weighted_days_in_period($dates{T1}, $dates{T2}, 1) / 365;
+    my $tau1 = $self->builder->weighted_days_in_period($dates{T1}, $dates{T},  0) / 365;
+    my $tau2 = $self->builder->weighted_days_in_period($dates{T1}, $dates{T2}, 1) / 365;
 
     warn(     'Error in volsurface['
             . $self->recorded_date->datetime
@@ -1217,8 +1217,6 @@ sub _get_initial_rr {
 
     return \%initial_rr;
 }
-
-
 
 sub _extrapolate_smile_up {
     my $self = shift;
@@ -1484,9 +1482,9 @@ sub get_existing_surface {
     return $self->_new_surface
         ? $self->new({
             underlying_config => $self->underlying_config,
-            cutoff     => $self->cutoff,
-            chronicle_reader => $self->chronicle_reader,
-            chronicle_writer => $self->chronicle_writer,
+            cutoff            => $self->cutoff,
+            chronicle_reader  => $self->chronicle_reader,
+            chronicle_writer  => $self->chronicle_writer,
         })
         : $self;
 }

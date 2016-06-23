@@ -29,14 +29,14 @@ sub get {
 }
 
 has chronicle_reader => (
-    is  => 'ro',
-    isa => 'Data::Chronicle::Reader',
+    is       => 'ro',
+    isa      => 'Data::Chronicle::Reader',
     required => 1,
 );
 
 has chronicle_writer => (
-    is  => 'ro',
-    isa => 'Data::Chronicle::Writer',
+    is       => 'ro',
+    isa      => 'Data::Chronicle::Writer',
     required => 1,
 );
 
@@ -158,8 +158,8 @@ sub _get_surfaces_from_file {
                 smile      => ['ON', 7, 14, 21, 30, 60, 90, 120, 150, 180, 270, 365],
                 vol_spread => ['ON', 7, 14, 21, 30, 60, 90, 120, 150, 180, 270, 365],
             },
-            chronicle_reader  => $self->chronicle_reader,
-            chronicle_writer  => $self->chronicle_writer,
+            chronicle_reader => $self->chronicle_reader,
+            chronicle_writer => $self->chronicle_writer,
         };
 
         $args->{cutoff} = $cutoff if $cutoff;

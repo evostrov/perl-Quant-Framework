@@ -25,10 +25,10 @@ subtest 'error check' => sub {
 subtest 'save and retrieve event' => sub {
     lives_ok {
         my $h = Quant::Framework::Holiday->new(
-            recorded_date => $now,
-            chronicle_reader    => $chronicle_r,
-            chronicle_writer    => $chronicle_w,
-            calendar      => {
+            recorded_date    => $now,
+            chronicle_reader => $chronicle_r,
+            chronicle_writer => $chronicle_w,
+            calendar         => {
                 $now->epoch => {
                     'Test Event' => ['USD'],
                 }
@@ -36,10 +36,10 @@ subtest 'save and retrieve event' => sub {
         );
         ok $h->save, 'succesfully saved event.';
         $h = Quant::Framework::Holiday->new(
-            recorded_date => $now,
-            chronicle_reader    => $chronicle_r,
-            chronicle_writer    => $chronicle_w,
-            calendar      => {
+            recorded_date    => $now,
+            chronicle_reader => $chronicle_r,
+            chronicle_writer => $chronicle_w,
+            calendar         => {
                 $now->epoch => {
                     'Test Event 2' => ['EURONEXT'],
                 }
@@ -54,10 +54,10 @@ subtest 'save and retrieve event' => sub {
     my $next_day = $now->plus_time_interval('1d');
     lives_ok {
         my $h = Quant::Framework::Holiday->new(
-            recorded_date => $next_day,
-            chronicle_reader    => $chronicle_r,
-            chronicle_writer    => $chronicle_w,
-            calendar      => {
+            recorded_date    => $next_day,
+            chronicle_reader => $chronicle_r,
+            chronicle_writer => $chronicle_w,
+            calendar         => {
                 $next_day->epoch => {
                     'Test Event Update' => ['AUD'],
                 }
@@ -78,10 +78,10 @@ subtest 'save and retrieve event in history' => sub {
     Quant::Framework::Utils::Test::create_doc(
         'holiday',
         {
-            recorded_date => $yesterday,
-            chronicle_reader    => $chronicle_r,
-            chronicle_writer    => $chronicle_w,
-            calendar      => {$now->epoch => {'Test Historical Save' => ['EURONEXT']}}});
+            recorded_date    => $yesterday,
+            chronicle_reader => $chronicle_r,
+            chronicle_writer => $chronicle_w,
+            calendar         => {$now->epoch => {'Test Historical Save' => ['EURONEXT']}}});
 
     my $h = Quant::Framework::Holiday::get_holidays_for($chronicle_r, 'EURONEXT', $yesterday);
     ok $h->{$now->truncate_to_day->epoch}, 'has a holiday';
