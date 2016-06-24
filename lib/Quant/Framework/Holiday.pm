@@ -30,9 +30,9 @@ This module saves/loads holidays to/from Chronicle.
 
 returns hard-coded string 'holidays'. Required to conform Document role contract.
 
-=head2 default_section
+=head2 initialize_data
 
-returns hard-coded string 'calendar'. Required to conform Document role contract.
+returns default data hash, i.e. C<{ alender => {}}> Required to conform Document role contract.
 
 =head2 create($package, $storage_accessor, $for_date)
 
