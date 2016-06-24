@@ -93,7 +93,9 @@ The C<$date> argument in mandatory.
 
 sub namespace { 'corporate_actions' }
 
-sub default_section { 'actions' }
+sub initialize_data {
+    return { actions => { }};
+}
 
 sub update {
     my ($self, $actions, $new_date) = @_;

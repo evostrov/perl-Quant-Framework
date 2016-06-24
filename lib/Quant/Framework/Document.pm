@@ -79,16 +79,17 @@ has symbol => (
 returns namespace (strign) for the object, which the role is applied to,
 e.g. "corporate_actions" or "holidays"
 
-=head2 default_section()
+=head2 initialize_data()
 
-The section in data hash (string), where object-specific data will be stored.
-For example for Holidays, it can be 'calendar'
+Returns initialized hash ref for data.  For example for Holidays, it can
+be C<{ calendar => {} }>. The fields C<symbol> and C<date> are reserved,
+please, do not fill them.
 
 =cut
 
 requires 'namespace';
 
-requires 'default_section';
+requires 'initialize_data';
 
 =head1 METHODS
 
@@ -133,11 +134,16 @@ role is applied to), otherwise it will not work.
 
 sub create_default {
     my ($package, $storage_accessor, $symbol, $for_date) = @_;
+    my $data = $package->initialize_data;
+    die("$package->initialize_data must return an hashref") unless ref($data) eq 'HASH';
+    die("$package->initialize_data must not fill 'date' field") if exists $data->{date};
+    die("$package->initialize_data must not fill 'symbol' field") if exists $data->{symbol};
+
     my $obj = $package->new(
         storage_accessor => $storage_accessor,
         recorded_date    => $for_date,
         symbol           => $symbol,
-        data             => {$package->default_section => {}},
+        data             => $data,
     );
 }
 *create = \&create_default;
