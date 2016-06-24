@@ -150,6 +150,7 @@ sub create_default {
         symbol           => $symbol,
         data             => $data,
     );
+    return $obj;
 }
 *create = \&create_default;
 
