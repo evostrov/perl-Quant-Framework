@@ -98,8 +98,8 @@ sub build_trading_calendar {
     my $self = shift;
 
     return Quant::Framework::TradingCalendar->new({
-        symbol           => $self->underlying_config->exchange_name,
-        chronicle_reader => $self->chronicle_reader,
+        symbol            => $self->underlying_config->exchange_name,
+        chronicle_reader  => $self->chronicle_reader,
         for_date          => $self->for_date,
         underlying_config => $self->underlying_config,
     });
