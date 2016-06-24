@@ -90,7 +90,9 @@ The C<$date> argument in mandatory.
 
 =cut
 
-sub namespace { 'corporate_actions' }
+sub namespace {
+    return 'corporate_actions';
+}
 
 sub initialize_data {
     return { actions => { }};

@@ -57,7 +57,9 @@ C<$date>, adds C<$new_events> and returns new unpersisted Holiday object.
 
 =cut
 
-sub namespace { 'holidays' }
+sub namespace {
+    return 'holidays';
+}
 
 sub initialize_data {
     return {calendar => {}};
@@ -67,12 +69,12 @@ sub initialize_data {
 # symbol for Holiday (it is equal to 'holidays')
 sub create {
     my ($package, $storage_accessor, $for_date) = @_;
-    $package->create_default($storage_accessor, namespace, $for_date);
+    return $package->create_default($storage_accessor, namespace, $for_date);
 }
 
 sub load {
     my ($package, $storage_accessor, $for_date) = @_;
-    $package->load_default($storage_accessor, namespace, $for_date);
+    return $package->load_default($storage_accessor, namespace, $for_date);
 }
 
 sub update {
