@@ -141,7 +141,7 @@ sub create_default {
     my ($package, $storage_accessor, $symbol, $for_date) = @_;
     my $data = $package->initialize_data;
     die("$package->initialize_data must return an hashref") unless ref($data) eq 'HASH';
-    die("$package->initialize_data must not fill 'date' field") if exists $data->{date};
+    die("$package->initialize_data must not fill 'date' field")   if exists $data->{date};
     die("$package->initialize_data must not fill 'symbol' field") if exists $data->{symbol};
 
     my $obj = $package->new(
