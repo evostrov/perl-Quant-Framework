@@ -80,22 +80,23 @@ Quant::Framework::Utils::Test::create_doc(
         chronicle_writer => $chronicle_w,
     });
 
-Quant::Framework::Utils::Test::create_doc('currency', {
-        symbol => $_,
+Quant::Framework::Utils::Test::create_doc(
+    'currency',
+    {
+        symbol           => $_,
         chronicle_reader => $chronicle_r,
         chronicle_writer => $chronicle_w,
     }) for qw(AUD GBP EUR USD HKD);
 
-
-my $LSE             = Quant::Framework::TradingCalendar->new('LSE', $chronicle_r, 'EN', $date);
-my $FSE             = Quant::Framework::TradingCalendar->new('FSE', $chronicle_r);               # think GDAXI
-my $FOREX           = Quant::Framework::TradingCalendar->new('FOREX', $chronicle_r);
-my $RANDOM          = Quant::Framework::TradingCalendar->new('RANDOM', $chronicle_r);
+my $LSE             = Quant::Framework::TradingCalendar->new('LSE',             $chronicle_r, 'EN', $date);
+my $FSE             = Quant::Framework::TradingCalendar->new('FSE',             $chronicle_r);                # think GDAXI
+my $FOREX           = Quant::Framework::TradingCalendar->new('FOREX',           $chronicle_r);
+my $RANDOM          = Quant::Framework::TradingCalendar->new('RANDOM',          $chronicle_r);
 my $RANDOM_NOCTURNE = Quant::Framework::TradingCalendar->new('RANDOM_NOCTURNE', $chronicle_r);
-my $ASX             = Quant::Framework::TradingCalendar->new('ASX', $chronicle_r);
-my $NYSE            = Quant::Framework::TradingCalendar->new('NYSE', $chronicle_r);
-my $HKSE            = Quant::Framework::TradingCalendar->new('HKSE', $chronicle_r);
-my $ISE             = Quant::Framework::TradingCalendar->new('ISE', $chronicle_r);
+my $ASX             = Quant::Framework::TradingCalendar->new('ASX',             $chronicle_r);
+my $NYSE            = Quant::Framework::TradingCalendar->new('NYSE',            $chronicle_r);
+my $HKSE            = Quant::Framework::TradingCalendar->new('HKSE',            $chronicle_r);
+my $ISE             = Quant::Framework::TradingCalendar->new('ISE',             $chronicle_r);
 
 subtest 'holidays check' => sub {
     is $LSE->for_date->epoch, $date->epoch, 'for_date properly set in Exchange';
@@ -666,17 +667,17 @@ subtest 'standard_closing_on early close' => sub {
 };
 
 my $builder = Quant::Framework::Utils::Builder->new({
-        chronicle_reader   => $chronicle_r,
-        chronicle_writer   => $chronicle_w,
-        underlying_config => Quant::Framework::Utils::Test::create_underlying_config('FTSE')
-    });
+        chronicle_reader  => $chronicle_r,
+        chronicle_writer  => $chronicle_w,
+        underlying_config => Quant::Framework::Utils::Test::create_underlying_config('FTSE')});
 
-my $trade_start          = Date::Utility->new('30-Mar-13');
-my $trade_end            = Date::Utility->new('8-Apr-13');
-my $trade_end2           = Date::Utility->new('9-Apr-13');      # Just to avoid memoization on weighted_days_in_period
+my $trade_start = Date::Utility->new('30-Mar-13');
+my $trade_end   = Date::Utility->new('8-Apr-13');
+my $trade_end2  = Date::Utility->new('9-Apr-13');    # Just to avoid memoization on weighted_days_in_period
 is $builder->closed_weight, 0.55, 'Sanity check so that our weighted math matches :-)';
 is $builder->weighted_days_in_period($trade_start, $trade_end), 7.2, 'Weighted period calculated correctly: 5 trading days, plus 4 weekends/holidays';
-is $builder->weighted_days_in_period($trade_start, $trade_end2), 8.2, 'Weighted period calculated correctly: 6 trading days, plus 4 weekends/holidays';
+is $builder->weighted_days_in_period($trade_start, $trade_end2), 8.2,
+    'Weighted period calculated correctly: 6 trading days, plus 4 weekends/holidays';
 
 done_testing;
 

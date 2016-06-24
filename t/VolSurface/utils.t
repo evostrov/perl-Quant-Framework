@@ -16,31 +16,31 @@ my ($chronicle_r, $chronicle_w) = Data::Chronicle::Mock::get_mocked_chronicle();
 my $date = Date::Utility->new('2016-05-25');
 subtest "default_bloomberg_cutoff" => sub {
     plan tests => 3;
-    my $forex = Quant::Framework::Utils::Test::create_underlying_config('frxUSDJPY');
+    my $forex      = Quant::Framework::Utils::Test::create_underlying_config('frxUSDJPY');
     my $volsurface = Quant::Framework::VolSurface::Delta->new({
-        underlying_config => $forex, 
-        _new_surface => 1,
-        chronicle_reader => $chronicle_r,
-        chronicle_writer => $chronicle_w,
-      });
+        underlying_config => $forex,
+        _new_surface      => 1,
+        chronicle_reader  => $chronicle_r,
+        chronicle_writer  => $chronicle_w,
+    });
     is($volsurface->cutoff->code, 'New York 10:00', 'Gets New York 10:00 for forex market');
-    
+
     my $commodity = Quant::Framework::Utils::Test::create_underlying_config('frxXAUUSD');
     $volsurface = Quant::Framework::VolSurface::Delta->new({
-        underlying_config => $commodity, 
-        _new_surface => 1,
-        chronicle_reader => $chronicle_r,
-        chronicle_writer => $chronicle_w,
-      });
+        underlying_config => $commodity,
+        _new_surface      => 1,
+        chronicle_reader  => $chronicle_r,
+        chronicle_writer  => $chronicle_w,
+    });
     is($volsurface->cutoff->code, 'New York 10:00', 'Default cutoff for a commodity.');
 
     my $indices = Quant::Framework::Utils::Test::create_underlying_config('SPC');
     $volsurface = Quant::Framework::VolSurface::Moneyness->new({
-        underlying_config => $indices, 
-        _new_surface => 1,
-        chronicle_reader => $chronicle_r,
-        chronicle_writer => $chronicle_w,
-      });
+        underlying_config => $indices,
+        _new_surface      => 1,
+        chronicle_reader  => $chronicle_r,
+        chronicle_writer  => $chronicle_w,
+    });
     isnt($volsurface->cutoff->code, 'New York 10:00', 'Anything other than New York 10:00 for indices');
 };
 
@@ -71,13 +71,13 @@ subtest default_bloomberg_cutoff => sub {
     foreach my $date_str (qw(2012-10-05 2012-10-06 2012-10-07 2012-10-08)) {
         set_absolute_time(Date::Utility->new($date_str . ' 10:00:00')->epoch);
 
-        my $AS51 = Quant::Framework::Utils::Test::create_underlying_config('AS51');
+        my $AS51       = Quant::Framework::Utils::Test::create_underlying_config('AS51');
         my $volsurface = Quant::Framework::VolSurface::Moneyness->new({
-            underlying_config => $AS51, 
-            _new_surface => 1,
-            chronicle_reader => $chronicle_r,
-            chronicle_writer => $chronicle_w,
-          });
+            underlying_config => $AS51,
+            _new_surface      => 1,
+            chronicle_reader  => $chronicle_r,
+            chronicle_writer  => $chronicle_w,
+        });
 
         is($volsurface->cutoff->code, 'UTC 06:00', 'Cutoff on Saturday before a DST spring forward.');
     }

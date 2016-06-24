@@ -26,7 +26,7 @@ my $date = Date::Utility->new('2013-12-08');
 note("Exchange tests for_date " . $date->date);
 
 subtest 'trading days' => sub {
-    my $exp       = LoadFile(File::ShareDir::dist_file('Quant-Framework', 'expected_trading_days.yml'));
+    my $exp = LoadFile(File::ShareDir::dist_file('Quant-Framework', 'expected_trading_days.yml'));
     my @exchanges = qw(JSC SES NYSE_SPC ASX ODLS ISE BSE FOREX JSE SWX FSE DFM EURONEXT HKSE NYSE RANDOM RANDOM_NOCTURNE TSE OSLO);
 
     foreach my $exchange_symbol (@exchanges) {

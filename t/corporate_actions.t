@@ -29,7 +29,8 @@ my $now = time;
 my $old_date = Date::Utility->new->minus_time_interval("15m");
 
 subtest "load/save" => sub {
-  my $ca = Quant::Framework::CorporateAction->create($storage_accessor, 'QWER', $old_date);
+
+my $ca = Quant::Framework::CorporateAction->create($storage_accessor, 'QWER', $old_date);
   ok $ca, "empty corporate actions object has been created";
 
   my $ca2 = $ca->update({
@@ -107,7 +108,7 @@ subtest 'save new corporate actions' => sub {
         }, $now->plus_time_interval("2m") )->save;
         my $persisted_actions = Quant::Framework::CorporateAction->load($storage_accessor, 'USAAPL')->actions;
         isnt $persisted_actions->{1122334}->{description}, 'Duplicate action';
-        is $persisted_actions->{1122334}->{description}, 'Test data 2';
+        is $persisted_actions->{1122334}->{description},   'Test data 2';
     };
 
     subtest 'update existing corporate actions' => sub {
@@ -155,6 +156,5 @@ subtest 'save new corporate actions' => sub {
         is $persisted_actions->{$action_id}->{suspend_trading}, 1, 'suspend_trading';
     };
 };
-
 
 done_testing;

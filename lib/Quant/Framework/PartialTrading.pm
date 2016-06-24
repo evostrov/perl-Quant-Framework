@@ -25,13 +25,13 @@ has [qw(calendar recorded_date)] => (
 );
 
 has chronicle_reader => (
-    is      => 'ro',
-    isa     => 'Data::Chronicle::Reader',
+    is  => 'ro',
+    isa => 'Data::Chronicle::Reader',
 );
 
 has chronicle_writer => (
-    is      => 'ro',
-    isa     => 'Data::Chronicle::Writer',
+    is  => 'ro',
+    isa => 'Data::Chronicle::Writer',
 );
 
 =head2 save
@@ -79,7 +79,7 @@ sub get_partial_trading_for {
     my ($self, $symbol, $for_date) = @_;
 
     my $cached =
-        $for_date
+          $for_date
         ? $self->chronicle_reader->get_for('partial_trading', $self->type, $for_date)
         : $self->chronicle_reader->get('partial_trading', $self->type);
 

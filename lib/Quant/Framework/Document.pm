@@ -67,6 +67,11 @@ has data => (
     required => 1,
 );
 
+has namespace => (
+    is       => 'ro',
+    required => 1,
+);
+
 has symbol => (
     is       => 'ro',
     required => 1,
@@ -182,6 +187,7 @@ sub save {
     $self->data->{date}   = $self->recorded_date->datetime_iso8601;
     $self->data->{symbol} = $self->symbol;
     $self->storage_accessor->chronicle_writer->set($self->namespace, $self->symbol, $self->data, $self->recorded_date);
+    return;
 }
 
 1;

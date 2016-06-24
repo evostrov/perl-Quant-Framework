@@ -18,17 +18,17 @@ $underlying_config->{spot} = 100;
 Quant::Framework::Utils::Test::create_doc(
     'volsurface_moneyness',
     {
-        underlying_config        => $underlying_config,
-        recorded_date => Date::Utility->new,
-        chronicle_reader => $chronicle_r,
-        chronicle_writer => $chronicle_w,
+        underlying_config => $underlying_config,
+        recorded_date     => Date::Utility->new,
+        chronicle_reader  => $chronicle_r,
+        chronicle_writer  => $chronicle_w,
     });
 
 Quant::Framework::Utils::Test::create_doc(
     'currency',
     {
-        symbol => $_,
-        date   => Date::Utility->new,
+        symbol           => $_,
+        date             => Date::Utility->new,
         chronicle_reader => $chronicle_r,
         chronicle_writer => $chronicle_w,
     }) for (qw/HKD USD/);
@@ -36,26 +36,26 @@ Quant::Framework::Utils::Test::create_doc(
 Quant::Framework::Utils::Test::create_doc(
     'index',
     {
-        symbol => 'SPC',
-        date   => Date::Utility->new,
+        symbol           => 'SPC',
+        date             => Date::Utility->new,
         chronicle_reader => $chronicle_r,
         chronicle_writer => $chronicle_w,
     });
 
 subtest clone => sub {
     plan tests => 5;
-    my $now = Date::Utility->new('2012-06-14 08:00:00');
-    my $surface    = {
+    my $now     = Date::Utility->new('2012-06-14 08:00:00');
+    my $surface = {
         'ON' => {smile => {100 => 0.1}},
         '1W' => {smile => {100 => 0.2}}};
-      $DB::single=1;
+    $DB::single = 1;
     my $volsurface = Quant::Framework::VolSurface::Moneyness->new(
-        underlying_config     => $underlying_config,
-        spot_reference => $underlying_config->spot,
-        surface        => $surface,
-        recorded_date  => $now,
-        chronicle_reader => $chronicle_r,
-        chronicle_writer => $chronicle_w,
+        underlying_config => $underlying_config,
+        spot_reference    => $underlying_config->spot,
+        surface           => $surface,
+        recorded_date     => $now,
+        chronicle_reader  => $chronicle_r,
+        chronicle_writer  => $chronicle_w,
     );
 
     lives_ok { $volsurface->clone } 'Can clone Quant::Framework::VolSurface::Moneyness';
@@ -73,17 +73,17 @@ subtest clone => sub {
 
 subtest 'get available strikes on surface' => sub {
     plan tests => 2;
-    my $now = Date::Utility->new('2012-06-14 08:00:00');
-    my $surface    = {
+    my $now     = Date::Utility->new('2012-06-14 08:00:00');
+    my $surface = {
         'ON' => {smile => {100 => 0.1}},
         '1W' => {smile => {100 => 0.2}}};
     my $volsurface = Quant::Framework::VolSurface::Moneyness->new(
-        underlying_config     => $underlying_config,
-        spot_reference => $underlying_config->spot,
-        surface        => $surface,
-        recorded_date  => $now,
-        chronicle_reader => $chronicle_r,
-        chronicle_writer => $chronicle_w,
+        underlying_config => $underlying_config,
+        spot_reference    => $underlying_config->spot,
+        surface           => $surface,
+        recorded_date     => $now,
+        chronicle_reader  => $chronicle_r,
+        chronicle_writer  => $chronicle_w,
     );
     my $moneyness_points;
     lives_ok { $moneyness_points = $volsurface->moneynesses } 'can call moneynesses';
@@ -92,19 +92,19 @@ subtest 'get available strikes on surface' => sub {
 
 subtest 'get surface spot reference' => sub {
     plan tests => 3;
-    my $date       = Date::Utility->new('2012-06-14 08:00:00');
+    my $date = Date::Utility->new('2012-06-14 08:00:00');
 
     my $surface = {
         'ON' => {smile => {100 => 0.1}},
         '1W' => {smile => {100 => 0.2}},
     };
     my $volsurface = Quant::Framework::VolSurface::Moneyness->new(
-        underlying_config     => $underlying_config,
-        surface        => $surface,
-        recorded_date  => $date,
-        spot_reference => 100,
-        chronicle_reader => $chronicle_r,
-        chronicle_writer => $chronicle_w,
+        underlying_config => $underlying_config,
+        surface           => $surface,
+        recorded_date     => $date,
+        spot_reference    => 100,
+        chronicle_reader  => $chronicle_r,
+        chronicle_writer  => $chronicle_w,
     );
 
     my $spot;
@@ -123,12 +123,12 @@ subtest _convert_strike_to_delta => sub {
         'ON' => {smile => {100 => 0.1}},
         '1W' => {smile => {100 => 0.2}}};
     my $volsurface = Quant::Framework::VolSurface::Moneyness->new(
-        underlying_config     => $underlying_config,
-        surface        => $surface,
-        recorded_date  => Date::Utility->new('2012-06-14 08:00:00'),
-        spot_reference => 100,
-        chronicle_reader => $chronicle_r,
-        chronicle_writer => $chronicle_w,
+        underlying_config => $underlying_config,
+        surface           => $surface,
+        recorded_date     => Date::Utility->new('2012-06-14 08:00:00'),
+        spot_reference    => 100,
+        chronicle_reader  => $chronicle_r,
+        chronicle_writer  => $chronicle_w,
     );
     my $args = {
         strike => 100,

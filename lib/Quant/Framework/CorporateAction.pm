@@ -55,16 +55,15 @@ to presist it via C<save> method.
 In the list context it will return new unpersisted Corporate object, and two hasref for
 new and cancelled action.
 
-
 =head1 SUBROUTINES
 
 =head2 namespace
 
 returns hard-coded string 'corporate_actions'. Required to conform Document role contract.
 
-=head2 default_section
+=head2 initialize_data
 
-returns hard-coded string 'actions'. Required to conform Document role contract.
+returns hard-coded hash with 'actions'. Required to conform Document role contract.
 
 =head2 update($actions, $date);
 
@@ -96,6 +95,7 @@ sub namespace { 'corporate_actions' }
 sub initialize_data {
     return { actions => { }};
 }
+
 
 sub update {
     my ($self, $actions, $new_date) = @_;

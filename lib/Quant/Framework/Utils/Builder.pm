@@ -34,8 +34,8 @@ Instance of Data::Chronicle::Reader for reading data
 =cut
 
 has chronicle_reader => (
-    is      => 'ro',
-    isa     => 'Data::Chronicle::Reader',
+    is  => 'ro',
+    isa => 'Data::Chronicle::Reader',
 );
 
 =head2 chronicle_writer
@@ -45,8 +45,8 @@ Instance of Data::Chronicle::Writer to write data to
 =cut
 
 has chronicle_writer => (
-    is      => 'ro',
-    isa     => 'Data::Chronicle::Writer',
+    is  => 'ro',
+    isa => 'Data::Chronicle::Writer',
 );
 
 =head2 underlying_config
@@ -56,8 +56,8 @@ UnderlyingConfig used to create/initialize Q::F modules
 =cut
 
 has underlying_config => (
-    is      => 'ro',
-    isa     => 'Quant::Framework::Utils::UnderlyingConfig',
+    is  => 'ro',
+    isa => 'Quant::Framework::Utils::UnderlyingConfig',
 );
 
 =head2 build_expiry_conventions
@@ -70,22 +70,22 @@ sub build_expiry_conventions {
     my $self = shift;
 
     my $quoted_currency = Quant::Framework::Currency->new({
-            symbol           => $self->underlying_config->quoted_currency_symbol,
-            for_date         => $self->for_date,
-            chronicle_reader => $self->chronicle_reader,
-            chronicle_writer => $self->chronicle_writer,
-        });
+        symbol           => $self->underlying_config->quoted_currency_symbol,
+        for_date         => $self->for_date,
+        chronicle_reader => $self->chronicle_reader,
+        chronicle_writer => $self->chronicle_writer,
+    });
 
     return Quant::Framework::ExpiryConventions->new({
-            chronicle_reader => $self->chronicle_reader,
-            is_forex_market  => $self->underlying_config->market_name eq 'forex',
-            symbol           => $self->underlying_config->symbol,
-            for_date         => $self->for_date,
-            asset            => $self->build_asset,
-            quoted_currency  => $quoted_currency,
-            asset_symbol     => $self->underlying_config->asset_symbol,
-            calendar         => $self->build_trading_calendar,
-        });
+        chronicle_reader => $self->chronicle_reader,
+        is_forex_market  => $self->underlying_config->market_name eq 'forex',
+        symbol           => $self->underlying_config->symbol,
+        for_date         => $self->for_date,
+        asset            => $self->build_asset,
+        quoted_currency  => $quoted_currency,
+        asset_symbol     => $self->underlying_config->asset_symbol,
+        calendar         => $self->build_trading_calendar,
+    });
 }
 
 =head2 build_trading_calendar
@@ -98,13 +98,11 @@ sub build_trading_calendar {
     my $self = shift;
 
     return Quant::Framework::TradingCalendar->new(
-            $self->underlying_config->exchange_name,
-            $self->chronicle_reader,
-            ($self->underlying_config->locale) ? $self->underlying_config->locale : undef,
-            $self->for_date
-        );
+        $self->underlying_config->exchange_name,
+        $self->chronicle_reader, ($self->underlying_config->locale) ? $self->underlying_config->locale : undef,
+        $self->for_date
+    );
 }
-
 
 =head2 build_dividend
 
@@ -116,11 +114,11 @@ sub build_dividend {
     my $self = shift;
 
     return Quant::Framework::Dividend->new({
-            symbol  => $self->underlying_config->symbol,
-            for_date => $self->for_date,
-            chronicle_reader => $self->chronicle_reader,
-            chronicle_writer => $self->chronicle_writer,
-        });
+        symbol           => $self->underlying_config->symbol,
+        for_date         => $self->for_date,
+        chronicle_reader => $self->chronicle_reader,
+        chronicle_writer => $self->chronicle_writer,
+    });
 }
 
 =head2 build_asset
@@ -128,7 +126,6 @@ sub build_dividend {
 Creates a default instance of Asset/Currency according to current parameters (chronicle, for_date, underlying_config)
 
 =cut
-
 
 sub build_asset {
     my $self = shift;
@@ -192,8 +189,6 @@ sub dividend_rate_for {
     return $rate;
 }
 
-
-
 =head2 interest_rate_for
 
 Get the interest rate for this underlying over a given time period (expressed in timeinyears.)
@@ -209,11 +204,11 @@ sub interest_rate_for {
     return $self->underlying_config->default_interest_rate if defined $self->underlying_config->default_interest_rate;
 
     my $quoted_currency = Quant::Framework::Currency->new({
-            symbol           => $self->underlying_config->quoted_currency_symbol,
-            for_date         => $self->for_date,
-            chronicle_reader => $self->chronicle_reader,
-            chronicle_writer => $self->chronicle_writer,
-        });
+        symbol           => $self->underlying_config->quoted_currency_symbol,
+        for_date         => $self->for_date,
+        chronicle_reader => $self->chronicle_reader,
+        chronicle_writer => $self->chronicle_writer,
+    });
 
     my $rate;
     if ($self->underlying_config->uses_implied_rate_for_quoted_currency) {
@@ -238,8 +233,8 @@ sub get_discrete_dividend_for_period {
         map { Date::Utility->new($_) } @{$args}{'start', 'end'};
 
     my %valid_dividends;
-    my $dividend_builder = $self->build_dividend();
-    my $discrete_points = $dividend_builder->discrete_points;
+    my $dividend_builder       = $self->build_dividend();
+    my $discrete_points        = $dividend_builder->discrete_points;
     my $dividend_recorded_date = $dividend_builder->recorded_date;
 
     if ($discrete_points and %$discrete_points) {
@@ -293,9 +288,9 @@ sub dividend_adjustments_for_period {
     }
 
     return {
-        barrier => $dK,
-        spot    => $dS,
-        recorded_date=> $dividend_recorded_date,
+        barrier       => $dK,
+        spot          => $dS,
+        recorded_date => $dividend_recorded_date,
     };
 }
 
@@ -306,14 +301,14 @@ Returns the sum of the weights we apply to each day in the requested period.
 =cut
 
 sub weighted_days_in_period {
-    my ($self, $begin, $end, $include) = @_;
+    my ($self, $begin, $end) = @_;
 
     $end = $end->truncate_to_day;
     my $current = $begin->truncate_to_day->plus_time_interval('1d');
     my $days    = 0.0;
 
     while (not $current->is_after($end)) {
-        $days += $self->weight_on($current, $include);
+        $days += $self->weight_on($current);
         $current = $current->plus_time_interval('1d');
     }
 
@@ -328,16 +323,16 @@ Returns our closed weight for days when the market is closed.
 =cut
 
 sub weight_on {
-    my ($self, $date, $include) = @_;
+    my ($self, $date) = @_;
 
-    my $calendar = $self->build_trading_calendar;
-    my $base = $self->build_asset;
+    my $calendar  = $self->build_trading_calendar;
+    my $base      = $self->build_asset;
     my $numeraire = Quant::Framework::Currency->new({
-            symbol           => $self->underlying_config->quoted_currency_symbol,
-            for_date         => $self->for_date,
-            chronicle_reader => $self->chronicle_reader,
-            chronicle_writer => $self->chronicle_writer,
-        });
+        symbol           => $self->underlying_config->quoted_currency_symbol,
+        for_date         => $self->for_date,
+        chronicle_reader => $self->chronicle_reader,
+        chronicle_writer => $self->chronicle_writer,
+    });
 
     my $weight = $calendar->weight_on($date) || $self->closed_weight;
     if ($self->underlying_config->market_name eq 'forex') {
@@ -350,31 +345,6 @@ sub weight_on {
         }
 
         $weight = min($weight, $currency_weight);
-    }
-
-    # We are adjusting our volatility based on market events for these dates.
-    # These HACKS will be removed after 2016-06-23
-    my ($jpy_announcement_date, $euro_announcement_date);
-    if ($include) {
-        $jpy_announcement_date = Date::Utility->new('2016-06-15');
-        $euro_announcement_date = Date::Utility->new('2016-06-22');
-    } else {
-        $jpy_announcement_date = Date::Utility->new('2016-06-16');
-        $euro_announcement_date = Date::Utility->new('2016-06-23');
-    }
-
-    if ($self->underlying_config->symbol =~ /JPY/ and $date->truncate_to_day->epoch == $jpy_announcement_date->epoch) {
-        return 11;
-    }
-
-    if ($date->truncate_to_day->epoch == $euro_announcement_date->minus_time_interval('1d')->epoch) {
-        return 10 if ($self->underlying_config->symbol =~ /GBP/);
-        return 5 if ($self->underlying_config->symbol =~ /EUR/);
-    }
-
-    if ($date->truncate_to_day->epoch == $euro_announcement_date->epoch) {
-        return 25 if ($self->underlying_config->symbol =~ /GBP/);
-        return 12 if ($self->underlying_config->symbol =~ /EUR/);
     }
 
     return $weight;
@@ -390,7 +360,6 @@ sub closed_weight {
     my $self = shift;
 
     return ($self->underlying_config->market_name eq 'indices') ? 0.55 : 0.06;
-};
-
+}
 
 1;

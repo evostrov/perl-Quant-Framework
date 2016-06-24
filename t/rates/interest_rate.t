@@ -16,25 +16,31 @@ use Quant::Framework::InterestRate;
 my ($chronicle_r, $chronicle_w) = Data::Chronicle::Mock::get_mocked_chronicle();
 
 subtest 'save interest rate' => sub {
-    is (Quant::Framework::InterestRate->new(symbol => 'USD',
-            chronicle_reader    => $chronicle_r,
-            chronicle_writer    => $chronicle_w,
-        )->document, undef, 'document is not present');
-
+    is(
+        Quant::Framework::InterestRate->new(
+            symbol           => 'USD',
+            chronicle_reader => $chronicle_r,
+            chronicle_writer => $chronicle_w,
+            )->document,
+        undef,
+        'document is not present'
+    );
 
     lives_ok {
         my $int = Quant::Framework::InterestRate->new(
-            symbol        => 'USD',
-            rates         => {365 => 0},
-            recorded_date => Date::Utility->new('2014-10-10'),
-            chronicle_reader    => $chronicle_r,
-            chronicle_writer    => $chronicle_w,
+            symbol           => 'USD',
+            rates            => {365 => 0},
+            recorded_date    => Date::Utility->new('2014-10-10'),
+            chronicle_reader => $chronicle_r,
+            chronicle_writer => $chronicle_w,
         );
         ok $int->save, 'save without error';
         lives_ok {
-            my $new = Quant::Framework::InterestRate->new(symbol => 'USD',
-            chronicle_reader    => $chronicle_r,
-            chronicle_writer    => $chronicle_w);
+            my $new = Quant::Framework::InterestRate->new(
+                symbol           => 'USD',
+                chronicle_reader => $chronicle_r,
+                chronicle_writer => $chronicle_w
+            );
 
             ok $new->document;
             is $new->type, 'market';

@@ -52,13 +52,13 @@ around _document_content => sub {
 };
 
 has chronicle_reader => (
-    is      => 'ro',
-    isa     => 'Data::Chronicle::Reader',
+    is  => 'ro',
+    isa => 'Data::Chronicle::Reader',
 );
 
 has chronicle_writer => (
-    is      => 'ro',
-    isa     => 'Data::Chronicle::Writer',
+    is  => 'ro',
+    isa => 'Data::Chronicle::Writer',
 );
 
 =head2 document
@@ -77,7 +77,7 @@ sub _build_document {
 
     my $document = $self->chronicle_reader->get('interest_rates', $self->symbol);
 
-    if ($self->for_date and $self->for_date->epoch < Date::Utility->new($document->{date})->epoch ) {
+    if ($self->for_date and $self->for_date->epoch < Date::Utility->new($document->{date})->epoch) {
         $document = $self->chronicle_reader->get_for('interest_rates', $self->symbol, $self->for_date->epoch);
 
         #Assume empty data in case there is nothing in the database

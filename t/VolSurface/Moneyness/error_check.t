@@ -14,17 +14,17 @@ my $underlying_config = Quant::Framework::Utils::Test::create_underlying_config(
 Quant::Framework::Utils::Test::create_doc(
     'volsurface_moneyness',
     {
-        underlying_config        => $underlying_config,
-        recorded_date => Date::Utility->new,
-        chronicle_reader => $chronicle_r,
-        chronicle_writer => $chronicle_w,
+        underlying_config => $underlying_config,
+        recorded_date     => Date::Utility->new,
+        chronicle_reader  => $chronicle_r,
+        chronicle_writer  => $chronicle_w,
     });
 
 Quant::Framework::Utils::Test::create_doc(
     'currency',
     {
-        symbol => 'USD',
-        date   => Date::Utility->new,
+        symbol           => 'USD',
+        date             => Date::Utility->new,
         chronicle_reader => $chronicle_r,
         chronicle_writer => $chronicle_w,
     });
@@ -32,8 +32,8 @@ Quant::Framework::Utils::Test::create_doc(
 Quant::Framework::Utils::Test::create_doc(
     'index',
     {
-        symbol => 'SPC',
-        date   => Date::Utility->new,
+        symbol           => 'SPC',
+        date             => Date::Utility->new,
         chronicle_reader => $chronicle_r,
         chronicle_writer => $chronicle_w,
     });
@@ -71,12 +71,12 @@ my $surface       = {
 };
 
 my $v = Quant::Framework::VolSurface::Moneyness->new(
-  underlying_config        => $underlying_config,
-  recorded_date  => $recorded_date,
-  surface        => $surface,
-  spot_reference => 101,
-  chronicle_reader => $chronicle_r,
-  chronicle_writer => $chronicle_w,
+    underlying_config => $underlying_config,
+    recorded_date     => $recorded_date,
+    surface           => $surface,
+    spot_reference    => 101,
+    chronicle_reader  => $chronicle_r,
+    chronicle_writer  => $chronicle_w,
 );
 
 subtest "can get volatility for strike, delta, and moneyness" => sub {
@@ -91,31 +91,31 @@ subtest "cannot get volatility when underlying spot is undef" => sub {
     Quant::Framework::Utils::Test::create_doc(
         'volsurface_moneyness',
         {
-            underlying_config        => $underlying_config,
-            spot_reference => 101,
-            recorded_date  => Date::Utility->new,
-            chronicle_reader => $chronicle_r,
-            chronicle_writer => $chronicle_w,
+            underlying_config => $underlying_config,
+            spot_reference    => 101,
+            recorded_date     => Date::Utility->new,
+            chronicle_reader  => $chronicle_r,
+            chronicle_writer  => $chronicle_w,
         });
     throws_ok {
-      Quant::Framework::VolSurface::Moneyness->new(
-            underlying_config        => $underlying_config,
-            recorded_date  => $recorded_date,
-            surface        => $surface,
-            spot_reference => undef,
-            chronicle_reader => $chronicle_r,
-            chronicle_writer => $chronicle_w,
+        Quant::Framework::VolSurface::Moneyness->new(
+            underlying_config => $underlying_config,
+            recorded_date     => $recorded_date,
+            surface           => $surface,
+            spot_reference    => undef,
+            chronicle_reader  => $chronicle_r,
+            chronicle_writer  => $chronicle_w,
         );
     }
     qr/Attribute \(spot_reference\) does not pass the type constraint/, 'cannot get_volatility when spot for underlying is undef';
     my $v_new2;
     lives_ok {
         $v_new2 = Quant::Framework::VolSurface::Moneyness->new(
-            underlying_config    => $underlying_config,
-            recorded_date => $recorded_date,
-            surface       => $surface,
-            chronicle_reader => $chronicle_r,
-            chronicle_writer => $chronicle_w,
+            underlying_config => $underlying_config,
+            recorded_date     => $recorded_date,
+            surface           => $surface,
+            chronicle_reader  => $chronicle_r,
+            chronicle_writer  => $chronicle_w,
         );
     }
     'creates moneyness surface without spot reference';

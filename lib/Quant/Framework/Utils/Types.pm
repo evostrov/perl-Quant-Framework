@@ -48,7 +48,6 @@ subtype 'qf_interest_rate_type', as Str, where {
     "Invalid interest_rate type $_. Must be one of: " . join(', ', @interest_rate_types)
 };
 
-
 =head2 qf_cutoff_code
 
 A volatility surface cutoff time convention
@@ -77,3 +76,5 @@ subtype 'qf_surface_type', as Str, where {
 
 subtype 'qf_cutoff_helper', as 'Quant::Framework::VolSurface::Cutoff';
 coerce 'qf_cutoff_helper', from 'Str', via { Quant::Framework::VolSurface::Cutoff->new($_) };
+
+1;
