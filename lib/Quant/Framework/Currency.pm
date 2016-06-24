@@ -80,7 +80,7 @@ has holidays => (
 sub _build_holidays {
     my $self = shift;
 
-    # temporaly create it here, will be removed after refactong of TradingCalendar
+    # temporaly create it here, will be removed after refactong of Currency
     my $storage_accessor = Quant::Framework::StorageAccessor->new(
         chronicle_reader => $self->chronicle_reader,
     );

@@ -107,12 +107,11 @@ has holidays => (
 sub _build_holidays {
     my $self = shift;
 
-    my $data = {};
     # temporaly create it here, will be removed after refactong of TradingCalendar
     my $storage_accessor = Quant::Framework::StorageAccessor->new(
         chronicle_reader => $self->chronicle_reader,
     );
-    $data = Quant::Framework::Holiday::holidays_for($storage_accessor, $self->symbol, $self->for_date);
+    my $data = Quant::Framework::Holiday::holidays_for($storage_accessor, $self->symbol, $self->for_date);
 
     my %exchange_holidays = map { Date::Utility->new($_)->days_since_epoch => $data->{$_} } keys %$data;
 
