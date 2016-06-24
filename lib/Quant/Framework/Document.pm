@@ -67,11 +67,6 @@ has data => (
     required => 1,
 );
 
-has namespace => (
-    is       => 'ro',
-    required => 1,
-);
-
 has symbol => (
     is       => 'ro',
     required => 1,
