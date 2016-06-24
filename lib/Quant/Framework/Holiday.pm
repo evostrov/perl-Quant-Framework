@@ -60,7 +60,7 @@ C<$date>, adds C<$new_events> and returns new unpersisted Holiday object.
 sub namespace { 'holidays' }
 
 sub initialize_data {
-    return { calendar => { }};
+    return {calendar => {}};
 }
 
 # override default create function, to supply symbol, as we don't have

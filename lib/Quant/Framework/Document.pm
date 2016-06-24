@@ -166,7 +166,8 @@ sub load_default {
     if ($for_date && $for_date->epoch < $recorded_date->epoch) {
         $data = $storage_accessor->chronicle_reader->get_for($namespace, $symbol, $for_date->epoch)
             or return;
-        $recorded_date = Date::Utility->new($data->{date};
+
+        $recorded_date = Date::Utility->new($data->{date});
     }
 
     return $package->new(
