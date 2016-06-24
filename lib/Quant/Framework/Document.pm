@@ -8,7 +8,7 @@ use Moo::Role;
 
 =head1 NAME
 
-Quant::Framework::Document - Rolde, which binds data with Chronicle
+Quant::Framework::Document - Role, which binds data with Chronicle
 
 =head1 DESCRIPTION
 
