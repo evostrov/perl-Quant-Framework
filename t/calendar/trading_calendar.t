@@ -157,7 +157,7 @@ subtest "Holiday/Weekend weights" => sub {
 };
 
 subtest 'Whole bunch of stuff.' => sub {
-    plan tests => 99;
+    plan tests => 107;
 
     is($LSE->weight_on(Date::Utility->new('2-Apr-13')), 1.0, 'open weight');
     is($LSE->weight_on(Date::Utility->new('1-Apr-13')), 0.0, 'holiday weight');
@@ -515,7 +515,7 @@ subtest 'Whole bunch of stuff.' => sub {
 };
 
 subtest 'regularly_adjusts_trading_hours_on' => sub {
-    plan tests => 5;
+    plan tests => 10;
     my $monday = Date::Utility->new('2013-08-26');
     my $friday = $monday->plus_time_interval('4d');
 
