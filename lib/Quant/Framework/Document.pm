@@ -172,7 +172,7 @@ Stores (persists) the object in Chronicle database.
 
 sub save {
     my $self = shift;
-    # the most probably this is redundant, anc can be removed in future
+    # the most probably this is redundant, and can be removed in future
     $self->data->{date}   = $self->recorded_date->datetime_iso8601;
     $self->data->{symbol} = $self->symbol;
     $self->storage_accessor->chronicle_writer->set($self->namespace, $self->symbol, $self->data, $self->recorded_date);
