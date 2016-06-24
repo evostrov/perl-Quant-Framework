@@ -95,9 +95,8 @@ sub namespace {
 }
 
 sub initialize_data {
-    return { actions => { }};
+    return {actions => {}};
 }
-
 
 sub update {
     my ($self, $actions, $new_date) = @_;
