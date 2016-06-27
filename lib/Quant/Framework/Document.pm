@@ -76,7 +76,7 @@ has symbol => (
 
 =head2 namespace()
 
-returns namespace (strign) for the object, which the role is applied to,
+returns namespace (string) for the object, which the role is applied to,
 e.g. "corporate_actions" or "holidays"
 
 =head2 initialize_data()
