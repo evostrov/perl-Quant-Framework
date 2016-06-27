@@ -65,7 +65,13 @@ subtest 'trades on holidays/pseudo-holidays' => sub {
         $counter++;
     }
 
-    my $metal = Quant::Framework::TradingCalendar->new('METAL', $chronicle_r, 'en', $date);
+    my $metal = Quant::Framework::TradingCalendar->new({
+        symbol           => 'METAL',
+        chronicle_reader => $chronicle_r,
+        locale           => 'EN',
+        for_date         => $date
+    });
+ 
     $counter = 0;
     foreach my $days (sort { $a <=> $b } keys %{$metal->pseudo_holidays}) {
         my $date = Date::Utility->new(0)->plus_time_interval($days . 'd');
