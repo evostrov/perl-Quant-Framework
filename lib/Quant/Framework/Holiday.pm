@@ -84,7 +84,7 @@ sub create {
 sub load {
     my ($package, %data) = @_;
     $data{symbol} = namespace;
-    return $package->load_default($storage_accessor, namespace, $for_date);
+    return $package->load_default(%data);
 }
 
 sub update {
