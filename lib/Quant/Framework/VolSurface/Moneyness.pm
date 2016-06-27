@@ -336,8 +336,8 @@ sub _convert_strike_to_delta {
         atm_vol          => $vol,
         t                => $tiy,
         spot             => $self->spot_reference,
-        r_rate           => $builder->interest_rate_for($tiy),
-        q_rate           => $builder->dividend_rate_for($tiy),
+        r_rate           => $builder->build_interest_rate->interest_rate_for($tiy),
+        q_rate           => $builder->build_dividend->dividend_rate_for($tiy),
         premium_adjusted => $self->underlying_config->market_convention->{delta_premium_adjusted},
     });
 }
