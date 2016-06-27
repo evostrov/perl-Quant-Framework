@@ -29,8 +29,10 @@ my $storage_accessor = Quant::Framework::StorageAccessor->new(
 );
 
 my $date = Date::Utility->new('2013-12-01');    # first of December 2014
-Quant::Framework::Holiday->create($storage_accessor, $date)
-    ->update({
+Quant::Framework::Holiday->create(
+      storage_accessor => $storage_accessor,
+      for_date         => $date,
+    )->update({
           "6-May-2013" => {
               "Early May Bank Holiday" => [qw(LSE)],
           },

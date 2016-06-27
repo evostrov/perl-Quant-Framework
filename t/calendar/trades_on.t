@@ -41,8 +41,10 @@ subtest 'trading days' => sub {
     }
 };
 
-Quant::Framework::Holiday->create($storage_accessor, $date)
-    ->update({
+Quant::Framework::Holiday->create(
+      storage_accessor => $storage_accessor,
+      for_date         => $date,
+    )->update({
         "25-Dec-2013" => {
             "Christmas Day" => [qw(FOREX)],
         },
