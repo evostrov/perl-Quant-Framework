@@ -1366,7 +1366,7 @@ sub weight_on {
             for_date         => $self->for_date,
             chronicle_reader => $self->chronicle_reader,
         });
-        my $commodities_weight = 0.5 if $usd->has_holiday_on($date);
+        my $commodities_weight = $usd->has_holiday_on($date) ? 0.5 : 1;
         $weight = min($weight, $commodities_weight);
     }
 
