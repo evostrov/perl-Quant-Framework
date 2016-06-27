@@ -37,7 +37,9 @@ Quant::Framework::Utils::Test::create_doc(
     });
 
 subtest 'holidays' => sub {
-    my ($LSE, $FOREX, $RANDOM, $METAL) = map { Quant::Framework::TradingCalendar->new($_, $chronicle_r, 'EN', $date) } qw(LSE FOREX RANDOM METAL);
+    my ($LSE, $FOREX, $RANDOM, $METAL) =
+        map { Quant::Framework::TradingCalendar->new({symbol => $_, chronicle_reader => $chronicle_r, locale => 'EN', for_date => $date}) }
+        qw(LSE FOREX RANDOM METAL);
     is $LSE->for_date->epoch, $date->epoch, 'for_date properly set in Exchange';
     my %expected_holidays = (
         15831 => 'Early May Bank Holiday',
@@ -65,8 +67,21 @@ subtest 'holidays' => sub {
 };
 
 subtest 'pseudo holidays' => sub {
-    my $FOREX = Quant::Framework::TradingCalendar->new('FOREX', $chronicle_r, 'EN', $date);
-    my $METAL = Quant::Framework::TradingCalendar->new('METAL', $chronicle_r, 'EN', $date);
+    my $FOREX = Quant::Framework::TradingCalendar->new({
+        symbol           => 'FOREX',
+        chronicle_reader => $chronicle_r,
+        locale           => 'EN',
+        for_date         => $date
+    });
+    
+    my $METAL = Quant::Framework::TradingCalendar->new({
+        symbol           => 'METAL',
+        chronicle_reader => $chronicle_r,
+        locale           => 'EN',
+        for_date         => $date
+    });
+ 
+
 
     my $start = Date::Utility->new('25-Dec-13')->minus_time_interval('7d');
     note("seven days before and after Chritmas is pseudo-holiday period");

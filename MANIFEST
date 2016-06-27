@@ -47,7 +47,6 @@ t/calendar/holidays.t
 t/calendar/partial_trading.t
 t/calendar/trades_on.t
 t/calendar/trading_calendar.t
-t/calendar/trading_calendar_caching.t
 t/calendar/weight_on.t
 t/corporate_actions.t
 t/correlation_matrix.t
