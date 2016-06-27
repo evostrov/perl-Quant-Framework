@@ -1306,7 +1306,9 @@ sub weighted_days_in_period {
     my ($self, $begin, $end) = @_;
 
     state %cache;
-    my $key = $begin->epoch . $end->epoch;
+    my $key = $begin->epoch . $end->epoch . $self->underlying_config->quoted_currency_symbol . $self->underlying_config->asset_symbol . 
+                    ($self->for_date ? $self->for_date->epoch:0);
+
     return $cache{$key} if defined $cache{$key};
 
     $end = $end->truncate_to_day;
