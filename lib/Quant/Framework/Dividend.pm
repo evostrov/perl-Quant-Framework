@@ -278,11 +278,11 @@ sub dividend_adjustments_for_period {
         my $duration_in_year     = $sec_away_from_action / (86400 * 365);
 
         my $ir = Quant::Framework::InterestRate->new({
-                symbol => $self->symbol,
-                underlying_config => $self->underlying_config,
-                chronicle_reader => $self->chronicle_reader,
-                chronicle_writer => $self->chronicle_writer
-            });
+            symbol            => $self->symbol,
+            underlying_config => $self->underlying_config,
+            chronicle_reader  => $self->chronicle_reader,
+            chronicle_writer  => $self->chronicle_writer
+        });
 
         #TODO: rewrite this using an instance of InterestRate
         my $r_rate = $ir->interest_rate_for($duration_in_year);
