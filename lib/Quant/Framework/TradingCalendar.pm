@@ -1360,6 +1360,14 @@ sub weight_on {
         }
 
         $weight = min($weight, $currency_weight);
+    } elsif ($self->underlying_config->market_name eq 'commodities' and $self->underlying_config->submarket->name eq 'metal') {
+        my $usd = Quant::Framework::Currency->new({
+            symbol           => 'USD',
+            for_date         => $self->for_date,
+            chronicle_reader => $self->chronicle_reader,
+        });
+        my $commodities_weight = 0.5 if $usd->has_holiday_on($date);
+        $weight = min($weight, $commodities_weight);
     }
 
     return $weight;
