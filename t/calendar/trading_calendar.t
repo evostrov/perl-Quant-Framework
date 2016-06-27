@@ -718,7 +718,7 @@ subtest 'trading period' => sub {
 
     $ex = Quant::Framework::TradingCalendar->new({
         symbol  =>'METAL',
-chronicle_reader => $chronicle_r
+        chronicle_reader => $chronicle_r
 });
     lives_ok {
         my $p = $ex->trading_period($trading_date);
@@ -787,7 +787,9 @@ subtest 'standard_closing_on early close' => sub {
     is $fx->standard_closing_on($early_close_thursday)->epoch, $early_close_thursday->plus_time_interval('23h59m59s')->epoch,
         'normal standard closing is 23:59:59 GMT';
 
-    my $metal                = Quant::Framework::TradingCalendar->new('METAL');
+    my $metal                = Quant::Framework::TradingCalendar->new({
+        symbol            =>'METAL',
+        chronicle_reader => $chronicle_r});
     is $metal->standard_closing_on($friday)->epoch, $friday->plus_time_interval('21h')->epoch, 'standard close for friday is 21:00 GMT';
     is $metal->standard_closing_on($normal_thursday)->epoch, $normal_thursday->plus_time_interval('23h59m59s')->epoch,
         'normal standard closing is 23:59:59 GMT';
