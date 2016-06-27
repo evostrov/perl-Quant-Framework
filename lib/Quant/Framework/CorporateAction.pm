@@ -17,7 +17,11 @@ Quant::Framework::CorporateAction
 Represents the corporate actions data of an underlying from database. Create
 new unpersistent CorporateAction can be done via:
 
- my $ca = Quant::Framework::CorporateAction->create($storage_accessor, 'QWER', Date::Utility->new);
+ my $ca = Quant::Framework::CorporateAction->create(
+    storage_accessor => $storage_accessor,
+    symbol           => 'QWER',
+    for_date         => Date::Utility->new,
+  )
 
 Obviously, it will have empty actions hash
 
@@ -29,12 +33,19 @@ Corporate actions can be persisted (stored in Chronicle) via C<save> method
 
 Load persisted actions can be done via:
 
- my $ca = Quant::Framework::CorporateAction->load($storage_accessor, 'QWER', Date::Utility->new);
+ my $ca = Quant::Framework::CorporateAction->load(
+    storage_accessor => $storage_accessor,
+    symbol           => 'QWER',
+    for_date         => Date::Utility->new,
+ )
 
 It will return C<undef> if there are no presisted actions in Chronicle. The date can be
 ommitted, than, it will try to load the most recent (last) corporate actions, i.e.
 
- my $ca = Quant::Framework::CorporateAction->load($storage_accessor, 'QWER');
+ my $ca = Quant::Framework::CorporateAction->load(
+    storage_accessor => $storage_accessor,
+    symbol           => 'QWER',
+ )
 
 
 To update actions, the C<update> method should be invoked, with appropriate structure, i.e.

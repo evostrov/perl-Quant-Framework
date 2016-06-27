@@ -93,9 +93,9 @@ requires 'initialize_data';
 
 =head1 METHODS
 
-=head2 create($package, $storage_accessor, $symbol, $for_date)
+=head2 create($package, %data)
 
-=head2 create_default($package, $storage_accessor, $symbol, $for_date)
+=head2 create_default($package, %data)
 
 
 Creates new unsaved (non-persisted) object, to which the role is applied
@@ -103,17 +103,21 @@ to. The C<create> can be overriden, while The C<create_default> not.
 They have the same impelemtation.
 
 
-  Quant::Framework::CorporateAction->create($storage_accessor, 'USAAPL', $date);
+  Quant::Framework::CorporateAction->create(
+    storage_accessor => $storage_accessor,
+    symbol           => 'USAAPL',
+    for_date         => $date,
+  );
 
 Please note, it should be invoked with package name (the module, to which the
 role is applied to), otherwise it will not work.
 
-All paremeters are required
+All paremeters are required.
 
 
-=head2 load($package, $storage_accessor, $symbol, $for_date)
+=head2 load($package, %data)
 
-=head2 load_default($package, $storage_accessor, $symbol, $for_date)
+=head2 load_default($package, %data)
 
 Loads persiseted object. All paramters are mandatory, except
 C<$for_date> which is optional. If C<$for_date> is not specified,
@@ -125,7 +129,10 @@ The C<load> can be overriden, while The C<load_default> not.
 They have the same impelemtation.
 
 
-  Quant::Framework::CorporateAction->load($storage_accessor, 'QWER')
+  Quant::Framework::CorporateAction->load(
+    storage_accessor => $storage_accessor,
+    symbol           => 'USAAPL',
+  )
 
 Please note, it should be invoked with package name (the module, to which the
 role is applied to), otherwise it will not work.
@@ -136,8 +143,8 @@ sub create_default {
     my ($package, %params) = @_;
 
     my $storage_accessor = $params{storage_accessor} // die("missing mandatory parameter: storage_accessor");
-    my $symbol = $params{symbol} // die("missing mandatory parameter: symbol");
-    my $for_date = $params{for_date} // die("missing mandatory parameter: for_date");
+    my $symbol           = $params{symbol}           // die("missing mandatory parameter: symbol");
+    my $for_date         = $params{for_date}         // die("missing mandatory parameter: for_date");
 
     my $data = $package->initialize_data;
     die("$package->initialize_data must return an hashref") unless ref($data) eq 'HASH';
@@ -155,7 +162,12 @@ sub create_default {
 *create = \&create_default;
 
 sub load_default {
-    my ($package, $storage_accessor, $symbol, $for_date) = @_;
+    my ($package, %params) = @_;
+
+    my $storage_accessor = $params{storage_accessor} // die("missing mandatory parameter: storage_accessor");
+    my $symbol           = $params{symbol}           // die("missing mandatory parameter: symbol");
+    # optional
+    my $for_date = $params{for_date};
 
     my $namespace = $package->namespace;
 

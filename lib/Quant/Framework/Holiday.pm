@@ -18,7 +18,9 @@ Quant::Framework::Holiday - A module to save/load market holidays
 
 This module saves/loads holidays to/from Chronicle.
 
-  my $holiday = Quant::Framework::Holiday->load($storage_accessor);
+  my $holiday = Quant::Framework::Holiday->load(
+    storage_accessor => $storage_accessor
+  );
   $holiday->update({ $now->epoch => { 'Some-event-affects-USD' => ['USD'], }  }, $now)->save;
 
   my $holidays_data = Quant::Framework::Holiday::holidays_for($storage_accessor, 'EUR', $some_date);
@@ -32,20 +34,26 @@ returns hard-coded string 'holidays'. Required to conform Document role contract
 
 =head2 initialize_data
 
-returns default data hash, i.e. C<{ alender => {}}> Required to conform Document role contract.
+returns default data hash, i.e. C<{ calendar => {}}> Required to conform Document role contract.
 
-=head2 create($package, $storage_accessor, $for_date)
+=head2 create($package, %data)
 
 Creates new holiday object
 
-  Quant::Framework::Holiday->create($storage_accessor, $now)
+  Quant::Framework::Holiday->create(
+    storage_accessor => $storage_accessor,
+    for_date         => $now,
+  )
 
-=head2 load($package, $storage_accessor, $for_date)
+=head2 load($package, %data)
 
 Loads persisted Holiday object. Returns undef it is not present. C<$for_date>
 is optional.
 
-  Quant::Framework::Holiday->load($storage_accessor);
+  Quant::Framework::Holiday->load(
+    storage_accessor => $storage_accessor,
+    for_date         => $now,
+  );
 
 =head2 update($self, $new_events, $date);
 
@@ -68,12 +76,14 @@ sub initialize_data {
 # override default create function, to supply symbol, as we don't have
 # symbol for Holiday (it is equal to 'holidays')
 sub create {
-    my ($package, $storage_accessor, $for_date) = @_;
-    return $package->create_default($storage_accessor, namespace, $for_date);
+    my ($package, %data) = @_;
+    $data{symbol} = namespace;
+    return $package->create_default(%data);
 }
 
 sub load {
-    my ($package, $storage_accessor, $for_date) = @_;
+    my ($package, %data) = @_;
+    $data{symbol} = namespace;
     return $package->load_default($storage_accessor, namespace, $for_date);
 }
 
@@ -126,7 +136,10 @@ chronicle_reader object passed to it.
 
 sub holidays_for {
     my ($storage_accessor, $symbol, $for_date) = @_;
-    my $holiday = __PACKAGE__->load($storage_accessor, $for_date);
+    my $holiday = __PACKAGE__->load(
+        storage_accessor => $storage_accessor,
+        for_date         => $for_date,
+    );
 
     my $data = $holiday ? $holiday->data->{calendar} : {};
 
