@@ -716,7 +716,10 @@ subtest 'trading period' => sub {
     }
     'trading period for FOREX';
 
-    $ex = Quant::Framework::TradingCalendar->new('METAL');
+    $ex = Quant::Framework::TradingCalendar->new({
+        symbol  =>'METAL',
+chronicle_reader => $chronicle_r
+});
     lives_ok {
         my $p = $ex->trading_period($trading_date);
         # daily_open: 0s
