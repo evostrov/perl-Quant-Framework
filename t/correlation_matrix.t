@@ -35,8 +35,14 @@ subtest general => sub {
 
     my $index           = 'FCHI';
     my $payout_currency = 'USD';
-    my $calendar        = Quant::Framework::TradingCalendar->new('EURONEXT', $chronicle_r, 'EN', $date);
-    my $qcurrency       = Quant::Framework::Currency->new({
+    my $calendar        = Quant::Framework::TradingCalendar->new({
+        symbol           => 'EURONEXT',
+        chronicle_reader => $chronicle_r,
+        locale           => 'EN',
+        for_date         => $date
+    });
+
+    my $qcurrency = Quant::Framework::Currency->new({
         symbol           => 'USD',
         for_date         => $date,
         chronicle_reader => $chronicle_r,

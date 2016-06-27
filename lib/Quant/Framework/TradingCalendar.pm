@@ -14,7 +14,10 @@ One important feature of this module is that it is designed for READING informat
 
 =head1 USAGE
 
-    my $calendar = Quant::Framework::TradingCalendar->new('LSE');
+    my $calendar = Quant::Framework::TradingCalendar->new({ 
+        symbol => 'LSE',
+        chronicle_reader => $chronicle_r,
+    });
 
 =cut
 
@@ -56,6 +59,18 @@ The standard symbol used to reference this exchange
 has symbol => (
     is  => 'ro',
     isa => 'Str',
+);
+
+=head2 underlying_config
+
+UnderlyingConfig used for query on weighting of an underlying. Not required if this modules is not used for
+that purpose.
+
+=cut
+
+has underlying_config => (
+    is  => 'ro',
+    isa => 'Quant::Framework::Utils::UnderlyingConfig',
 );
 
 =head2 locale
@@ -244,14 +259,15 @@ BEGIN {
 }
 
 sub BUILDARGS {
-    my ($class, $symbol, $chronicle_r, $locale, $for_date) = @_;
+    my ($class, $orig_params_ref) = @_;
+
+    my $symbol = $orig_params_ref->{symbol};
 
     croak "Exchange symbol must be specified" unless $symbol;
     my $params_ref = clone($exchanges->{$symbol});
-    $params_ref->{symbol}           = $symbol;
-    $params_ref->{for_date}         = $for_date if $for_date;
-    $params_ref->{locale}           = $locale if $locale;
-    $params_ref->{chronicle_reader} = $chronicle_r;
+    $params_ref = {%$params_ref, %$orig_params_ref};
+
+    my $locale = $orig_params_ref->{locale} // 'EN';
 
     foreach my $key (keys %{$params_ref->{market_times}}) {
         foreach my $trading_segment (keys %{$params_ref->{market_times}->{$key}}) {
@@ -302,14 +318,14 @@ sub _object_expired {
     return shift->_build_time + 30 < time;
 }
 
-=head2 weight_on
+=head2 simple_weight_on
 
 Returns the weight assigned to the day of a given Date::Utility object. Return 0
 if the exchange does not trade on this day and 1 if there is no pseudo-holiday.
 
 =cut
 
-sub weight_on {
+sub simple_weight_on {
     my ($self, $when) = @_;
 
     return 0   if not $self->trades_on($when);
@@ -1280,27 +1296,88 @@ sub trading_period {
     return \@periods;
 }
 
-sub new {
-    my ($self, $symbol, $chronicle_r, $lang, $for_date) = @_;
+=head2 weighted_days_in_period
 
-    state %cached_objects;
-    $lang //= 'EN';
+Returns the sum of the weights we apply to each day in the requested period.
 
-    my $key = join('::', $symbol, $lang);
+=cut
 
-    my $ex = $cached_objects{$key};
-    if (not $ex or $ex->_object_expired) {
-        $ex = $self->_new($symbol, $chronicle_r, $lang, $for_date);
-        $cached_objects{$key} = $ex;
+sub weighted_days_in_period {
+    my ($self, $begin, $end) = @_;
+
+    $end = $end->truncate_to_day;
+    my $current = $begin->truncate_to_day->plus_time_interval('1d');
+    my $days    = 0.0;
+
+    while (not $current->is_after($end)) {
+        $days += $self->weight_on($current);
+        $current = $current->plus_time_interval('1d');
     }
 
-    return $ex;
+    return $days;
+}
+
+sub _build_asset {
+    my $self = shift;
+
+    return unless $self->underlying_config->asset_symbol;
+    my $type = $self->underlying_config->asset_class;
+
+    my $which = $type eq 'currency' ? 'Quant::Framework::Currency' : 'Quant::Framework::Asset';
+
+    return $which->new({
+        symbol           => $self->underlying_config->asset_symbol,
+        for_date         => $self->for_date,
+        chronicle_reader => $self->chronicle_reader,
+    });
+}
+
+=head2 weight_on
+
+Returns the weight for a given day (given as a Date::Utility object).
+Returns our closed weight for days when the market is closed.
+
+=cut
+
+sub weight_on {
+    my ($self, $date) = @_;
+
+    my $base      = $self->_build_asset;
+    my $numeraire = Quant::Framework::Currency->new({
+        symbol           => $self->underlying_config->quoted_currency_symbol,
+        for_date         => $self->for_date,
+        chronicle_reader => $self->chronicle_reader,
+    });
+
+    my $weight = $self->simple_weight_on($date) || $self->closed_weight;
+    if ($self->underlying_config->market_name eq 'forex') {
+        my $currency_weight =
+            0.5 * ($base->weight_on($date) + $numeraire->weight_on($date));
+
+        # If both have a holiday, set to 0.25
+        if (!$currency_weight) {
+            $currency_weight = 0.25;
+        }
+
+        $weight = min($weight, $currency_weight);
+    }
+
+    return $weight;
+}
+
+=head2 closed_weight
+
+Weights assigned for days when the markets are closed, based on empirical study and industry standards.
+
+=cut
+
+sub closed_weight {
+    my $self = shift;
+
+    return ($self->underlying_config->market_name eq 'indices') ? 0.55 : 0.06;
 }
 
 no Moose;
-__PACKAGE__->meta->make_immutable(
-    constructor_name    => '_new',
-    replace_constructor => 1
-);
+__PACKAGE__->meta->make_immutable;
 
 1;
