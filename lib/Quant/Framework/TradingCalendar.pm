@@ -1305,6 +1305,10 @@ Returns the sum of the weights we apply to each day in the requested period.
 sub weighted_days_in_period {
     my ($self, $begin, $end, $include) = @_;
 
+    state %cache;
+    my $key = $begin->epoch . $end->epoch;
+    return $cache{$key} if defined $cache{$key};
+
     $end = $end->truncate_to_day;
     my $current = $begin->truncate_to_day->plus_time_interval('1d');
     my $days    = 0.0;
@@ -1313,6 +1317,8 @@ sub weighted_days_in_period {
         $days += $self->weight_on($current, $include);
         $current = $current->plus_time_interval('1d');
     }
+
+    $cache{$key} = $days;
 
     return $days;
 }
