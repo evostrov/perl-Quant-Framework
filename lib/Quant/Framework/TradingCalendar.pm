@@ -1360,7 +1360,7 @@ sub weight_on {
         }
 
         $weight = min($weight, $currency_weight);
-    } elsif ($self->underlying_config->market_name eq 'commodities' and $self->underlying_config->submarket->name eq 'metal') {
+    } elsif ($self->symbol eq 'METAL') {
         my $usd = Quant::Framework::Currency->new({
             symbol           => 'USD',
             for_date         => $self->for_date,
