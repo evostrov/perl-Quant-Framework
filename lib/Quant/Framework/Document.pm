@@ -133,7 +133,12 @@ role is applied to), otherwise it will not work.
 =cut
 
 sub create_default {
-    my ($package, $storage_accessor, $symbol, $for_date) = @_;
+    my ($package, %params) = @_;
+
+    my $storage_accessor = $params{storage_accessor} // die("missing mandatory parameter: storage_accessor");
+    my $symbol = $params{symbol} // die("missing mandatory parameter: symbol");
+    my $for_date = $params{for_date} // die("missing mandatory parameter: for_date");
+
     my $data = $package->initialize_data;
     die("$package->initialize_data must return an hashref") unless ref($data) eq 'HASH';
     die("$package->initialize_data must not fill 'date' field")   if exists $data->{date};
