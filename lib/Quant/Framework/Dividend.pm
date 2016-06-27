@@ -276,8 +276,16 @@ sub dividend_adjustments_for_period {
         my $effective_date       = Date::Utility->new($date);
         my $sec_away_from_action = ($effective_date->epoch - $start->epoch);
         my $duration_in_year     = $sec_away_from_action / (86400 * 365);
+
+        my $ir = Quant::Framework::InterestRate->new({
+                symbol => $self->symbol,
+                underlying_config => $self->underlying_config,
+                chronicle_reader => $self->chronicle_reader,
+                chronicle_writer => $self->chronicle_writer
+            });
+
         #TODO: rewrite this using an instance of InterestRate
-        my $r_rate = $self->interest_rate_for($duration_in_year);
+        my $r_rate = $ir->interest_rate_for($duration_in_year);
 
         my $adj_present_value = $adjustment * exp(-$r_rate * $duration_in_year);
         my $s_adj = ($duration_in_sec - $sec_away_from_action) / ($duration_in_sec) * $adj_present_value;
