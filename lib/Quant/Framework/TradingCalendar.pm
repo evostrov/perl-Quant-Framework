@@ -1303,7 +1303,7 @@ Returns the sum of the weights we apply to each day in the requested period.
 =cut
 
 sub weighted_days_in_period {
-    my ($self, $begin, $end, $include) = @_;
+    my ($self, $begin, $end) = @_;
 
     state %cache;
     my $key = $begin->epoch . $end->epoch;
@@ -1314,7 +1314,7 @@ sub weighted_days_in_period {
     my $days    = 0.0;
 
     while (not $current->is_after($end)) {
-        $days += $self->weight_on($current, $include);
+        $days += $self->weight_on($current);
         $current = $current->plus_time_interval('1d');
     }
 
@@ -1346,7 +1346,7 @@ Returns our closed weight for days when the market is closed.
 =cut
 
 sub weight_on {
-    my ($self, $date, $include) = @_;
+    my ($self, $date) = @_;
 
     my $base      = $self->_build_asset;
     my $numeraire = Quant::Framework::Currency->new({
@@ -1366,31 +1366,6 @@ sub weight_on {
         }
 
         $weight = min($weight, $currency_weight);
-    }
-
-    # We are adjusting our volatility based on market events for these dates.
-    # These HACKS will be removed after 2016-06-23
-    my ($jpy_announcement_date, $euro_announcement_date);
-    if ($include) {
-        $jpy_announcement_date  = Date::Utility->new('2016-06-15');
-        $euro_announcement_date = Date::Utility->new('2016-06-22');
-    } else {
-        $jpy_announcement_date  = Date::Utility->new('2016-06-16');
-        $euro_announcement_date = Date::Utility->new('2016-06-23');
-    }
-
-    if ($self->underlying_config->symbol =~ /JPY/ and $date->truncate_to_day->epoch == $jpy_announcement_date->epoch) {
-        return 11;
-    }
-
-    if ($date->truncate_to_day->epoch == $euro_announcement_date->minus_time_interval('1d')->epoch) {
-        return 10 if ($self->underlying_config->symbol =~ /GBP/);
-        return 5  if ($self->underlying_config->symbol =~ /EUR/);
-    }
-
-    if ($date->truncate_to_day->epoch == $euro_announcement_date->epoch) {
-        return 25 if ($self->underlying_config->symbol =~ /GBP/);
-        return 12 if ($self->underlying_config->symbol =~ /EUR/);
     }
 
     return $weight;
