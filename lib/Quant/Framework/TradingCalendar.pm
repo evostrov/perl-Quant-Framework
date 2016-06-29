@@ -357,7 +357,7 @@ sub trades_on {
 
     my $really_when = $self->trading_date_for($when);
     my $symbol      = $self->symbol;
-    my $result      = @{$self->trading_days_list}[$really_when->day_of_week] && !$self->has_holiday_on($really_when);
+    my $result      = (@{$self->trading_days_list}[$really_when->day_of_week] && !$self->has_holiday_on($really_when)) ? 1 : 0;
 
     return $result;
 }
