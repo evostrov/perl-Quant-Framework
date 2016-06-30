@@ -42,7 +42,7 @@ subtest 'save and retrieve early close dates' => sub {
             recorded_date => $now,
             calendar      => {
                 $now->epoch => {
-                    "18:00" => ['FOREX'],
+                    "18:00" => ['FOREX', 'METAL'],
                 },
             },
             chronicle_reader => $chronicle_r,
@@ -73,7 +73,18 @@ subtest 'save and retrieve early close dates' => sub {
                 type             => 'early_closes',
             })->get_partial_trading_for('FOREX');
         is scalar(keys %$early_closes), 1, 'retrieved one early close date for FOREX';
-        is $early_closes->{$now->truncate_to_day->epoch}, "18:00", 'correct early close time';
+        is $early_closes->{$now->truncate_to_day->epoch}, "18:00", 'correct early close time for FOREX';
+
+
+        my $early_closes_metal = Quant::Framework::PartialTrading->new({
+                chronicle_reader => $chronicle_r,
+                chronicle_writer => $chronicle_w,
+                type             => 'early_closes',
+            })->get_partial_trading_for('METAL');
+        is scalar(keys %$early_closes_metal), 1, 'retrieved one early close date for METAL';
+        is $early_closes_metal->{$now->truncate_to_day->epoch}, "18:00", 'correct early close time for METAL';
+
+
 
         $early_closes = Quant::Framework::PartialTrading->new({
                 chronicle_reader => $chronicle_r,
