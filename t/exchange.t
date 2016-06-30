@@ -16,6 +16,7 @@ subtest 'exchange currency and OTC check' => sub {
     my %undef_currency_exchanges = (
         RANDOM          => 1,
         FOREX           => 1,
+        METAL           => 1,
         RANDOM_NOCTURNE => 1
     );
     foreach my $exchange (keys %$exchanges) {

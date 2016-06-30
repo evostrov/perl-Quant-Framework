@@ -70,7 +70,7 @@ frxXAUUSD:
   quanto_only : 0
   rate_to_imply_from : 'USD'
   volatility_surface_type : 'delta'
-  exchange_name : 'FOREX'
+  exchange_name : 'METAL'
   uses_implied_rate_for_asset : 0
   uses_implied_rate_for_quoted_currency : 0
   spot : 1202.74,

@@ -364,6 +364,20 @@ FOREX:
   symbol: FOREX
   trading_days: weekdays
   trading_timezone: UTC
+METAL:
+  delay_amount: '0'
+  display_name: Metal
+  market_times:
+    partial_trading:
+      standard_close: 16h30m
+      standard_open: 0s
+    standard:
+      daily_close: 23h59m59s
+      daily_open: 0s
+      daily_settlement: 23h59m59s
+  symbol: METAL
+  trading_days: weekdays
+  trading_timezone: UTC
 FS:
   currency: GBP
   delay_amount: '1440'
