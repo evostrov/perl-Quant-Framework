@@ -797,7 +797,7 @@ sub standard_closing_on {
 
     $when = $self->trading_date_for($when);
 
-    return $self->closes_early_on($when) if ($self->symbol eq 'FOREX' and $when->day_of_week == 5);
+    return $self->closes_early_on($when) if (($self->symbol eq 'FOREX' or $self->symbol eq 'METAL') and $when->day_of_week == 5);
     return $when->truncate_to_day->plus_time_interval($self->market_times->{standard}->{daily_close});
 }
 
@@ -953,7 +953,7 @@ sub regularly_adjusts_trading_hours_on {
 
     if ($when->day_of_week == 5) {
         my $rule = 'Fridays';
-        if ($self->symbol eq 'FOREX') {
+        if ($self->symbol eq 'FOREX' or $self->symbol eq 'METAL') {
             $changes = {
                 'daily_close' => {
                     to   => '21h',
@@ -1360,6 +1360,14 @@ sub weight_on {
         }
 
         $weight = min($weight, $currency_weight);
+    } elsif ($self->symbol eq 'METAL') {
+        my $usd = Quant::Framework::Currency->new({
+            symbol           => 'USD',
+            for_date         => $self->for_date,
+            chronicle_reader => $self->chronicle_reader,
+        });
+        my $commodities_weight = $usd->has_holiday_on($date) ? 0.5 : 1;
+        $weight = min($weight, $commodities_weight);
     }
 
     return $weight;
