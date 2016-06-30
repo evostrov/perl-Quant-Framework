@@ -26,8 +26,8 @@ my $date = Date::Utility->new('2013-12-08');
 note("Exchange tests for_date " . $date->date);
 
 subtest 'trading days' => sub {
-    my $exp = LoadFile(File::ShareDir::dist_file('Quant-Framework', 'expected_trading_days.yml'));
-    my @exchanges = qw(JSC SES NYSE_SPC ASX ODLS ISE BSE FOREX JSE SWX FSE DFM EURONEXT HKSE NYSE RANDOM RANDOM_NOCTURNE TSE OSLO);
+    my $exp       = LoadFile(File::ShareDir::dist_file('Quant-Framework', 'expected_trading_days.yml'));
+    my @exchanges = qw(JSC SES NYSE_SPC ASX ODLS ISE BSE FOREX METAL JSE SWX FSE DFM EURONEXT HKSE NYSE RANDOM RANDOM_NOCTURNE TSE OSLO);
 
     foreach my $exchange_symbol (@exchanges) {
         my $e = Quant::Framework::TradingCalendar->new({
@@ -46,10 +46,10 @@ Quant::Framework::Holiday->create(
       for_date         => $date,
     )->update({
         "25-Dec-2013" => {
-            "Christmas Day" => [qw(FOREX)],
+            "Christmas Day" => [qw(FOREX METAL)],
         },
         "1-Jan-2014" => {
-            "New Year's Day" => [qw(FOREX)],
+            "New Year's Day" => [qw(FOREX METAL)],
         },
 
     }, $date)
@@ -71,4 +71,19 @@ subtest 'trades on holidays/pseudo-holidays' => sub {
         is $forex->trades_on($date), $expected[$counter];
         $counter++;
     }
+
+    my $metal = Quant::Framework::TradingCalendar->new({
+        symbol           => 'METAL',
+        chronicle_reader => $chronicle_r,
+        locale           => 'EN',
+        for_date         => $date
+    });
+
+    $counter = 0;
+    foreach my $days (sort { $a <=> $b } keys %{$metal->pseudo_holidays}) {
+        my $date = Date::Utility->new(0)->plus_time_interval($days . 'd');
+        is $metal->trades_on($date), $expected[$counter];
+        $counter++;
+    }
+
 };
