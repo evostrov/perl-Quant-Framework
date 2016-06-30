@@ -1296,7 +1296,7 @@ sub weighted_days_in_period {
         . ($self->for_date ? $self->for_date->epoch : 0);
 
     #empty cache on 5-minute slices so upon updating related data, the cache will be refreshed
-    %cache=() if (time % 300 == 0);
+    %cache = () if (time % 300 == 0);
 
     return $cache{$key} if defined $cache{$key};
 
