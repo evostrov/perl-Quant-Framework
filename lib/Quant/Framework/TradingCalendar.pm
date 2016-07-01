@@ -74,17 +74,6 @@ has underlying_config => (
     isa => 'Quant::Framework::Utils::UnderlyingConfig',
 );
 
-=head2 locale
-
-localization language (default is 'en')
-
-=cut
-
-has locale => (
-    is      => 'ro',
-    default => 'EN'
-);
-
 =head2 chronicle_reader
 
 Used to work with Chronicle storage data (Holidays and Partial trading data)
@@ -273,15 +262,12 @@ sub BUILDARGS {
     my $params_ref = clone($exchanges->{$symbol});
     $params_ref = {%$params_ref, %$orig_params_ref};
 
-    my $locale = $orig_params_ref->{locale} // 'EN';
-
     foreach my $key (keys %{$params_ref->{market_times}}) {
         foreach my $trading_segment (keys %{$params_ref->{market_times}->{$key}}) {
             if ($trading_segment eq 'day_of_week_extended_trading_breaks') { next; }
             elsif ($trading_segment ne 'trading_breaks') {
                 $params_ref->{market_times}->{$key}->{$trading_segment} = Time::Duration::Concise::Localize->new(
                     interval => $params_ref->{market_times}->{$key}->{$trading_segment},
-                    locale   => $locale,
                 );
             } else {
                 my $break_intervals = $params_ref->{market_times}->{$key}->{$trading_segment};
@@ -289,11 +275,9 @@ sub BUILDARGS {
                 foreach my $int (@$break_intervals) {
                     my $open_int = Time::Duration::Concise::Localize->new(
                         interval => $int->[0],
-                        locale   => $locale,
                     );
                     my $close_int = Time::Duration::Concise::Localize->new(
                         interval => $int->[1],
-                        locale   => $locale,
                     );
                     push @converted, [$open_int, $close_int];
                 }

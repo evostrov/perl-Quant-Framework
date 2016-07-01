@@ -93,7 +93,6 @@ Quant::Framework::Utils::Test::create_doc(
 my $LSE = Quant::Framework::TradingCalendar->new({
     symbol           => 'LSE',
     chronicle_reader => $chronicle_r,
-    locale           => 'EN',
     for_date         => $date
 });
 my $FSE = Quant::Framework::TradingCalendar->new({

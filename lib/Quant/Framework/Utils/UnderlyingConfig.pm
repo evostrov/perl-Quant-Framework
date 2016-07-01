@@ -107,17 +107,6 @@ has exchange_name => (
     isa => 'Str',
 );
 
-=head2 locale
-
-Locale code, used to generate some descriptions in TradingCalendar (Default is 'EN')
-
-=cut
-
-has locale => (
-    is  => 'ro',
-    isa => 'Str',
-);
-
 =head2 uses_implied_rate
 
 Whether this underlying uses implied rate or no.
