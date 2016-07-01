@@ -1287,6 +1287,8 @@ sub weighted_days_in_period {
     my ($self, $begin, $end) = @_;
 
     state %cache;
+    state $cache_init_time = time;
+
     my $key =
           $begin->epoch
         . $end->epoch
@@ -1295,9 +1297,13 @@ sub weighted_days_in_period {
         . $self->symbol
         . ($self->for_date ? $self->for_date->epoch : 0);
 
-    #empty cache on 5-minute slices so upon updating related data, the cache will be refreshed
-    %cache = () if (time % 300 == 0);
+    #empty cache after 5-minute so upon updating related data, the cache will be refreshed
+    if (time - $cache_init_time > 300) {
+        $cache_init_time = time;
+        %cache           = ();
+    }
 
+    print "cache hit" if defined $cache{$key};
     return $cache{$key} if defined $cache{$key};
 
     $end = $end->truncate_to_day;
