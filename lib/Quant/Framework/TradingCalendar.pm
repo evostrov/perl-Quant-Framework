@@ -73,17 +73,6 @@ has underlying_config => (
     isa => 'Quant::Framework::Utils::UnderlyingConfig',
 );
 
-=head2 locale
-
-localization language (default is 'en')
-
-=cut
-
-has locale => (
-    is      => 'ro',
-    default => 'EN'
-);
-
 =head2 chronicle_reader
 
 Used to work with Chronicle storage data (Holidays and Partial trading data)
@@ -267,15 +256,12 @@ sub BUILDARGS {
     my $params_ref = clone($exchanges->{$symbol});
     $params_ref = {%$params_ref, %$orig_params_ref};
 
-    my $locale = $orig_params_ref->{locale} // 'EN';
-
     foreach my $key (keys %{$params_ref->{market_times}}) {
         foreach my $trading_segment (keys %{$params_ref->{market_times}->{$key}}) {
             if ($trading_segment eq 'day_of_week_extended_trading_breaks') { next; }
             elsif ($trading_segment ne 'trading_breaks') {
                 $params_ref->{market_times}->{$key}->{$trading_segment} = Time::Duration::Concise::Localize->new(
                     interval => $params_ref->{market_times}->{$key}->{$trading_segment},
-                    locale   => $locale,
                 );
             } else {
                 my $break_intervals = $params_ref->{market_times}->{$key}->{$trading_segment};
@@ -283,11 +269,9 @@ sub BUILDARGS {
                 foreach my $int (@$break_intervals) {
                     my $open_int = Time::Duration::Concise::Localize->new(
                         interval => $int->[0],
-                        locale   => $locale,
                     );
                     my $close_int = Time::Duration::Concise::Localize->new(
                         interval => $int->[1],
-                        locale   => $locale,
                     );
                     push @converted, [$open_int, $close_int];
                 }
@@ -297,25 +281,6 @@ sub BUILDARGS {
     }
 
     return $params_ref;
-}
-
-=head1 METHODS
-
-=head2 new($symbol)
-
-Returns object for given exchange. Accepts single parameter - exchange symbol.
-
-=cut
-
-has _build_time => (
-    is      => 'ro',
-    default => sub { time },
-);
-
-# we cache objects, when we're getting object from cache we should check if it isn't too old
-# currently we allow age to be up to 30 seconds
-sub _object_expired {
-    return shift->_build_time + 30 < time;
 }
 
 =head2 simple_weight_on
@@ -1301,6 +1266,25 @@ Returns the sum of the weights we apply to each day in the requested period.
 sub weighted_days_in_period {
     my ($self, $begin, $end) = @_;
 
+    state %cache;
+    state $cache_init_time = time;
+
+    my $key =
+          $begin->epoch
+        . $end->epoch
+        . $self->underlying_config->quoted_currency_symbol
+        . $self->underlying_config->asset_symbol
+        . $self->symbol
+        . ($self->for_date ? $self->for_date->epoch : 0);
+
+    #empty cache after 5-minute so upon updating related data, the cache will be refreshed
+    if (time - $cache_init_time > 300) {
+        $cache_init_time = time;
+        %cache           = ();
+    }
+
+    return $cache{$key} if defined $cache{$key};
+
     $end = $end->truncate_to_day;
     my $current = $begin->truncate_to_day->plus_time_interval('1d');
     my $days    = 0.0;
@@ -1309,6 +1293,8 @@ sub weighted_days_in_period {
         $days += $self->weight_on($current);
         $current = $current->plus_time_interval('1d');
     }
+
+    $cache{$key} = $days;
 
     return $days;
 }
