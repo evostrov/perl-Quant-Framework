@@ -1303,7 +1303,6 @@ sub weighted_days_in_period {
         %cache           = ();
     }
 
-    print "cache hit" if defined $cache{$key};
     return $cache{$key} if defined $cache{$key};
 
     $end = $end->truncate_to_day;
