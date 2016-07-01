@@ -38,7 +38,6 @@ subtest general => sub {
     my $calendar        = Quant::Framework::TradingCalendar->new({
         symbol           => 'EURONEXT',
         chronicle_reader => $chronicle_r,
-        locale           => 'EN',
         for_date         => $date
     });
 
