@@ -20,3 +20,5 @@ Revision history for Quant-Framework
         Enable perlcritic and perltidy checks 
 0.24    23 Jun 2016
         Cleanup Builder module
+0.26    26 Jun 2016
+        Removing locale parameter from TradingCalendar and UnderlyingConfig

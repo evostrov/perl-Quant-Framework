@@ -38,7 +38,7 @@ Quant::Framework::Utils::Test::create_doc(
 
 subtest 'holidays' => sub {
     my ($LSE, $FOREX, $RANDOM, $METAL) =
-        map { Quant::Framework::TradingCalendar->new({symbol => $_, chronicle_reader => $chronicle_r, locale => 'EN', for_date => $date}) }
+        map { Quant::Framework::TradingCalendar->new({symbol => $_, chronicle_reader => $chronicle_r, for_date => $date}) }
         qw(LSE FOREX RANDOM METAL);
     is $LSE->for_date->epoch, $date->epoch, 'for_date properly set in Exchange';
     my %expected_holidays = (
@@ -70,7 +70,6 @@ subtest 'pseudo holidays' => sub {
     my $FOREX = Quant::Framework::TradingCalendar->new({
         symbol           => 'FOREX',
         chronicle_reader => $chronicle_r,
-        locale           => 'EN',
         for_date         => $date
     });
     
