@@ -74,7 +74,7 @@ has quanto_only => (
     is => 'ro',
 );
 
-=head2 rate_to_imply_from 
+=head2 rate_to_imply_from
 
 Name of the underlying to imply interest rates from, when calculating implied interest rate
 
@@ -234,26 +234,14 @@ has market_convention => (
     },
 );
 
-=head2 default_dividend_rate 
+=head2 default_dividend_rate
 
-Default dividend of this underlying (If this is not set, Quant::Framework::Dividend will be 
+Default dividend of this underlying (If this is not set, Quant::Framework::Dividend will be
 used to lookup dividend)
 
 =cut
 
 has default_dividend_rate => (
-    is      => 'ro',
-    default => undef,
-);
-
-=head2 default_interest_rate  
-
-Default interest rate of this underlying (If this is not set, Quant::Framework::Currency will be 
-used to lookup interest rate)
-
-=cut
-
-has default_interest_rate => (
     is      => 'ro',
     default => undef,
 );
