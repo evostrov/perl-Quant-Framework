@@ -130,7 +130,10 @@ sub interest_rate_for {
     my ($self, $tiy) = @_;
 
     # timeinyears cannot be undef
-    $tiy ||= 0;
+    $tiy //= 0;
+
+    # if symbol doesn't have quoted_currency_symbol - it doesn't have interest rate either
+    return 0 unless $self->underlying_config->quoted_currency_symbol;
 
     my $quoted_currency = Quant::Framework::Currency->new({
         symbol           => $self->underlying_config->quoted_currency_symbol,
